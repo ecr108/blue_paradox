@@ -12,8 +12,8 @@ Do announcements of MPAs lead to increased fishing effort or catch in the design
 
 - `data/`:
     - `data/raw`: 
-        - raw/mpas: contains `.gkpg` files of mpas from the `mregions2` package
-        - raw/rfmo: contains harmonized datasets from the `tuna_data` repo
+        - `raw/mpas`: contains `.gkpg` files of mpas from the `mregions2` package
+        - `raw/rfmo`: contains harmonized datasets from the `tuna_data` repo
         
     - `data/processed`: 
     - `data/output`: 
