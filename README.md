@@ -19,7 +19,7 @@ Do announcements of MPAs lead to increased fishing effort or catch in the design
     - `data/processed`: 
     - `data/output`: 
 - `scripts/`:
-    - `scripts/01_standardizing`: 
+    - `scripts/01_processing`: 
     - `scripts/02_analysis`: 
     - `scripts/03_content`:
 - `results/`:
