@@ -6,7 +6,7 @@
 # Your email here
 # date
 #
-# This script details how to obtain and save MPA shape fiels from the R package
+# This script details how to obtain and save MPA shape files from the R package
 # mregions2
 #
 ################################################################################
@@ -44,6 +44,7 @@ write.csv(
 ############################
 # Get Kiribati EEZ: TEST
 ############################
+sf::sf_use_s2(TRUE) # to ensure islands not cut off
 
 # Search
 kiribati_search <- gaz_search("Kiribati Exclusive Economic Zone")
