@@ -19,40 +19,88 @@ library(sf)
 library(mapview)
 
 ## Load data -------------------------------------------------------------------
-# set up connection to GitHub tuna repo?
 
-# Load spatial data
+# Spatial data
 pipa <- st_read("data/raw/mpas/pipa.gpkg")
 k_eez <- st_read("data/raw/eez/kiribati_eez.gpkg")
 line_eez <- st_read("data/raw/eez/kiribati_eez_line.gpkg")
 phoenix_eez <- st_read("data/raw/eez/kiribati_eez_phoenix.gpkg")
 gilbert_eez <- st_read("data/raw/eez/kiribati_eez_gilbert.gpkg")
 
-# Load tuna data
-## need to crop tuna data within region
-tuna <- readRDS("data/raw/rfmo/allrfmo_month_1deg_purseseine.rds") |>
-  st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE) # check, is geometry needed?
-
+# Tuna data
+tuna <- readRDS("data/raw/rfmo/allrfmo_month_1deg_purseseine.rds") #|>
+  #st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE)
 
 # PROCESSING ###################################################################
 
-## Set up data -----------------------------------------------------------------
+# Rasterize tuna data ----------------------------------------------------------
+make_cell <- function(lon, lat) {
+  st_polygon(list(rbind(
+    c(lon - 0.5, lat - 0.5),
+    c(lon + 0.5, lat - 0.5),
+    c(lon + 0.5, lat + 0.5),
+    c(lon - 0.5, lat + 0.5),
+    c(lon - 0.5, lat - 0.5)
+  )))
+}
 
-# Define control and treatment region
-## need to consider rule for cells being both inside and outside region
+tuna_polys <- tuna |>
+  mutate(
+    cell = purrr::map2(lon, lat, make_cell)
+  ) |>
+  mutate(
+    cell = st_sfc(cell, crs = 4326)
+  ) |>
+  st_as_sf(sf_column_name = "cell")
 
-# Temporal boundaries
+# Get cell area ----------------------------------------------------------------
+# tuna_area <- tuna_polys |>
+#  st_transform(6933) |>   # equal-area CRS
+#  mutate(
+#    cell_area = as.numeric(st_area(cell)) / 1e6   # km2
+#  )
+
+# Find intersection with PIPA --------------------------------------------------
+#tuna_overlap <- tuna_area |>
+#  mutate(
+#    pipa_intersection = st_intersection(cell, st_transform(pipa, 6933))
+#  ) |>
+#
+  # Get overlap area
+#  mutate(
+#    overlap_area = ifelse(
+#      lengths(pipa_intersection) == 0,
+#      0,
+#      as.numeric(st_area(pipa_intersection)) / 1e6
+#    ),
+#    overlap_pct = overlap_area / cell_area
+#  )
+
+# Define temporal boundaries ---------------------------------------------------
 start_pre      <- as.Date("2012-09-01")  # 1 year before 2013 announcement
-announcement   <- as.Date("2013-09-01")
-implementation <- as.Date("2015-01-01")
+announcement   <- as.Date("2013-09-01")  # Announcement online defined by PIPA paper
+implementation <- as.Date("2015-01-01")  # Implementation date
 end_post       <- as.Date("2016-01-01")  # 1 year after implementation
 
-# Filter
-tuna_region <- tuna |>
+# Define spatial areas ---------------------------------------------------------
+pipa_area <- pipa |>
+  st_transform(6933) |>
+  st_area() |>
+  as.numeric() / 1e6 # convert m2 -> km2
+
+control_area <- st_union(
+  st_transform(line_eez, 6933),
+  st_transform(gilbert_eez, 6933)
+) |>
+  st_area() |>
+  as.numeric() / 1e6
+
+# Filter -----------------------------------------------------------------------
+tuna_region <- tuna_polys |>
   mutate(
-    in_pipa = as.integer(st_intersects(geometry, pipa, sparse = FALSE)),
-    in_line = as.integer(st_intersects(geometry, line_eez, sparse = FALSE)),
-    in_gilbert = as.integer(st_intersects(geometry, gilbert_eez, sparse = FALSE)),
+    in_pipa = as.integer(st_intersects(cell, pipa, sparse = FALSE)),
+    in_line = as.integer(st_intersects(cell, line_eez, sparse = FALSE)),
+    in_gilbert = as.integer(st_intersects(cell, gilbert_eez, sparse = FALSE)),
 
     # Treatment = inside PIPA
     # Control = inside Line Islands and Gilbert EEZ
@@ -63,40 +111,129 @@ tuna_region <- tuna |>
     ),
     date = as.Date(paste(year, month, "01", sep = "-")) # this adds 01 as day to date in set, not sure if this would be correct approach
   ) |>
+
+  # Add column of region area
+  mutate(
+    region_area = case_when(
+      treatment == "treatment" ~ pipa_area,
+      treatment == "control"   ~ control_area
+    )
+  ) |>
+
+  # Filter for time
   filter(
     treatment %in% c("treatment", "control"),
     date >= start_pre,
     date <= end_post
   ) |>
-  # add tags to time periods
+
+  # Add tags to time periods
   mutate(
     period = case_when(
       date < announcement ~ "pre",
       date >= announcement & date < implementation ~ "anticipation",
       date >= implementation ~ "post"
     )
-  )
+  ) |>
 
+  # Add CPUE day and set
+  mutate(
+    cpue_day = ifelse(effort_day > 0, catch_tot / effort_day, NA),
+    cpue_set = ifelse(effort_set > 0, catch_tot / effort_set, NA)
+  ) |>
+  arrange(treatment, date)
 
 # VISUALIZE ####################################################################
-mapview(k_eez) +
-  mapview(pipa)
 
-
+# Map RFMO data, PIPA, and EEZ
 mapview(tuna_region, zcol = "treatment") +
   mapview(pipa, col.regions = "red", alpha.regions = 0.3) +
   mapview(k_eez, col.regions = "blue", alpha.regions = 0.2)
 
-mapview(k_eez)
+# Plot catch time series
+p_catch <- ggplot(tuna_region, aes(x = date, y = catch_tot, color = treatment)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "Catch (tons)", x = "Date") +
+  theme_minimal()
 
-## Another step ----------------------------------------------------------------
 
-# ANALYSIS #####################################################################
+# Plot effort (days) time series
+p_effort_day <- ggplot(tuna_region, aes(x = date, y = effort_day, color = treatment)) +
+  stat_summary(fun = mean,geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "Effort (days)", x = "Date") +
+  theme_minimal()
 
-## Almost last step ------------------------------------------------------------
+
+# Plot effort (sets) time series
+p_effort_set <- ggplot(tuna_region, aes(x = date, y = effort_set, color = treatment)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "Effort (sets)", x = "Date") +
+  theme_minimal()
+
+# Plot CPUE (tons per day) time series
+p_cpue_day <- ggplot(tuna_region, aes(x = date, y = cpue_day, color = treatment)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "CPUE (tons/day)", x = "Date") +
+  theme_minimal()
+
+# Plot CPUE (tons per set) time series
+p_cpue_set <- ggplot(tuna_region, aes(x = date, y = cpue_set, color = treatment)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "CPUE (tons/set)", x = "Date") +
+  theme_minimal()
 
 
 # EXPORT #######################################################################
+ggsave("results/figures/pipa_original/catch_timeseries.png",
+       p_catch, width = 8, height = 5, dpi = 300)
 
-## The final step --------------------------------------------------------------
+ggsave("results/figures/pipa_original/effort_day_timeseries.png",
+       p_effort_day, width = 8, height = 5, dpi = 300)
 
+ggsave("results/figures/pipa_original/effort_set_timeseries.png",
+       p_effort_set, width = 8, height = 5, dpi = 300)
+
+ggsave("results/figures/pipa_original/cpue_day_timeseries.png",
+       p_cpue_day, width = 8, height = 5, dpi = 300)
+
+ggsave("results/figures/pipa_original/cpue_set_timeseries.png",
+       p_cpue_set, width = 8, height = 5, dpi = 300)
+
+# Test Analysis ################################################################
+
+
+tuna_region |>
+  filter(in_pipa == 1, date >= implementation) |>
+  summarize(total_catch = sum(catch_tot, na.rm = TRUE),
+            total_effort = sum(effort_day, na.rm = TRUE))
+
+# could be showing fishing effort along border of PIPA?
+
+
+library(fixest)
+feols(catch_tot ~ i(date, treatment, "2013-09-01") | year ^ month + lat ^ lon,
+      data = tuna_region |>
+        mutate(
+          treatment = 1 * (treatment == "treatment")
+        )) |>
+  iplot()

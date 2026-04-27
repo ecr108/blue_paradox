@@ -44,7 +44,6 @@ write.csv(
 ############################
 # Get Kiribati EEZ: TEST
 ############################
-sf::sf_use_s2(TRUE) # to ensure islands not cut off
 
 # Search
 kiribati_search <- gaz_search("Kiribati Exclusive Economic Zone")

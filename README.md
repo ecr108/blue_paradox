@@ -23,7 +23,8 @@ Do announcements of MPAs lead to increased fishing effort or catch in the design
     - `scripts/02_analysis`: 
     - `scripts/03_content`:
 - `results/`:
-    - `results/figures`
+    - `results/figures`:
+      - `pipa_original`: contains time series plots from recreated PIPA analysis
     - `results/img`:
     - `results/tab`:
 
