@@ -2,11 +2,11 @@
 # Recreate PIPA analysis
 ################################################################################
 #
-# Your Name Here
-# Your email here
-# date
+# Emily Rodriguez
+# ecr108@miami.edu
 #
-# Description
+# Recreation of blue paradox analysis in PIPA region using tuna RFMO catch and
+# effort data at the 1 x 1 degree, monthly resolution.
 #
 ################################################################################
 
@@ -28,8 +28,7 @@ phoenix_eez <- st_read("data/raw/eez/kiribati_eez_phoenix.gpkg")
 gilbert_eez <- st_read("data/raw/eez/kiribati_eez_gilbert.gpkg")
 
 # Tuna data
-tuna <- readRDS("data/raw/rfmo/allrfmo_month_1deg_purseseine.rds") #|>
-  #st_as_sf(coords = c("lon", "lat"), crs = 4326, remove = FALSE)
+tuna <- readRDS("data/raw/rfmo/allrfmo_month_1deg_purseseine.rds")
 
 # PROCESSING ###################################################################
 
@@ -52,29 +51,6 @@ tuna_polys <- tuna |>
     cell = st_sfc(cell, crs = 4326)
   ) |>
   st_as_sf(sf_column_name = "cell")
-
-# Get cell area ----------------------------------------------------------------
-# tuna_area <- tuna_polys |>
-#  st_transform(6933) |>   # equal-area CRS
-#  mutate(
-#    cell_area = as.numeric(st_area(cell)) / 1e6   # km2
-#  )
-
-# Find intersection with PIPA --------------------------------------------------
-#tuna_overlap <- tuna_area |>
-#  mutate(
-#    pipa_intersection = st_intersection(cell, st_transform(pipa, 6933))
-#  ) |>
-#
-  # Get overlap area
-#  mutate(
-#    overlap_area = ifelse(
-#      lengths(pipa_intersection) == 0,
-#      0,
-#      as.numeric(st_area(pipa_intersection)) / 1e6
-#    ),
-#    overlap_pct = overlap_area / cell_area
-#  )
 
 # Define temporal boundaries ---------------------------------------------------
 start_pre      <- as.Date("2012-09-01")  # 1 year before 2013 announcement
@@ -150,8 +126,10 @@ mapview(tuna_region, zcol = "treatment") +
   mapview(pipa, col.regions = "red", alpha.regions = 0.3) +
   mapview(k_eez, col.regions = "blue", alpha.regions = 0.2)
 
+# Time series without standardizing for area -----------------------------------
+
 # Plot catch time series
-p_catch <- ggplot(tuna_region, aes(x = date, y = catch_tot, color = treatment)) +
+ggplot(tuna_region, aes(x = date, y = catch_tot, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -162,9 +140,9 @@ p_catch <- ggplot(tuna_region, aes(x = date, y = catch_tot, color = treatment)) 
 
 
 # Plot effort (days) time series
-p_effort_day <- ggplot(tuna_region, aes(x = date, y = effort_day, color = treatment)) +
-  stat_summary(fun = mean,geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+ggplot(tuna_region, aes(x = date, y = effort_day, color = treatment)) +
+  stat_summary(fun = sum, geom = "line") +
+  #stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
@@ -173,7 +151,7 @@ p_effort_day <- ggplot(tuna_region, aes(x = date, y = effort_day, color = treatm
 
 
 # Plot effort (sets) time series
-p_effort_set <- ggplot(tuna_region, aes(x = date, y = effort_set, color = treatment)) +
+ggplot(tuna_region, aes(x = date, y = effort_set, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -183,7 +161,7 @@ p_effort_set <- ggplot(tuna_region, aes(x = date, y = effort_set, color = treatm
   theme_minimal()
 
 # Plot CPUE (tons per day) time series
-p_cpue_day <- ggplot(tuna_region, aes(x = date, y = cpue_day, color = treatment)) +
+ggplot(tuna_region, aes(x = date, y = cpue_day, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -193,7 +171,7 @@ p_cpue_day <- ggplot(tuna_region, aes(x = date, y = cpue_day, color = treatment)
   theme_minimal()
 
 # Plot CPUE (tons per set) time series
-p_cpue_set <- ggplot(tuna_region, aes(x = date, y = cpue_set, color = treatment)) +
+ggplot(tuna_region, aes(x = date, y = cpue_set, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -202,38 +180,118 @@ p_cpue_set <- ggplot(tuna_region, aes(x = date, y = cpue_set, color = treatment)
   labs(y = "CPUE (tons/set)", x = "Date") +
   theme_minimal()
 
+# Time series standardizing for area -------------------------------------------
+
+# Plot catch time series
+p_catch <- tuna_region |>
+  group_by(date, treatment) |>
+  summarize(catch_tot = sum(catch_tot, na.rm = TRUE)/unique(region_area)) |>
+  ggplot(aes(x = date, y = catch_tot, color = treatment, group = treatment)) +
+  geom_line() +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "Catch (mt)", x = "Date") +
+  theme_minimal()
+
+
+# Plot effort (days) time series
+p_effort_day <- tuna_region |>
+  group_by(date, treatment) |>
+  summarize(effort_day = sum(effort_day, na.rm = TRUE)/unique(region_area)) |>
+  ggplot(aes(x = date, y = effort_day, color = treatment, group = treatment)) +
+  geom_line() +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "Days", x = "Date") +
+  theme_minimal()
+
+# Plot effort (sets) time series
+p_effort_set <- tuna_region |>
+  group_by(date, treatment) |>
+  summarize(effort_set = sum(effort_set, na.rm = TRUE)/unique(region_area)) |>
+  ggplot(aes(x = date, y = effort_set, color = treatment, group = treatment)) +
+  geom_line() +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "Sets", x = "Date") +
+  theme_minimal()
+
+# Plot CPUE (tons/days) time series
+p_cpue_day <- tuna_region |>
+  group_by(date, treatment) |>
+  summarize(cpue_day = sum(cpue_day, na.rm = TRUE)/unique(region_area)) |>
+  ggplot(aes(x = date, y = cpue_day, color = treatment, group = treatment)) +
+  geom_line() +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "CPUE (tons/day)", x = "Date") +
+  theme_minimal()
+
+# Plot CPUE (sets/days) time series
+p_cpue_set <- tuna_region |>
+  group_by(date, treatment) |>
+  summarize(cpue_set = sum(cpue_set, na.rm = TRUE)/unique(region_area)) |>
+  ggplot(aes(x = date, y = cpue_set, color = treatment, group = treatment)) +
+  geom_line() +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(y = "CPUE (tons/set)", x = "Date") +
+  theme_minimal()
 
 # EXPORT #######################################################################
+
+# Standardized figures
+
 ggsave("results/figures/pipa_original/catch_timeseries.png",
-       p_catch, width = 8, height = 5, dpi = 300)
+       plot = p_catch,
+       width = 8,
+       height = 5,
+       dpi = 300)
 
 ggsave("results/figures/pipa_original/effort_day_timeseries.png",
-       p_effort_day, width = 8, height = 5, dpi = 300)
+       plot = p_effort_day,
+       width = 8,
+       height = 5,
+       dpi = 300)
 
 ggsave("results/figures/pipa_original/effort_set_timeseries.png",
-       p_effort_set, width = 8, height = 5, dpi = 300)
+       plot = p_effort_set,
+       width = 8,
+       height = 5,
+       dpi = 300)
 
 ggsave("results/figures/pipa_original/cpue_day_timeseries.png",
-       p_cpue_day, width = 8, height = 5, dpi = 300)
+       plot = p_cpue_day,
+       width = 8,
+       height = 5,
+       dpi = 300)
 
 ggsave("results/figures/pipa_original/cpue_set_timeseries.png",
-       p_cpue_set, width = 8, height = 5, dpi = 300)
+       plot = p_cpue_set,
+       width = 8,
+       height = 5,
+       dpi = 300)
 
 # Test Analysis ################################################################
 
-
-tuna_region |>
-  filter(in_pipa == 1, date >= implementation) |>
-  summarize(total_catch = sum(catch_tot, na.rm = TRUE),
-            total_effort = sum(effort_day, na.rm = TRUE))
-
-# could be showing fishing effort along border of PIPA?
-
-
 library(fixest)
+library(rms)
+
 feols(catch_tot ~ i(date, treatment, "2013-09-01") | year ^ month + lat ^ lon,
-      data = tuna_region |>
+      data = tuna_region_old |>
         mutate(
           treatment = 1 * (treatment == "treatment")
         )) |>
   iplot()
+
+feols(catch_tot ~ treatment * rcs(as.numeric(date - as.Date("2013-09-01"))),
+      data = tuna_region_old |>
+        mutate(
+          treatment = 1 * (treatment == "treatment")
+        )) |>
+  predict()
