@@ -161,7 +161,7 @@ ggplot(tuna_region, aes(x = date, y = effort_set, color = treatment)) +
   theme_minimal()
 
 # Plot CPUE (tons per day) time series
-ggplot(tuna_region, aes(x = date, y = cpue_day, color = treatment)) +
+p_cpue_day_s <- ggplot(tuna_region, aes(x = date, y = cpue_day, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -171,7 +171,7 @@ ggplot(tuna_region, aes(x = date, y = cpue_day, color = treatment)) +
   theme_minimal()
 
 # Plot CPUE (tons per set) time series
-ggplot(tuna_region, aes(x = date, y = cpue_set, color = treatment)) +
+p_cpue_set_s <- ggplot(tuna_region, aes(x = date, y = cpue_set, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -220,28 +220,28 @@ p_effort_set <- tuna_region |>
   theme_minimal()
 
 # Plot CPUE (tons/days) time series
-p_cpue_day <- tuna_region |>
-  group_by(date, treatment) |>
-  summarize(cpue_day = sum(cpue_day, na.rm = TRUE)/unique(region_area)) |>
-  ggplot(aes(x = date, y = cpue_day, color = treatment, group = treatment)) +
-  geom_line() +
-  geom_vline(xintercept = (announcement), linetype = "dashed") +
-  geom_vline(xintercept = (implementation),
-             linetype = "dashed", color = "red") +
-  labs(y = "CPUE (tons/day)", x = "Date") +
-  theme_minimal()
+#p_cpue_day <- tuna_region |>
+#  group_by(date, treatment) |>
+#  summarize(cpue_day = sum(cpue_day, na.rm = TRUE)/unique(region_area)) |>
+#  ggplot(aes(x = date, y = cpue_day, color = treatment, group = treatment)) +
+#  geom_line() +
+#  geom_vline(xintercept = (announcement), linetype = "dashed") +
+#  geom_vline(xintercept = (implementation),
+#             linetype = "dashed", color = "red") +
+#  labs(y = "CPUE (tons/day)", x = "Date") +
+#  theme_minimal()
 
 # Plot CPUE (sets/days) time series
-p_cpue_set <- tuna_region |>
-  group_by(date, treatment) |>
-  summarize(cpue_set = sum(cpue_set, na.rm = TRUE)/unique(region_area)) |>
-  ggplot(aes(x = date, y = cpue_set, color = treatment, group = treatment)) +
-  geom_line() +
-  geom_vline(xintercept = (announcement), linetype = "dashed") +
-  geom_vline(xintercept = (implementation),
-             linetype = "dashed", color = "red") +
-  labs(y = "CPUE (tons/set)", x = "Date") +
-  theme_minimal()
+#p_cpue_set <- tuna_region |>
+#  group_by(date, treatment) |>
+#  summarize(cpue_set = sum(cpue_set, na.rm = TRUE)/unique(region_area)) |>
+#  ggplot(aes(x = date, y = cpue_set, color = treatment, group = treatment)) +
+# geom_line() +
+#  geom_vline(xintercept = (announcement), linetype = "dashed") +
+#  geom_vline(xintercept = (implementation),
+#             linetype = "dashed", color = "red") +
+#  labs(y = "CPUE (tons/set)", x = "Date") +
+#  theme_minimal()
 
 # EXPORT #######################################################################
 
@@ -266,13 +266,13 @@ ggsave("results/figures/pipa_original/effort_set_timeseries.png",
        dpi = 300)
 
 ggsave("results/figures/pipa_original/cpue_day_timeseries.png",
-       plot = p_cpue_day,
+       plot = p_cpue_day_s,
        width = 8,
        height = 5,
        dpi = 300)
 
 ggsave("results/figures/pipa_original/cpue_set_timeseries.png",
-       plot = p_cpue_set,
+       plot = p_cpue_set_s,
        width = 8,
        height = 5,
        dpi = 300)
