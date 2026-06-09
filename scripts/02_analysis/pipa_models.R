@@ -94,19 +94,6 @@ tab <- modelsummary(
 gtsave(tab, "results/tab/pixel_model_summaries.png")
 
 
-modelsummary(
-  list(
-    "Effort (days)" = m_effort_day,
-    "Effort (sets)" = m_effort_set,
-    "Catch total"   = m_catch_tot,
-    "CPUE (day)"    = m_cpue_day,
-    "CPUE (set)"    = m_cpue_set
-  ),
-  output = "markdown"
-)
-
-
-
 # Example from meeting:
 # m1 <- feols(c(effort_day, effort_set) ~ treatment * post,
             # data = estimation_panel, vcov = vcov_conley())
@@ -155,8 +142,7 @@ region_panel <- region_std_df |>
 ## Effort (days per km²)
 m_region_effort_day <- feols(
   effort_day_per_km2 ~ treatment * post,
-  data = region_panel,
-  vcov = vcov_NW(unit = ~ treatment, time = ~ date) # not sure if this is correct approach
+  data = region_panel
 )
 
 # Effort (sets per km²)
