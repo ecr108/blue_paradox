@@ -155,43 +155,43 @@ p_cpue_set <- ggplot(pipa_data, aes(x = date, y = cpue_set, color = treatment)) 
 # Plot catch time series
 p_catch_a <- pipa_data |>
   group_by(date, treatment) |>
-  summarize(catch_tot = sum(catch_tot, na.rm = TRUE)/unique(region_area)) |>
+  summarise(catch_tot = sum(catch_tot, na.rm = TRUE)/unique(region_area)) |>
   ggplot(aes(x = date, y = catch_tot, color = treatment, group = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
   labs(y = "Catch (mt)", x = "Date", color = "Region") +
-  theme_minimal()
+  theme_classic()
 
 
 # Plot effort (days) time series
 p_effort_day_a <- pipa_data |>
   group_by(date, treatment) |>
-  summarize(effort_day = sum(effort_day, na.rm = TRUE)/unique(region_area)) |>
+  summarise(effort_day = sum(effort_day, na.rm = TRUE)/unique(region_area)) |>
   ggplot(aes(x = date, y = effort_day, color = treatment, group = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
   labs(y = "Days", x = "Date", color = "Region") +
-  theme_minimal()
+  theme_classic()
 
 # Plot effort (sets) time series
 p_effort_set_a <- pipa_data |>
   group_by(date, treatment) |>
-  summarize(effort_set = sum(effort_set, na.rm = TRUE)/unique(region_area)) |>
+  summarise(effort_set = sum(effort_set, na.rm = TRUE)/unique(region_area)) |>
   ggplot(aes(x = date, y = effort_set, color = treatment, group = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
   labs(y = "Sets", x = "Date", color = "Region") +
-  theme_minimal()
+  theme_classic()
 
 # EXPORT #######################################################################
 
-ggsave("results/figures/pipa_original/p_map_pipa.png",
+ggsave("results/figures/pipa_original/map_pipa.png",
        plot = p_map_pipa,
        width = 8,
        height = 6,
@@ -244,3 +244,4 @@ ggsave("results/figures/pipa_original/effort_set_timeseries_area_standardized.pn
        width = 8,
        height = 5,
        dpi = 300)
+
