@@ -20,7 +20,7 @@ pipa_search <- gaz_search("Phoenix Islands Protected Area")
 
 # Extract ID
 pipa_id <- pipa_search |>
-  filter(grepl("Phoenix Islands Protected Area", preferredGazetteerName)) %>%
+  filter(grepl("Phoenix Islands Protected Area", preferredGazetteerName)) |>
   pull(MRGID)
 
 

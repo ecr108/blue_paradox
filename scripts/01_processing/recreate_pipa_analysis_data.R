@@ -21,7 +21,7 @@ library(mapview)
 ## Load data -------------------------------------------------------------------
 
 # Spatial data
-pipa <- st_read("data/raw/mpas/pipa.gpkg")
+pipa <- st_read("data/raw/mpa/pipa.gpkg")
 k_eez <- st_read("data/raw/eez/kiribati_eez.gpkg")
 line_eez <- st_read("data/raw/eez/kiribati_eez_line.gpkg")
 phoenix_eez <- st_read("data/raw/eez/kiribati_eez_phoenix.gpkg")
@@ -219,79 +219,6 @@ p_effort_set <- tuna_region |>
   labs(y = "Sets", x = "Date") +
   theme_minimal()
 
-# Plot CPUE (tons/days) time series
-#p_cpue_day <- tuna_region |>
-#  group_by(date, treatment) |>
-#  summarize(cpue_day = sum(cpue_day, na.rm = TRUE)/unique(region_area)) |>
-#  ggplot(aes(x = date, y = cpue_day, color = treatment, group = treatment)) +
-#  geom_line() +
-#  geom_vline(xintercept = (announcement), linetype = "dashed") +
-#  geom_vline(xintercept = (implementation),
-#             linetype = "dashed", color = "red") +
-#  labs(y = "CPUE (tons/day)", x = "Date") +
-#  theme_minimal()
-
-# Plot CPUE (sets/days) time series
-#p_cpue_set <- tuna_region |>
-#  group_by(date, treatment) |>
-#  summarize(cpue_set = sum(cpue_set, na.rm = TRUE)/unique(region_area)) |>
-#  ggplot(aes(x = date, y = cpue_set, color = treatment, group = treatment)) +
-# geom_line() +
-#  geom_vline(xintercept = (announcement), linetype = "dashed") +
-#  geom_vline(xintercept = (implementation),
-#             linetype = "dashed", color = "red") +
-#  labs(y = "CPUE (tons/set)", x = "Date") +
-#  theme_minimal()
-
 # EXPORT #######################################################################
 
-# Standardized figures
-
-ggsave("results/figures/pipa_original/catch_timeseries.png",
-       plot = p_catch,
-       width = 8,
-       height = 5,
-       dpi = 300)
-
-ggsave("results/figures/pipa_original/effort_day_timeseries.png",
-       plot = p_effort_day,
-       width = 8,
-       height = 5,
-       dpi = 300)
-
-ggsave("results/figures/pipa_original/effort_set_timeseries.png",
-       plot = p_effort_set,
-       width = 8,
-       height = 5,
-       dpi = 300)
-
-ggsave("results/figures/pipa_original/cpue_day_timeseries.png",
-       plot = p_cpue_day_s,
-       width = 8,
-       height = 5,
-       dpi = 300)
-
-ggsave("results/figures/pipa_original/cpue_set_timeseries.png",
-       plot = p_cpue_set_s,
-       width = 8,
-       height = 5,
-       dpi = 300)
-
-# Test Analysis ################################################################
-
-library(fixest)
-library(rms)
-
-feols(catch_tot ~ i(date, treatment, "2013-09-01") | year ^ month + lat ^ lon,
-      data = tuna_region_old |>
-        mutate(
-          treatment = 1 * (treatment == "treatment")
-        )) |>
-  iplot()
-
-feols(catch_tot ~ treatment * rcs(as.numeric(date - as.Date("2013-09-01"))),
-      data = tuna_region_old |>
-        mutate(
-          treatment = 1 * (treatment == "treatment")
-        )) |>
-  predict()
+saveRDS(tuna_region, "data/processed/blue_paradox_pipa.rds")
