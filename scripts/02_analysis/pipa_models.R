@@ -17,6 +17,7 @@ library(tidyverse)
 library(fixest)
 library(modelsummary)
 library(sf)
+library(gt)
 
 ## Load data -------------------------------------------------------------------
 
@@ -79,6 +80,20 @@ m_cpue_set <- feols(
 )
 
 # Model Summaries
+tab <- modelsummary(
+  list(
+    "Effort (days)" = m_effort_day,
+    "Effort (sets)" = m_effort_set,
+    "Catch total"   = m_catch_tot,
+    "CPUE (day)"    = m_cpue_day,
+    "CPUE (set)"    = m_cpue_set
+  ),
+  output = "gt"
+)
+
+gtsave(tab, "results/tab/pixel_model_summaries.png")
+
+
 modelsummary(
   list(
     "Effort (days)" = m_effort_day,
@@ -89,6 +104,7 @@ modelsummary(
   ),
   output = "markdown"
 )
+
 
 
 # Example from meeting:
@@ -167,7 +183,7 @@ m_region_cpue_set <- feols(
   data = region_panel
 )
 
-modelsummary(
+tab2 <- modelsummary(
   list(
     "Effort day / km²" = m_region_effort_day,
     "Effort set / km²" = m_region_effort_set,
@@ -175,8 +191,10 @@ modelsummary(
     "CPUE day"         = m_region_cpue_day,
     "CPUE set"         = m_region_cpue_set
   ),
-  output = "markdown"
+  output = "gt"
 )
+
+gtsave(tab2, "results/tab/region_model_summaries.png")
 
 # Old --------------------------------------------------------------------------
 
