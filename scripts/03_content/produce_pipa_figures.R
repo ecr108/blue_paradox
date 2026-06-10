@@ -19,6 +19,8 @@ library(mapview)
 library(lwgeom)
 library(patchwork)
 library(viridis)
+library(terra)
+library(ggspatial)
 
 ## Load data -------------------------------------------------------------------
 
@@ -70,7 +72,6 @@ p_map_pipa <- ggplot() +
     width = 1, height = 1
   ) +
   scale_fill_viridis(
-    name = "Fishing effort (days)",
     option = "G",
     trans = "sqrt",
     na.value = "transparent",
@@ -85,16 +86,21 @@ p_map_pipa <- ggplot() +
   geom_sf(data = pipa_360,     fill = NA, color = "red",    linewidth = 1.5) +
 
   coord_sf(expand = FALSE, datum = NA) +
-  theme_minimal(base_size = 13) +
-  theme(
-    panel.grid = element_blank(),
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    legend.title = element_text(size = 11),
-    legend.text = element_text(size = 9),
-    legend.position = "right"
-  )
+  theme_bw(base_size = 13) +
+  # Add north arrow
+  annotation_north_arrow(
+    location = "tl",
+    height = unit(0.8, "cm"),
+    width  = unit(0.8, "cm"),
+    style = north_arrow_fancy_orienteering()
+  ) +
+  # Add scale bar
+  annotation_scale(location = "bl") +
+  labs(fill = "Fishing effort (days)",
+       x = "Longitude",
+       y = "Latitude",
+       title = "Fishing effort in Kiribati",
+       caption = "Data sources: ")
 
 # Time series without standardizing for area -----------------------------------
 
@@ -188,6 +194,9 @@ p_effort_set_a <- pipa_data |>
              linetype = "dashed", color = "red") +
   labs(y = "Sets", x = "Date", color = "Region") +
   theme_classic()
+
+
+# Need region-level CPUE plot
 
 # EXPORT #######################################################################
 

@@ -107,7 +107,6 @@ gtsave(tab, "results/tab/pixel_model_summaries.png")
 # Unit of observation is the region --------------------------------------------
 
 # Create region-level data
-# should this be used for models above??
 region_df <- pipa_data |>
   group_by(treatment, date, region_area) |>
   summarise(
