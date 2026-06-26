@@ -44,72 +44,6 @@ estimation_panel <- pipa_data |>
 
 # BACI models
 
-## Effort days
-m_effort_day <- feols(
-  effort_day ~ treatment * post,
-  data = estimation_panel,
-  vcov = vcov_conley()
-)
-
-## Effort sets
-m_effort_set <- feols(
-  effort_set ~ treatment * post,
-  data = estimation_panel,
-  vcov = vcov_conley()
-)
-
-## Total catch
-m_catch_tot <- feols(
-  catch_tot ~ treatment * post,
-  data = estimation_panel,
-  vcov = vcov_conley()
-)
-
-## CPUE (days)
-m_cpue_day <- feols(
-  cpue_day ~ treatment * post,
-  data = estimation_panel,
-  vcov = vcov_conley()
-)
-
-## CPUE (sets)
-m_cpue_set <- feols(
-  cpue_set ~ treatment * post,
-  data = estimation_panel,
-  vcov = vcov_conley()
-)
-
-# Model Summaries
-tab <- modelsummary(
-  list(
-    "Effort (days)" = m_effort_day,
-    "Effort (sets)" = m_effort_set,
-    "Catch total"   = m_catch_tot,
-    "CPUE (day)"    = m_cpue_day,
-    "CPUE (set)"    = m_cpue_set
-  ),
-  title = "Unit of observation is a 1 degree grid cell",
-  gof_omit = "IC|RMSE",
-  stars = TRUE,
-  output = "gt"
-)
-
-gtsave(tab, "results/tab/pixel_model_summaries.png")
-
-modelsummary(
-  list(
-    "Effort (days)" = m_effort_day,
-    "Effort (sets)" = m_effort_set,
-    "Catch total"   = m_catch_tot,
-    "CPUE (day)"    = m_cpue_day,
-    "CPUE (set)"    = m_cpue_set
-  ),
-  stars = TRUE,
-  output = "html"
-)
-
-# Redo models in one set
-
 m_pixel <- feols(
   c(
     effort_day,
@@ -132,13 +66,18 @@ names(m_pixel_list) <- c(
   "CPUE (sets)"
 )
 
+# Get model summary
 modelsummary(
   m_pixel_list,
   stars = TRUE,
-  output = "html"
+  title = "Pixel-level BACI models of effort, catch, and CPUE",
+  notes = "BACI regression estimates at the pixel‑month level. The interaction
+  term estiamtes the change in treated pixels relative to the control pixels
+  during the anticiaption period. Conley standard errors are used.",
+  output = "results/tab/pixel_model_summary.html"
 )
 
-# Repeat model with a log wrap
+# Repeat with log wrap
 
 m_pixel_log <- feols(
   c(
@@ -165,23 +104,23 @@ names(m_pixel_log_list) <- c(
 modelsummary(
   m_pixel_log_list,
   stars = TRUE,
-  output = "html"
+  title = "Log-linear pixel-level BACI models of effort, catch, and CPUE",
+  note = "Log-linear BACI regression estimates at the pixel-month level.
+  The interaction term estimates the percentage change in treated pixels
+  relative to control pixels during the anticipation period. Conley standard
+  errors are used.",
+  output = "results/tab/log_pixel_model_summary.html"
 )
-
-# Example from meeting:
-# m1 <- feols(c(effort_day, effort_set) ~ treatment * post,
-            # data = estimation_panel, vcov = vcov_conley())
-
-# modelsummary(m1, output = "markdown")
-
-# feols(c(effort_day) ~ treatment * post,
-     #  data = estimation_panel)
-
 
 # Unit of observation is the region --------------------------------------------
 
+# Change catch_tot to kg
+pipa_data_kg <- pipa_data |>
+  mutate(catch_tot = catch_tot * 1000)
+
+
 # Create region-level data
-region_df <- pipa_data |>
+region_df <- pipa_data_kg |>
   group_by(treatment, date, region_area) |>
   summarise(
     catch_sum = sum(catch_tot, na.rm = TRUE),
@@ -210,64 +149,8 @@ region_panel <- region_std_df |>
     post      = 1 * (date >= announcement & date < implementation) # see if this can be fixed to match first panel
   )
 
+
 # BACI models
-
-## Effort (days per km²)
-m_region_effort_day <- feols(
-  log(effort_day_per_km2) ~ treatment * post,
-  data = region_panel
-)
-
-# Effort (sets per km²)
-m_region_effort_set <- feols(
-  effort_set_per_km2 ~ treatment * post,
-  data = region_panel
-)
-
-# Catch (per km²)
-m_region_catch <- feols(
-  catch_per_km2 ~ treatment * post,
-  data = region_panel
-)
-
-# CPUE (day)
-m_region_cpue_day <- feols(
-  cpue_day ~ treatment * post,
-  data = region_panel
-)
-
-# CPUE (set)
-m_region_cpue_set <- feols(
-  cpue_set ~ treatment * post,
-  data = region_panel
-)
-
-tab2 <- modelsummary(
-  list(
-    "Effort day / km²" = m_region_effort_day,
-    "Effort set / km²" = m_region_effort_set,
-    "Catch / km²"      = m_region_catch,
-    "CPUE day"         = m_region_cpue_day,
-    "CPUE set"         = m_region_cpue_set
-  ),
-  output = "gt"
-)
-
-gtsave(tab2, "results/tab/region_model_summaries.png")
-
-modelsummary(
-  list(
-    "Effort day / km²" = m_region_effort_day,
-    "Effort set / km²" = m_region_effort_set,
-    "Catch / km²"      = m_region_catch,
-    "CPUE day"         = m_region_cpue_day,
-    "CPUE set"         = m_region_cpue_set
-  ),
-  stars = TRUE,
-  output = "html"
-)
-
-# Redo models in one set
 
 m_region <- feols(
   c(
@@ -293,12 +176,15 @@ names(m_region_list) <- c(
 modelsummary(
   m_region_list,
   stars = TRUE,
-  title = "Region level model comparisons",
-  output = "html"
+  title = "Region-level BACI models of effort, catch, and CPUE",
+  note = "BACI regression estimates at the region-level. The interaction
+  term estiamtes the change in treatment region relative to the control region
+  during the anticiaption period.",
+  output = "results/tab/region_model_summary.html"
 )
 
 
-# Redo with log wrap
+# Repeat with log wrap
 m_region_log <- feols(
   c(
     log(effort_day_per_km2),
@@ -323,30 +209,15 @@ names(m_region_log_list) <- c(
 modelsummary(
   m_region_log_list,
   stars = TRUE,
-  output = "html"
+  coef_map = c(
+    "treatment" = "Treatment",               # Sample labeling
+    "post" = "Anticipation period",
+    "treatment:post" = "Treatment × Anticipation"
+  ),
+  name = "Log-linear region-level BACI models of effort, catch, and CPUE",
+  note = "Log-linear BACI regression estimates at the region-level.
+  The interaction term estimates the percentage change in the treatment region
+  relative to control region during the anticipation period.",
+  output = "results/tab/log_region_model_summary.html"
 )
 
-
-# Old --------------------------------------------------------------------------
-
-m_event <- feols(catch_tot ~ i(date, treatment, "2013-09-01") | year ^ month + lat ^ lon,
-                 data = tuna_region |>
-                   mutate(
-                     treatment = 1 * (treatment == "treatment")
-                   )) |>
-  iplot()
-
-iplot(m_event)
-
-summary(m_event)
-m_event$gg
-
-
-summary(m_event)
-
-feols(catch_tot ~ treatment * rcs(as.numeric(date - as.Date("2013-09-01"))),
-      data = tuna_region |>
-        mutate(
-          treatment = 1 * (treatment == "treatment")
-        )) |>
-  predict()
