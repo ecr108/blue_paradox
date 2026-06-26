@@ -21,6 +21,9 @@ library(patchwork)
 library(viridis)
 library(terra)
 library(ggspatial)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(patchwork)
 
 ## Load data -------------------------------------------------------------------
 
@@ -48,111 +51,284 @@ mapview(pipa_data, zcol = "treatment") +
   mapview(k_eez, col.regions = "blue", alpha.regions = 0.2)
 
 
-# Aggregate and fix meridian issue for RFMO data
-tuna_tiles <- pipa_data |>
-  mutate(lon_plot = if_else(lon < 0, lon + 360, lon)) |>
-  group_by(lon_plot, lat) |>
-  summarise(
-    effort_day_sum = sum(effort_day, na.rm = TRUE),
-    .groups = "drop"
+# Create area of interest plot -------------------------------------------------
+
+## World map
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Create area of interest box
+
+aoi_box <- st_as_sfc(
+  st_bbox(
+    c(
+      xmin = 168,
+      xmax = 210,
+      ymin = -12,
+      ymax = 8
+    ),
+    crs = 4326
+  )
+) |>
+  st_transform("EPSG:8859")
+
+# Create global map
+
+global_map <- ggplot() +
+
+  geom_sf(
+    data = world,
+    fill = "grey85",
+    color = "grey50",
+    linewidth = 0.15
+  ) +
+
+  geom_sf(
+    data = aoi_box,
+    fill = NA,
+    color = "blue",
+    linewidth = 1.2
+  ) +
+
+  coord_sf(
+    crs = "EPSG:8859",
+    xlim = c(-3.5e6, 9.5e6),
+    ylim = c(-5e6, 3e6)
+  ) +
+
+  annotation_scale(
+    location = "bl",
+    width_hint = 0.25
+  ) +
+
+  annotation_north_arrow(
+    location = "tl",
+    which_north = "true",
+    style = north_arrow_fancy_orienteering
+  ) +
+
+  labs(
+    title = "Area of interest"
+  ) +
+
+  theme_void() +
+
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      hjust = 0.5
+    ),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA
+    ),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
   )
 
-# Fix meridian issue for spatial objects
-pipa_360     <- st_shift_longitude(pipa)
-line_360     <- st_shift_longitude(line_eez)
-gilbert_360  <- st_shift_longitude(gilbert_eez)
-phoenix_360  <- st_shift_longitude(phoenix_eez)
-kiribati_360 <- st_shift_longitude(k_eez)
+# Create zoomed in study region
+
+zoom_map <- ggplot() +
+
+  geom_sf(
+    data = gilbert_eez,
+    fill = NA,
+    color = "grey50",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = phoenix_eez,
+    fill = NA,
+    color = "grey50",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = line_eez,
+    fill = NA,
+    color = "grey50",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = pipa,
+    fill = NA,
+    color = "#d73027",
+    linewidth = 1.4
+  ) +
+
+  coord_sf(crs = "EPSG:8859") +
+
+  labs(
+    title = "Kiribati EEZs and PIPA"
+  ) +
+
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      hjust = 0.5
+    ),
+    panel.grid.major = element_blank(
+    ),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
+  )
+
+# Combine figures
+
+study_area_map <- (global_map / zoom_map) +
+  plot_annotation(tag_levels = "A")
+
+# Create fishing effort plot ---------------------------------------------------
+
+# Aggregate and fix meridian issue for RFMO data
+tuna_tiles <- pipa_data |>
+  group_by(year, lon, lat) |>
+  summarize(effort = sum(effort_day, na.rm = TRUE)) |>
+  st_as_sf(coords = c("lon", "lat"), crs = "EPSG:4326")
 
 # Plot fishing effort (days) over study region
 p_map_pipa <- ggplot() +
-  geom_tile(
+
+  geom_sf(
     data = tuna_tiles,
-    aes(x = lon_plot, y = lat, fill = effort_day_sum),
-    width = 1, height = 1
+    aes(fill = log(effort)),
+    color = "transparent"
   ) +
+
   scale_fill_viridis(
     option = "G",
-    trans = "sqrt",
     na.value = "transparent",
     end = 0.95,
     alpha = 0.9
   ) +
 
-  #geom_sf(data = kiribati_360, fill = NA, color = "grey40", linewidth = 0.3) +
-  geom_sf(data = line_360,     fill = NA, color = "grey60", linewidth = 0.4) +
-  geom_sf(data = gilbert_360,  fill = NA, color = "grey60", linewidth = 0.4) +
-  geom_sf(data = phoenix_360,  fill = NA, color = "grey60", linewidth = 0.4) +
-  geom_sf(data = pipa_360,     fill = NA, color = "red",    linewidth = 1.5) +
+  # Place islands on top
+  geom_sf(data = line_eez,
+          fill = NA, color = "grey60",
+          linewidth = 0.4) +
 
-  coord_sf(expand = FALSE, datum = NA) +
+  geom_sf(data = gilbert_eez,
+          fill = NA,
+          color = "grey60",
+          linewidth = 0.4) +
+
+  geom_sf(data = phoenix_eez,
+          fill = NA,
+          color = "grey60",
+          linewidth = 0.4) +
+  geom_sf(data = pipa,
+          fill = NA, color = "red",
+          linewidth = 1.5) +
+
+  geom_sf(
+    data = pipa,
+    aes(color = "PIPA"),
+    fill = NA,
+    linewidth = 1.5,
+    show.legend = TRUE
+  ) +
+
+  coord_sf(expand = FALSE, crs = "EPSG:8859") +
+
+  scale_color_manual(name = NULL, values = c("PIPA" = "#d73027")) +
+
+  scale_x_continuous(
+    breaks = seq(150, 210, by = 5),
+    labels = function(x) paste0(x, "°")
+  ) +
+
   theme_bw(base_size = 13) +
+
+  theme(
+    legend.position = "bottom",
+    panel.background = element_rect(fill = "#eaf2f8", color = NA)
+  ) +
+
   # Add north arrow
   annotation_north_arrow(
-    location = "tl",
+    location = "bl",
     height = unit(0.8, "cm"),
     width  = unit(0.8, "cm"),
     style = north_arrow_fancy_orienteering()
   ) +
+
   # Add scale bar
-  annotation_scale(location = "bl") +
-  labs(fill = "Fishing effort (days)",
+  annotation_scale(location = "bl",
+                   pad_x = unit(1, "cm"),
+                   pad_y = unit(0.5, "cm")) +
+  # Headings
+  labs(fill = "Fishing effort\n(log-days)",
        x = "Longitude",
        y = "Latitude",
        title = "Fishing effort in Kiribati",
-       caption = "Data sources: ")
+       caption = "Data sources: IATTC, WCPFC, *missing MPA citation")
 
 # Time series without standardizing for area -----------------------------------
 
 # Plot catch time series
 p_catch <- ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "Catch (tons)", x = "Date", color = "Region") +
+  labs(title = "Mean catch over time by treatment (unstandardized)",
+       y = "Catch (tons)", x = "Date", color = "Region") +
   theme_classic()
 
 
 # Plot effort (days) time series
 p_effort_day <- ggplot(pipa_data, aes(x = date, y = effort_day, color = treatment)) +
-  stat_summary(fun = sum, geom = "line") +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "Effort (days)", x = "Date", color = "Region") +
+  labs(title = "Mean fishing effort (days) over time by treatment (unstandardized)",
+       y = "Effort (days)", x = "Date", color = "Region") +
   theme_classic()
 
 
 # Plot effort (sets) time series
 p_effort_set <- ggplot(pipa_data, aes(x = date, y = effort_set, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "Effort (sets)", x = "Date", color = "Region") +
+  labs(title = "Mean fishing effort (sets) over time by treatment (unstandardized)", y = "Effort (sets)", x = "Date", color = "Region") +
   theme_classic()
 
 # Plot CPUE (tons per day) time series
 p_cpue_day <-  ggplot(pipa_data, aes(x = date, y = cpue_day, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "CPUE (tons/day)", x = "Date", color = "Region") +
+  labs(title = "Mean CPUE (tons per day) over time by treatment (unstandardized)",
+       y = "CPUE (tons/day)", x = "Date", color = "Region") +
   theme_classic()
 
 # Plot CPUE (tons per set) time series
 p_cpue_set <- ggplot(pipa_data, aes(x = date, y = cpue_set, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2) +
+  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "CPUE (tons/set)", x = "Date", color = "Region") +
+  labs(title = "Mean CPUE (tons per set) over time by treatment (unstandardized",
+       y = "CPUE (tons/set)", x = "Date", color = "Region") +
   theme_classic()
 
 
@@ -167,7 +343,8 @@ p_catch_a <- pipa_data |>
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "Catch (mt)", x = "Date", color = "Region") +
+  labs(title = "Region‑level catch standardized by area over time",
+  y = "Catch (mt)", x = "Date", color = "Region") +
   theme_classic()
 
 
@@ -180,7 +357,8 @@ p_effort_day_a <- pipa_data |>
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "Days", x = "Date", color = "Region") +
+  labs(title = "Region-level effort (days) standardized by area over time",
+       y = "Days", x = "Date", color = "Region") +
   theme_classic()
 
 # Plot effort (sets) time series
@@ -192,13 +370,61 @@ p_effort_set_a <- pipa_data |>
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(y = "Sets", x = "Date", color = "Region") +
+  labs(title = "Region-level effort (sets) standardized by area over time",
+       y = "Sets", x = "Date", color = "Region") +
   theme_classic()
 
 
-# Need region-level CPUE plot
+# Set up CPUE data
+
+region_df <- pipa_data |>
+  group_by(treatment, date, region_area) |>
+  summarise(
+    catch_sum = sum(catch_tot, na.rm = TRUE),
+    effort_day_sum = sum(effort_day, na.rm = TRUE),
+    effort_set_sum = sum(effort_set, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(
+    cpue_day = catch_sum / effort_day_sum,
+    cpue_set = catch_sum / effort_set_sum
+  )
+
+cpue_ts <- region_df |>
+  group_by(date, treatment) |>
+  summarise(
+    cpue_day = mean(cpue_day, na.rm = TRUE),
+    cpue_set = mean(cpue_set, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# CPUE days
+p_cpue_day_a <- ggplot(cpue_ts, aes(x = date, y = cpue_day, color = treatment, group = treatment)) +
+  geom_line() +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(title = "Region‑level CPUE (day) standardized by area over time",
+       y = "CPUE (tons/day)", x = "Date", color = "Region") +
+  theme_classic()
+
+# CPUE sets
+p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment, group = treatment)) +
+  geom_line() +
+  geom_vline(xintercept = (announcement), linetype = "dashed") +
+  geom_vline(xintercept = (implementation),
+             linetype = "dashed", color = "red") +
+  labs(title = "Region‑level CPUE (set) standardized by area over time",
+       y = "CPUE (tons/sets)", x = "Date", color = "Region") +
+  theme_classic()
 
 # EXPORT #######################################################################
+
+ggsave("results/figures/pipa_original/map_studyarea.png",
+       plot = study_area_map,
+       width = 8,
+       height = 6,
+       dpi = 300)
 
 ggsave("results/figures/pipa_original/map_pipa.png",
        plot = p_map_pipa,
@@ -253,4 +479,17 @@ ggsave("results/figures/pipa_original/effort_set_timeseries_area_standardized.pn
        width = 8,
        height = 5,
        dpi = 300)
+
+ggsave("results/figures/pipa_original/cpue_day_timeseries_area_standardized.png",
+       plot = p_cpue_day_a,
+       width = 8,
+       height = 5,
+       dpi = 300)
+
+ggsave("results/figures/pipa_original/cpue_set_timeseries_area_standardized.png",
+       plot = p_cpue_set_a,
+       width = 8,
+       height = 5,
+       dpi = 300)
+
 
