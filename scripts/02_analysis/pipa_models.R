@@ -88,11 +88,85 @@ tab <- modelsummary(
     "CPUE (day)"    = m_cpue_day,
     "CPUE (set)"    = m_cpue_set
   ),
+  title = "Unit of observation is a 1 degree grid cell",
+  gof_omit = "IC|RMSE",
+  stars = TRUE,
   output = "gt"
 )
 
 gtsave(tab, "results/tab/pixel_model_summaries.png")
 
+modelsummary(
+  list(
+    "Effort (days)" = m_effort_day,
+    "Effort (sets)" = m_effort_set,
+    "Catch total"   = m_catch_tot,
+    "CPUE (day)"    = m_cpue_day,
+    "CPUE (set)"    = m_cpue_set
+  ),
+  stars = TRUE,
+  output = "html"
+)
+
+# Redo models in one set
+
+m_pixel <- feols(
+  c(
+    effort_day,
+    effort_set,
+    catch_tot,
+    cpue_day,
+    cpue_set
+  ) ~ treatment * post,
+  data = estimation_panel,
+  vcov = vcov_conley()
+)
+
+m_pixel_list <- as.list(m_pixel)
+
+names(m_pixel_list) <- c(
+  "Effort (days)",
+  "Effort (sets)",
+  "Total Catch",
+  "CPUE (days)",
+  "CPUE (sets)"
+)
+
+modelsummary(
+  m_pixel_list,
+  stars = TRUE,
+  output = "html"
+)
+
+# Repeat model with a log wrap
+
+m_pixel_log <- feols(
+  c(
+    log(effort_day),
+    log(effort_set),
+    log(catch_tot),
+    log(cpue_day),
+    log(cpue_set)
+  ) ~ treatment * post,
+  data = estimation_panel,
+  vcov = vcov_conley()
+)
+
+m_pixel_log_list <- as.list(m_pixel_log)
+
+names(m_pixel_log_list) <- c(
+  "log Effort (days)",
+  "log Effort (sets)",
+  "log Total Catch",
+  "log CPUE (days)",
+  "log CPUE (sets)"
+)
+
+modelsummary(
+  m_pixel_log_list,
+  stars = TRUE,
+  output = "html"
+)
 
 # Example from meeting:
 # m1 <- feols(c(effort_day, effort_set) ~ treatment * post,
@@ -122,9 +196,9 @@ region_df <- pipa_data |>
 
 region_std_df <- region_df |>
   mutate(
-    catch_per_km2 = catch_sum / region_area,
-    effort_day_per_km2 = effort_day_sum / region_area,
-    effort_set_per_km2 = effort_set_sum / region_area
+    catch_per_km2 = catch_sum / (region_area / 1e4), # catch per 10,000 km2
+    effort_day_per_km2 = effort_day_sum / (region_area / 1e4),
+    effort_set_per_km2 = effort_set_sum / (region_area / 1e4)
   )
 
 # Create estimation panel at the region level
@@ -140,7 +214,7 @@ region_panel <- region_std_df |>
 
 ## Effort (days per km²)
 m_region_effort_day <- feols(
-  effort_day_per_km2 ~ treatment * post,
+  log(effort_day_per_km2) ~ treatment * post,
   data = region_panel
 )
 
@@ -180,6 +254,78 @@ tab2 <- modelsummary(
 )
 
 gtsave(tab2, "results/tab/region_model_summaries.png")
+
+modelsummary(
+  list(
+    "Effort day / km²" = m_region_effort_day,
+    "Effort set / km²" = m_region_effort_set,
+    "Catch / km²"      = m_region_catch,
+    "CPUE day"         = m_region_cpue_day,
+    "CPUE set"         = m_region_cpue_set
+  ),
+  stars = TRUE,
+  output = "html"
+)
+
+# Redo models in one set
+
+m_region <- feols(
+  c(
+    effort_day_per_km2,
+    effort_set_per_km2,
+    catch_per_km2,
+    cpue_day,
+    cpue_set
+  ) ~ treatment * post,
+  data = region_panel
+)
+
+m_region_list <- as.list(m_region)
+
+names(m_region_list) <- c(
+  "Effort (days) / km²",
+  "Effort (sets) / km²",
+  "Total Catch / km²",
+  "CPUE (days)",
+  "CPUE (sets)"
+)
+
+modelsummary(
+  m_region_list,
+  stars = TRUE,
+  title = "Region level model comparisons",
+  output = "html"
+)
+
+
+# Redo with log wrap
+m_region_log <- feols(
+  c(
+    log(effort_day_per_km2),
+    log(effort_set_per_km2),
+    log(catch_per_km2),
+    log(cpue_day),
+    log(cpue_set)
+  ) ~ treatment * post,
+  data = region_panel
+)
+
+m_region_log_list <- as.list(m_region_log)
+
+names(m_region_log_list) <- c(
+  "log Effort (days) / km²",
+  "log Effort (sets) / km²",
+  "log Total Catch / km²",
+  "CPUE (days)",
+  "CPUE (sets)"
+)
+
+modelsummary(
+  m_region_log_list,
+  stars = TRUE,
+  output = "html"
+)
+
 
 # Old --------------------------------------------------------------------------
 
