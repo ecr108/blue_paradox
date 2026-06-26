@@ -275,6 +275,33 @@ p_map_pipa <- ggplot() +
 
 # Time series without standardizing for area -----------------------------------
 
+# Sample idea to label dates:
+events <- data.frame(
+  event = c("Announcement", "Implementation"),
+  date = c(announcement, implementation)
+)
+
+ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
+  stat_summary(fun = mean, geom = "line") +
+  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
+  geom_vline(
+    data = events,
+    aes(xintercept = date, linetype = event),
+    color = "black"
+  ) +
+  scale_linetype_manual(
+    values = c("Announcement" = "longdash",
+               "Implementation" = "dotted")
+  ) +
+  labs(
+    title = "Mean catch over time by treatment (unstandardized)",
+    y = "Catch (tons)",
+    x = "Date",
+    color = "Region",
+    linetype = "Policy milestone"
+  ) +
+  theme_classic()
+
 # Plot catch time series
 p_catch <- ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
@@ -288,7 +315,8 @@ p_catch <- ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
 
 
 # Plot effort (days) time series
-p_effort_day <- ggplot(pipa_data, aes(x = date, y = effort_day, color = treatment)) +
+p_effort_day <- ggplot(pipa_data, aes(x = date, y = effort_day,
+                                      color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -300,17 +328,21 @@ p_effort_day <- ggplot(pipa_data, aes(x = date, y = effort_day, color = treatmen
 
 
 # Plot effort (sets) time series
-p_effort_set <- ggplot(pipa_data, aes(x = date, y = effort_set, color = treatment)) +
+p_effort_set <- ggplot(pipa_data, aes(x = date, y = effort_set,
+                                      color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Mean fishing effort (sets) over time by treatment (unstandardized)", y = "Effort (sets)", x = "Date", color = "Region") +
+  labs(title = "Mean fishing effort (sets) over time by treatment (unstandardized)",
+       y = "Effort (sets)", x = "Date", color = "Region") +
   theme_classic()
 
 # Plot CPUE (tons per day) time series
-p_cpue_day <-  ggplot(pipa_data, aes(x = date, y = cpue_day, color = treatment)) +
+p_cpue_day <-  ggplot(pipa_data, aes(x = date,
+                                     y = cpue_day,
+                                     color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
   stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
@@ -334,25 +366,29 @@ p_cpue_set <- ggplot(pipa_data, aes(x = date, y = cpue_set, color = treatment)) 
 
 # Time series standardizing for area -------------------------------------------
 
+# Change catch_tot to kg
+pipa_data_kg <- pipa_data |>
+  mutate(catch_tot = catch_tot * 1000)
+
 # Plot catch time series
-p_catch_a <- pipa_data |>
+p_catch_a <- pipa_data_kg |>
   group_by(date, treatment) |>
   summarise(catch_tot = sum(catch_tot, na.rm = TRUE)/unique(region_area)) |>
-  ggplot(aes(x = date, y = catch_tot, color = treatment, group = treatment)) +
+  ggplot(aes(x = date, y = catch_tot, color = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Region‑level catch standardized by area over time",
-  y = "Catch (mt)", x = "Date", color = "Region") +
+  labs(title = "Region-level catch standardized by area over time",
+  y = "Catch (kg)", x = "Date", color = "Region") +
   theme_classic()
 
 
 # Plot effort (days) time series
-p_effort_day_a <- pipa_data |>
+p_effort_day_a <- pipa_data_kg |>
   group_by(date, treatment) |>
   summarise(effort_day = sum(effort_day, na.rm = TRUE)/unique(region_area)) |>
-  ggplot(aes(x = date, y = effort_day, color = treatment, group = treatment)) +
+  ggplot(aes(x = date, y = effort_day, color = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
@@ -362,10 +398,10 @@ p_effort_day_a <- pipa_data |>
   theme_classic()
 
 # Plot effort (sets) time series
-p_effort_set_a <- pipa_data |>
+p_effort_set_a <- pipa_data_kg |>
   group_by(date, treatment) |>
   summarise(effort_set = sum(effort_set, na.rm = TRUE)/unique(region_area)) |>
-  ggplot(aes(x = date, y = effort_set, color = treatment, group = treatment)) +
+  ggplot(aes(x = date, y = effort_set, color = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
@@ -377,7 +413,7 @@ p_effort_set_a <- pipa_data |>
 
 # Set up CPUE data
 
-region_df <- pipa_data |>
+region_df <- pipa_data_kg |>
   group_by(treatment, date, region_area) |>
   summarise(
     catch_sum = sum(catch_tot, na.rm = TRUE),
@@ -399,24 +435,25 @@ cpue_ts <- region_df |>
   )
 
 # CPUE days
-p_cpue_day_a <- ggplot(cpue_ts, aes(x = date, y = cpue_day, color = treatment, group = treatment)) +
+p_cpue_day_a <- ggplot(cpue_ts, aes(x = date, y = cpue_day, color = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Region‑level CPUE (day) standardized by area over time",
-       y = "CPUE (tons/day)", x = "Date", color = "Region") +
+  labs(title = "Region-level CPUE (day) standardized by area over time",
+       y = "CPUE (kg/day)", x = "Date", color = "Region") +
   theme_classic()
 
 # CPUE sets
-p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment, group = treatment)) +
+p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Region‑level CPUE (set) standardized by area over time",
-       y = "CPUE (tons/sets)", x = "Date", color = "Region") +
+  labs(title = "Region-level CPUE (set) standardized by area over time",
+       y = "CPUE (kg/sets)", x = "Date", color = "Region") +
   theme_classic()
+
 
 # EXPORT #######################################################################
 
