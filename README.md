@@ -34,6 +34,4 @@ Do announcements of MPAs lead to increased fishing effort or catch in the design
 
 ## Data sources
 
-## Repository structure
-
 ## References
