@@ -58,10 +58,10 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 
 # Create area of interest box
 
-aoi_box <- st_as_sfc(
-  st_bbox(
+aoi_box <- st_as_sfc(  # convert geometry into sf object
+  st_bbox(             # creates box
     c(
-      xmin = 168,
+      xmin = 168,      # defined in lat/lon
       xmax = 210,
       ymin = -12,
       ymax = 8
@@ -73,6 +73,7 @@ aoi_box <- st_as_sfc(
 
 # Create global map
 
+# Add EEZs for all countries
 global_map <- ggplot() +
 
   geom_sf(
@@ -89,33 +90,35 @@ global_map <- ggplot() +
     linewidth = 1.2
   ) +
 
-  coord_sf(
+  coord_sf(                  # limits of world map
     crs = "EPSG:8859",
     xlim = c(-3.5e6, 9.5e6),
     ylim = c(-5e6, 3e6)
   ) +
 
-  annotation_scale(
-    location = "bl",
+  annotation_scale(          # scale bar move to right
+    location = "br",
     width_hint = 0.25
   ) +
 
-  annotation_north_arrow(
-    location = "tl",
-    which_north = "true",
-    style = north_arrow_fancy_orienteering
-  ) +
+  #annotation_north_arrow(
+   # location = "tl",
+  #  which_north = "true",
+  #  style = north_arrow_fancy_orienteering
+  # ) +
 
   labs(
     title = "Area of interest"
   ) +
 
-  theme_void() +
+  #theme_void() +
 
   theme(
     plot.title = element_text(
       face = "bold",
       hjust = 0.5
+    ),
+    panel.grid.major = element_blank(
     ),
     panel.background = element_rect(
       fill = "aliceblue",
@@ -162,6 +165,8 @@ zoom_map <- ggplot() +
 
   coord_sf(crs = "EPSG:8859") +
 
+  scale_x_continuous(breaks = c(-190, -180, -170, -160, -150)) +
+
   labs(
     title = "Kiribati EEZs and PIPA"
   ) +
@@ -184,6 +189,7 @@ zoom_map <- ggplot() +
   )
 
 # Combine figures
+# Remove titles
 
 study_area_map <- (global_map / zoom_map) +
   plot_annotation(tag_levels = "A")
@@ -286,15 +292,18 @@ ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
   stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(
     data = events,
-    aes(xintercept = date, linetype = event),
-    color = "black"
+    aes(xintercept = date, color = event),
+    #color = "black"
+    linetype = "dashed"
   ) +
-  scale_linetype_manual(
-    values = c("Announcement" = "longdash",
-               "Implementation" = "dotted")
+  scale_color_manual(
+    values = c("Announcement" = "red",
+               "Implementation" = "green",
+               "treatment" = "blue",
+               "control" = "purple")
   ) +
   labs(
-    title = "Mean catch over time by treatment (unstandardized)",
+    title = "Mean catch over time by treatment",
     y = "Catch (tons)",
     x = "Date",
     color = "Region",
@@ -308,8 +317,8 @@ p_catch <- ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
   stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
-             linetype = "dashed", color = "red") +
-  labs(title = "Mean catch over time by treatment (unstandardized)",
+             linetype = "dashed", color = "red") +   # Better way to label these?
+  labs(title = "Mean catch over time by treatment",
        y = "Catch (tons)", x = "Date", color = "Region") +
   theme_classic()
 
@@ -322,7 +331,7 @@ p_effort_day <- ggplot(pipa_data, aes(x = date, y = effort_day,
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Mean fishing effort (days) over time by treatment (unstandardized)",
+  labs(title = "Mean fishing effort (days) over time by treatment",
        y = "Effort (days)", x = "Date", color = "Region") +
   theme_classic()
 
@@ -335,7 +344,7 @@ p_effort_set <- ggplot(pipa_data, aes(x = date, y = effort_set,
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Mean fishing effort (sets) over time by treatment (unstandardized)",
+  labs(title = "Mean fishing effort (sets) over time by treatment",
        y = "Effort (sets)", x = "Date", color = "Region") +
   theme_classic()
 
@@ -348,7 +357,7 @@ p_cpue_day <-  ggplot(pipa_data, aes(x = date,
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Mean CPUE (tons per day) over time by treatment (unstandardized)",
+  labs(title = "Mean CPUE (tons per day) over time by treatment",
        y = "CPUE (tons/day)", x = "Date", color = "Region") +
   theme_classic()
 
@@ -359,7 +368,7 @@ p_cpue_set <- ggplot(pipa_data, aes(x = date, y = cpue_set, color = treatment)) 
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed", color = "red") +
-  labs(title = "Mean CPUE (tons per set) over time by treatment (unstandardized",
+  labs(title = "Mean CPUE (tons per set) over time by treatment",
        y = "CPUE (tons/set)", x = "Date", color = "Region") +
   theme_classic()
 
