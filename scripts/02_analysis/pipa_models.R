@@ -94,16 +94,21 @@ m_pixel_log <- feols(
 m_pixel_log_list <- as.list(m_pixel_log)
 
 names(m_pixel_log_list) <- c(
-  "log Effort (days)",
-  "log Effort (sets)",
-  "log Total Catch",
-  "log CPUE (days)",
-  "log CPUE (sets)"
+  "log Effort (days) / km²",
+  "log Effort (sets) / km²",
+  "log Total Catch / km²",
+  "CPUE (days)",
+  "CPUE (sets)"
 )
 
 modelsummary(
   m_pixel_log_list,
   stars = TRUE,
+  coef_map = c(
+    "treatment" = "Treatment region",               # Sample labeling
+    "post" = "Anticipation period",
+    "treatment:post" = "BACI effect (Treatment × Anticipation)"
+  ),
   title = "Log-linear pixel-level BACI models of effort, catch, and CPUE",
   note = "Log-linear BACI regression estimates at the pixel-month level.
   The interaction term estimates the percentage change in treated pixels
@@ -210,11 +215,11 @@ modelsummary(
   m_region_log_list,
   stars = TRUE,
   coef_map = c(
-    "treatment" = "Treatment",               # Sample labeling
+    "treatment" = "Treatment region",               # Sample labeling
     "post" = "Anticipation period",
-    "treatment:post" = "Treatment × Anticipation"
+    "treatment:post" = "BACI effect (Treatment × Anticipation)"
   ),
-  name = "Log-linear region-level BACI models of effort, catch, and CPUE",
+  title = "Log-linear region-level BACI models of effort, catch, and CPUE",
   note = "Log-linear BACI regression estimates at the region-level.
   The interaction term estimates the percentage change in the treatment region
   relative to control region during the anticipation period.",
