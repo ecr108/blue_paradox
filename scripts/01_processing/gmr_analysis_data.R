@@ -74,6 +74,8 @@ tuna_polys_rm <- tuna_polys |>
   filter(!(touches_gmr & !centroid_inside_gmr))
 
 # Define temporal boundaries ---------------------------------------------------
+# (need to be updated correctly)
+
 start_pre      <- as.Date("1997-01-01")  # 1 year before 1998 announcement
 announcement   <- as.Date("1998-01-01")  # Announcement and implementation of GMR
 implementation <- as.Date("2002-01-01")  # Implementation of enforcement date
