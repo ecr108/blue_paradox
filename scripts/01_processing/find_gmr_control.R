@@ -4,20 +4,67 @@
 ################################################################################
 
 # Load packages ----------------------------------------------------------------
+library(tidyverse)
 library(sf)
-library(dplyr)
-library(ggplot2)
 library(viridis)
+library(mapview)
 
 # Load data --------------------------------------------------------------------
 
 tuna_polys <- readRDS("data/processed/unfiltered_blue_paradox_gmr.rds")
 
+# Spatial data
+gmr <- st_read("data/raw/mpa/galapagos_world_heritage.gpkg")
+e_main_eez <- st_read("data/raw/eez/ecuador_eez_main.gpkg")
+e_gal_eez <- st_read("data/raw/eez/ecuador_eez_galapagos.gpkg")
+
 # Check data for GMR announcement/anticipation period ##########################
+
+# Define spatial areas ---------------------------------------------------------
+gmr_area <- gmr |>
+  st_transform(6933) |>
+  st_area() |>
+  as.numeric() / 1e6 # convert m2 -> km2
+
+control_area <- e_main_eez |>
+  st_transform(6933) |>
+  st_area() |>
+  as.numeric() / 1e6 # convert m2 -> km2
+
+# Remove border cells ----------------------------------------------------------
+
+# Identify cells that intersect GMR
+tuna_polys$touches_gmr <- st_intersects(
+  tuna_polys,
+  gmr,
+  sparse = FALSE
+)[, 1]
+
+# Compute centroids
+centroids <- st_centroid(tuna_polys)
+
+# Identify cells whose centroid is inside GMR
+tuna_polys$centroid_inside_gmr <- st_within(
+  centroids,
+  gmr,
+  sparse = FALSE
+)[, 1]
+
+# Remove border cells (this keeps some along the border that slightly crossover)
+tuna_polys_rm <- tuna_polys |>
+  filter(!(touches_gmr & !centroid_inside_gmr))
+
+# OR ###########################################################################
+
+# Keep only within GMR
+inside <- st_within(tuna_polys, gmr, sparse = FALSE)[, 1]
+
+tuna_polys_rm_all <- tuna_polys |>
+  filter(inside | !st_intersects(tuna_polys, gmr, sparse = FALSE)[, 1])
 
 
 # Filter -----------------------------------------------------------------------
-tuna_region <- tuna_polys |>
+tuna_region <- tuna_polys_rm_all |>
   mutate(
     in_gmr = as.integer(st_intersects(cell, gmr, sparse = FALSE)),
     in_eez = as.integer(st_intersects(cell, e_main_eez, sparse = FALSE)),
@@ -47,6 +94,10 @@ tuna_region <- tuna_polys |>
     effort_density = effort_set / region_area,
     catch_density  = catch_tot / region_area
   )
+
+mapview(tuna_region, zcol = "treatment") +
+  mapview(gmr, col.regions = "red", alpha.regions = 0.3) +
+  mapview(e_main_eez, col.regions = "blue", alpha.regions = 0.2)
 
 # Aggregate by month/region
 tuna_monthly <- tuna_region |>
@@ -178,18 +229,24 @@ ggplot() +
   geom_sf(
     data = effort_map,
     aes(fill = total_effort),
-    colour = NA
+    color = NA
   ) +
   geom_sf(
     data = e_main_eez,
     fill = NA,
-    colour = "black",
+    color = "black",
     linewidth = 0.4
   ) +
   geom_sf(
     data = gmr,
     fill = NA,
-    colour = "red",
+    color = "red",
+    linewidth = 0.8
+  ) +
+  geom_sf(
+    data = e_gal_eez,
+    fill = NA,
+    color = "white",
     linewidth = 0.8
   ) +
   scale_fill_viridis_c(
