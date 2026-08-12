@@ -51,7 +51,7 @@ tuna_polys <- tuna |>
 
 # Remove border cells ----------------------------------------------------------
 
-# Identify cells that intersect GMR
+# Identify cells that intersect revilla
 tuna_polys$touches_revilla <- st_intersects(
   tuna_polys,
   revilla,
@@ -61,25 +61,24 @@ tuna_polys$touches_revilla <- st_intersects(
 # Compute centroids
 centroids <- st_centroid(tuna_polys)
 
-# Identify cells whose centroid is inside GMR
+# Identify cells whose centroid is inside revilla
 tuna_polys$centroid_inside_revilla <- st_within(
   centroids,
   revilla,
   sparse = FALSE
 )[, 1]
 
-# Keep only within Revilla
-inside <- st_within(tuna_polys, revilla, sparse = FALSE)[, 1]
-
-tuna_polys_rm_all <- tuna_polys |>
-  filter(inside | !st_intersects(tuna_polys, revilla, sparse = FALSE)[, 1])
+# Remove border cells
+# Rule is set to keep cells whose centroid is inside revilla
+tuna_polys_rm <- tuna_polys |>
+  filter(!(touches_revilla & !centroid_inside_revilla))
 
 
 # Define temporal boundaries ---------------------------------------------------
-start_pre      <- as.Date("")  # Missing
-announcement   <- as.Date("")  # Missing
-implementation <- as.Date("2017-11-27")  # Implementation of enforcement date
-end_post       <- as.Date("2018-11-27")  # 1 year after implementation
+start_pre      <- as.Date("2015-11-24")  # Missing
+announcement   <- as.Date("2016-11-24")  # Missing
+implementation <- as.Date("2017-11-24")  # Implementation date
+end_post       <- as.Date("2018-11-24")  # 1 year after implementation
 
 # There is a duplicate cell in the Mexico EEZ ----------------------------------
 mexico_eez <- st_make_valid(mexico_eez)
@@ -96,7 +95,7 @@ control_area <- mexico_eez |>
   as.numeric() / 1e6 # convert m2 -> km2
 
 # Filter -----------------------------------------------------------------------
-tuna_region <- tuna_polys_rm_all |>
+tuna_region <- tuna_polys_rm |>
   mutate(
     in_revilla = as.integer(st_intersects(cell, revilla, sparse = FALSE)),
     in_eez = as.integer(st_intersects(cell, mexico_eez, sparse = FALSE)),
@@ -150,5 +149,5 @@ mapview(tuna_region, zcol = "treatment") +
   mapview(mexico_eez, col.regions = "blue", alpha.regions = 0.2)
 
 # EXPORT #######################################################################
-saveRDS(tuna_region, "data/processed/blue_paradox_gmr.rds")
-saveRDS(tuna_polys, "data/processed/unfiltered_blue_paradox_gmr.rds")
+saveRDS(tuna_region, "data/processed/blue_paradox_revilla.rds")
+saveRDS(tuna_polys, "data/processed/unfiltered_blue_paradox_revilla.rds")
