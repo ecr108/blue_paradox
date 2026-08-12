@@ -24,6 +24,7 @@ library(ggspatial)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(patchwork)
+library(mregions2)
 
 ## Load data -------------------------------------------------------------------
 
@@ -37,7 +38,19 @@ line_eez <- st_read("data/raw/eez/kiribati_eez_line.gpkg")
 phoenix_eez <- st_read("data/raw/eez/kiribati_eez_phoenix.gpkg")
 gilbert_eez <- st_read("data/raw/eez/kiribati_eez_gilbert.gpkg")
 
-# Define temporal boundaries
+# Get world EEZs from mregions2 ------------------------------------------------
+
+# Download global EEZs
+world_eez <- mrp_get("eez")
+
+# Inspect
+world_eez
+head(world_eez)
+
+# Plot
+plot(st_geometry(world_eez))
+
+# Define temporal boundaries ---------------------------------------------------
 start_pre      <- as.Date("2012-09-01")  # 1 year before 2013 announcement
 announcement   <- as.Date("2013-09-01")  # Announcement online defined by PIPA paper
 implementation <- as.Date("2015-01-01")  # Implementation date
@@ -72,8 +85,6 @@ aoi_box <- st_as_sfc(  # convert geometry into sf object
   st_transform("EPSG:8859")
 
 # Create global map
-
-# Add EEZs for all countries
 global_map <- ggplot() +
 
   geom_sf(
@@ -81,6 +92,14 @@ global_map <- ggplot() +
     fill = "grey85",
     color = "grey50",
     linewidth = 0.15
+  ) +
+
+  # Add global EEZ boundaries
+  geom_sf(
+    data = world_eez,
+    fill = NA,
+    color = "grey70",
+    linewidth = 0.15               # Need to find out why this layer adds lines
   ) +
 
   geom_sf(
@@ -93,7 +112,8 @@ global_map <- ggplot() +
   coord_sf(                  # limits of world map
     crs = "EPSG:8859",
     xlim = c(-3.5e6, 9.5e6),
-    ylim = c(-5e6, 3e6)
+    ylim = c(-5e6, 3e6),
+    datum = NA
   ) +
 
   annotation_scale(          # scale bar move to right
@@ -186,11 +206,14 @@ zoom_map <- ggplot() +
 study_area_map <- (global_map / zoom_map) +
   plot_annotation(tag_levels = "A")
 
+study_area_map
+
+
 # Create fishing effort plot ---------------------------------------------------
 
 # Aggregate and fix meridian issue for RFMO data
 tuna_tiles <- pipa_data |>
-  group_by(year, lon, lat) |>
+  group_by(lon, lat) |>
   summarize(effort = sum(effort_day, na.rm = TRUE)) |>
   st_as_sf(coords = c("lon", "lat"), crs = "EPSG:4326")
 
@@ -268,7 +291,6 @@ p_map_pipa <- ggplot() +
   labs(fill = "Fishing effort\n(log-days)",
        x = "Longitude",
        y = "Latitude",
-       title = "Fishing effort in Kiribati",
        caption = "Data sources: IATTC, WCPFC, *missing MPA citation")
 
 # Time series without standardizing for area -----------------------------------
@@ -310,7 +332,7 @@ p_catch <- ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +   # Better way to label these?
-  labs(title = "Mean catch over time",
+  labs(#title = "Mean catch over time",
        y = "Catch (tons)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -327,7 +349,7 @@ p_effort_day <- ggplot(pipa_data, aes(x = date, y = effort_day,
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Mean fishing effort (days) over time",
+  labs(#title = "Mean fishing effort (days) over time",
        y = "Effort (days)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -344,7 +366,7 @@ p_effort_set <- ggplot(pipa_data, aes(x = date, y = effort_set,
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Mean fishing effort (sets) over time",
+  labs(#title = "Mean fishing effort (sets) over time",
        y = "Effort (sets)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -361,7 +383,7 @@ p_cpue_day <-  ggplot(pipa_data, aes(x = date,
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Mean CPUE (tons per day) over time",
+  labs(#title = "Mean CPUE (tons per day) over time",
        y = "CPUE (tons/day)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -376,7 +398,7 @@ p_cpue_set <- ggplot(pipa_data, aes(x = date, y = cpue_set, color = treatment)) 
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Mean CPUE (tons per set) over time",
+  labs(#title = "Mean CPUE (tons per set) over time",
        y = "CPUE (tons/set)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -394,13 +416,15 @@ pipa_data_kg <- pipa_data |>
 # Plot catch time series
 p_catch_a <- pipa_data_kg |>
   group_by(date, treatment) |>
-  summarise(catch_tot = sum(catch_tot, na.rm = TRUE)/unique(region_area)) |>
+  summarise(
+    catch_tot = sum(catch_tot, na.rm = TRUE) / unique(region_area)
+  ) |>
   ggplot(aes(x = date, y = catch_tot, color = treatment)) +
   geom_line() +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Region-level catch standardized by area over time",
+  labs(#title = "Region-level catch standardized by area over time",
   y = "Catch (kg)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -408,6 +432,28 @@ p_catch_a <- pipa_data_kg |>
   ) +
   theme_classic()
 
+# Redo with points to match previous
+p_catch_a <- pipa_data_kg |>
+  group_by(date, treatment) |>
+  summarise(
+    catch_tot = sum(catch_tot, na.rm = TRUE) / unique(region_area)
+  ) |>
+  ggplot(aes(date, catch_tot, color = treatment)) +
+  geom_line() +
+  geom_point(size = 2) +
+  geom_vline(xintercept = announcement, linetype = "dashed") +
+  geom_vline(xintercept = implementation, linetype = "dashed") +
+  labs(
+    #title = "Region-level catch standardized by area over time",
+    y = "Catch (kg)",
+    x = "Date",
+    color = "Region"
+  ) +
+  scale_color_discrete(
+    labels = c(control = "Control",
+               treatment = "Treatment")
+  ) +
+  theme_classic()
 
 # Plot effort (days) time series
 p_effort_day_a <- pipa_data_kg |>
@@ -415,10 +461,11 @@ p_effort_day_a <- pipa_data_kg |>
   summarise(effort_day = sum(effort_day, na.rm = TRUE)/unique(region_area)) |>
   ggplot(aes(x = date, y = effort_day, color = treatment)) +
   geom_line() +
+  geom_point(size = 2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Region-level effort (days) standardized by area over time",
+  labs(#title = "Region-level effort (days) standardized by area over time",
        y = "Days", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -432,10 +479,11 @@ p_effort_set_a <- pipa_data_kg |>
   summarise(effort_set = sum(effort_set, na.rm = TRUE)/unique(region_area)) |>
   ggplot(aes(x = date, y = effort_set, color = treatment)) +
   geom_line() +
+  geom_point(size = 2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Region-level effort (sets) standardized by area over time",
+  labs(#title = "Region-level effort (sets) standardized by area over time",
        y = "Sets", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -470,10 +518,11 @@ cpue_ts <- region_df |>
 # CPUE days
 p_cpue_day_a <- ggplot(cpue_ts, aes(x = date, y = cpue_day, color = treatment)) +
   geom_line() +
+  geom_point(size = 2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Region-level CPUE (day) standardized by area over time",
+  labs(#title = "Region-level CPUE (day) standardized by area over time",
        y = "CPUE (kg/day)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -484,10 +533,11 @@ p_cpue_day_a <- ggplot(cpue_ts, aes(x = date, y = cpue_day, color = treatment)) 
 # CPUE sets
 p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment)) +
   geom_line() +
+  geom_point(size = 2) +
   geom_vline(xintercept = (announcement), linetype = "dashed") +
   geom_vline(xintercept = (implementation),
              linetype = "dashed") +
-  labs(title = "Region-level CPUE (set) standardized by area over time",
+  labs(#title = "Region-level CPUE (set) standardized by area over time",
        y = "CPUE (kg/sets)", x = "Date", color = "Region") +
   scale_color_discrete(
     labels = c("control" = "Control",
@@ -620,6 +670,7 @@ figure2 <- p_effort_day_a + p_effort_set_a +
   plot_annotation(
     tag_levels = "A"
   )
+
 figure2
 
 ggsave(
