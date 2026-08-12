@@ -61,9 +61,9 @@ m_pixel_list <- as.list(m_pixel)
 names(m_pixel_list) <- c(
   "Effort (days)",
   "Effort (sets)",
-  "Total Catch",
-  "CPUE (days)",
-  "CPUE (sets)"
+  "Total Catch (mt)",
+  "CPUE (mt/days)",
+  "CPUE (mt/sets)"
 )
 
 # Get model summary
@@ -96,9 +96,9 @@ m_pixel_log_list <- as.list(m_pixel_log)
 names(m_pixel_log_list) <- c(
   "log Effort (days) / km²",
   "log Effort (sets) / km²",
-  "log Total Catch / km²",
-  "CPUE (days)",
-  "CPUE (sets)"
+  "log Total Catch (mt) / km²",
+  "CPUE (mt/days)",
+  "CPUE (mt/sets)"
 )
 
 
@@ -175,9 +175,9 @@ m_region_list <- as.list(m_region)
 names(m_region_list) <- c(
   "Effort (days) / km²",
   "Effort (sets) / km²",
-  "Total Catch / km²",
-  "CPUE (days)",
-  "CPUE (sets)"
+  "Total Catch (kg) / km²",
+  "CPUE (kg/days)",
+  "CPUE (kg/sets)"
 )
 
 modelsummary(
@@ -208,9 +208,9 @@ m_region_log_list <- as.list(m_region_log)
 names(m_region_log_list) <- c(
   "log Effort (days) / km²",
   "log Effort (sets) / km²",
-  "log Total Catch / km²",
-  "CPUE (days)",
-  "CPUE (sets)"
+  "log Total Catch (kg) / km²",
+  "CPUE (kg/days)",
+  "CPUE (kg/sets)"
 )
 
 modelsummary(
