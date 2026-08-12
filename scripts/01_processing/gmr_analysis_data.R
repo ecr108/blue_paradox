@@ -53,7 +53,7 @@ tuna_polys <- tuna |>
 # Remove border cells ----------------------------------------------------------
 
 # Identify cells that intersect GMR
-tuna_polys$touches_gmr <- st_intersects(
+tuna_polys$intersects_gmr <- st_intersects(
   tuna_polys,
   gmr,
   sparse = FALSE
@@ -70,15 +70,15 @@ tuna_polys$centroid_inside_gmr <- st_within(
 )[, 1]
 
 # Remove border cells
+# Rule is set to keep cells whose centroid is inside GMR
 tuna_polys_rm <- tuna_polys |>
-  filter(!(touches_gmr & !centroid_inside_gmr))
+  filter(!(intersects_gmr & !centroid_inside_gmr))
 
 # Define temporal boundaries ---------------------------------------------------
-# (need to be updated correctly)
 
 start_pre      <- as.Date("1997-01-01")  # 1 year before 1998 announcement
-announcement   <- as.Date("1998-01-01")  # Announcement and implementation of GMR
-implementation <- as.Date("2002-01-01")  # Implementation of enforcement date
+announcement   <- as.Date("1998-03-18")  # Announcement and implementation of GMR
+implementation <- as.Date("2002-01-01")  # Implementation of enforcement date (need to find month)
 end_post       <- as.Date("2003-01-01")  # 1 year after implementation
 
 # Define spatial areas ---------------------------------------------------------
@@ -99,8 +99,8 @@ tuna_region <- tuna_polys_rm |>
     in_gmr = as.integer(st_intersects(cell, gmr, sparse = FALSE)),
     in_eez = as.integer(st_intersects(cell, e_main_eez, sparse = FALSE)),
 
-    # Treatment = inside PIPA
-    # Control = inside Line Islands and Gilbert EEZ
+    # Treatment = inside GMR
+    # Control = inside main Ecudar EEZ
     treatment = case_when(
       in_gmr == 1 ~ "treatment",
       in_eez == 1 ~ "control",
