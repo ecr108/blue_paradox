@@ -74,7 +74,7 @@ modelsummary(
   notes = "BACI regression estimates at the pixel‑month level. The interaction
   term estiamtes the change in treated pixels relative to the control pixels
   during the anticiaption period. Conley standard errors are used.",
-  output = "results/tab/pixel_model_summary.html"
+  output = "results/tab/pipa/pixel_model_summary.html"
 )
 
 # Repeat with log wrap
@@ -101,6 +101,7 @@ names(m_pixel_log_list) <- c(
   "CPUE (sets)"
 )
 
+
 modelsummary(
   m_pixel_log_list,
   stars = TRUE,
@@ -114,8 +115,9 @@ modelsummary(
   The interaction term estimates the percentage change in treated pixels
   relative to control pixels during the anticipation period. Conley standard
   errors are used.",
-  output = "results/tab/log_pixel_model_summary.html"
+  output = "results/tab/pipa/log_pixel_model_summary.html"
 )
+
 
 # Unit of observation is the region --------------------------------------------
 
@@ -185,7 +187,7 @@ modelsummary(
   note = "BACI regression estimates at the region-level. The interaction
   term estiamtes the change in treatment region relative to the control region
   during the anticiaption period.",
-  output = "results/tab/region_model_summary.html"
+  output = "results/tab/pipa/region_model_summary.html"
 )
 
 
@@ -223,6 +225,6 @@ modelsummary(
   note = "Log-linear BACI regression estimates at the region-level.
   The interaction term estimates the percentage change in the treatment region
   relative to control region during the anticipation period.",
-  output = "results/tab/log_region_model_summary.html"
+  output = "results/tab/pipa/log_region_model_summary.html"
 )
 
