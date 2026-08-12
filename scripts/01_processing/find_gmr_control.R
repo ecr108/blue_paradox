@@ -51,26 +51,27 @@ tuna_polys$centroid_inside_gmr <- st_within(
 )[, 1]
 
 # Remove border cells (this keeps some along the border that slightly crossover)
+# Select this choice, leaves the most available data with minimal overlap
 tuna_polys_rm <- tuna_polys |>
   filter(!(touches_gmr & !centroid_inside_gmr))
 
 # OR ###########################################################################
 
 # Keep only within GMR
-inside <- st_within(tuna_polys, gmr, sparse = FALSE)[, 1]
+#inside <- st_within(tuna_polys, gmr, sparse = FALSE)[, 1]
 
-tuna_polys_rm_all <- tuna_polys |>
-  filter(inside | !st_intersects(tuna_polys, gmr, sparse = FALSE)[, 1])
+#tuna_polys_rm_all <- tuna_polys |>
+#  filter(inside | !st_intersects(tuna_polys, gmr, sparse = FALSE)[, 1])
 
 
 # Filter -----------------------------------------------------------------------
-tuna_region <- tuna_polys_rm_all |>
+tuna_region <- tuna_polys_rm |>
   mutate(
     in_gmr = as.integer(st_intersects(cell, gmr, sparse = FALSE)),
     in_eez = as.integer(st_intersects(cell, e_main_eez, sparse = FALSE)),
 
-    # Treatment = inside PIPA
-    # Control = inside Line Islands and Gilbert EEZ
+    # Treatment = inside GMR
+    # Control = inside Ecuador main EEZ
     treatment = case_when(
       in_gmr == 1 ~ "treatment",
       in_eez == 1 ~ "control",
@@ -263,3 +264,4 @@ ggplot() +
     fill = "Total (sets)"
   ) +
   theme_minimal(base_size = 13)
+
