@@ -13,18 +13,19 @@
 
 ## Load packages ---------------------------------------------------------------
 
-library(tidyverse)
-library(sf)
-library(mapview)
-library(lwgeom)
-library(patchwork)
-library(viridis)
-library(terra)
-library(ggspatial)
-library(rnaturalearth)
-library(rnaturalearthdata)
-library(patchwork)
-library(mregions2)
+pacman::p_load(
+  tidyverse,
+  sf,
+  mapview,
+  lwgeom,
+  viridis,
+  terra,
+  ggspatial,
+  rnaturalearth,
+  rnaturalearthdata,
+  patchwork,
+  mregions2
+)
 
 ## Load data -------------------------------------------------------------------
 
@@ -213,6 +214,7 @@ study_area_map
 
 # Aggregate and fix meridian issue for RFMO data
 tuna_tiles <- pipa_data |>
+  filter(year >= 2010, year <= 2015) |>
   group_by(lon, lat) |>
   summarize(effort = sum(effort_day, na.rm = TRUE)) |>
   st_as_sf(coords = c("lon", "lat"), crs = "EPSG:4326")
