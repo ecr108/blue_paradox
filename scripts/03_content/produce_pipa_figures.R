@@ -39,17 +39,7 @@ line_eez <- st_read("data/raw/eez/kiribati_eez_line.gpkg")
 phoenix_eez <- st_read("data/raw/eez/kiribati_eez_phoenix.gpkg")
 gilbert_eez <- st_read("data/raw/eez/kiribati_eez_gilbert.gpkg")
 
-# Get world EEZs from mregions2 ------------------------------------------------
-
-# Download global EEZs
-world_eez <- mrp_get("eez")
-
-# Inspect
-world_eez
-head(world_eez)
-
-# Plot
-plot(st_geometry(world_eez))
+world_eez <- st_read("data/raw/eez/world_eez.gpkg")
 
 # Define temporal boundaries ---------------------------------------------------
 start_pre      <- as.Date("2012-09-01")  # 1 year before 2013 announcement
