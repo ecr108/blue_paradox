@@ -94,9 +94,9 @@ m_pixel_log <- feols(
 m_pixel_log_list <- as.list(m_pixel_log)
 
 names(m_pixel_log_list) <- c(
-  "log Effort (days) / km²",
-  "log Effort (sets) / km²",
-  "log Total Catch (mt) / km²",
+  "log Effort (days)",
+  "log Effort (sets)",
+  "log Total Catch (mt)",
   "CPUE (mt/days)",
   "CPUE (mt/sets)"
 )
