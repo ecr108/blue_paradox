@@ -283,12 +283,12 @@ ggsave("results/figures/gmr/cpue_set_timeseries_area_standardized.png",
 ggsave("results/figures/gmr/BACI_timeseries_panels.png",
       figure1,
       width = 15,
-      height = 10,
+      height = 8,
       dpi = 600)
 
 ggsave("results/figures/gmr/BACI_timeseries_panels_region.png",
       figure2,
       width = 15,
-      height = 10,
+      height = 8,
       dpi = 600)
 
