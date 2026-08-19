@@ -59,23 +59,6 @@ p_catch <- ggplot(gmr_data, aes(x = date, y = catch_tot, color = treatment)) +
   theme_classic()
 
 
-# Plot effort (days) time series
-p_effort_day <- ggplot(gmr_data, aes(x = date, y = effort_day,
-                                      color = treatment)) +
-  stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
-  geom_vline(xintercept = (announcement), linetype = "dashed") +
-  geom_vline(xintercept = (implementation),
-             linetype = "dashed") +
-  labs(#title = "Mean fishing effort (days) over time",
-    y = "Effort (days)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
-  ) +
-  theme_classic()
-
-
 # Plot effort (sets) time series
 p_effort_set <- ggplot(gmr_data, aes(x = date, y = effort_set,
                                       color = treatment)) +
