@@ -145,7 +145,7 @@ mexico_eez <- st_make_valid(mexico_eez)
 
 # Define temporal boundaries ---------------------------------------------------
 start_pre      <- as.Date("2016-09-17")  # One year before announcement
-announcement   <- as.Date("2017-09-17")  # Date that they published the MPA should be made
+announcement   <- as.Date("2017-10-05")  # Date of announcement
 implementation <- as.Date("2017-11-27")  # Implementation date (from MPA database)
 end_post       <- as.Date("2018-11-27")  # 1 year after implementation
 

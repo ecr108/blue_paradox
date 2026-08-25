@@ -150,3 +150,4 @@ mapview(tuna_region, zcol = "treatment") +
 # EXPORT #######################################################################
 saveRDS(tuna_region, "data/processed/blue_paradox_gmr.rds")
 saveRDS(tuna_polys, "data/processed/unfiltered_blue_paradox_gmr.rds")
+
