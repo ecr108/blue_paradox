@@ -70,7 +70,7 @@ modelsummary(
   stars = TRUE,
   title = "Pixel-level BACI models of effort, catch, and CPUE",
   notes = "BACI regression estimates at the pixel‑month level. The interaction
-  term estiamtes the change in treated pixels relative to the control pixels
+  term estimates the change in treated pixels relative to the control pixels
   during the anticiaption period. Conley standard errors are used.",
   output = "results/tab/gmr/pixel_model_summary.html"
 )
@@ -112,6 +112,7 @@ modelsummary(
   output = "results/tab/gmr/log_pixel_model_summary.html"
 )
 
+saveRDS(m_pixel_log, "data/output/gmr/m_pixel_log.rds")
 
 # Unit of observation is the region --------------------------------------------
 
@@ -211,3 +212,4 @@ modelsummary(
   output = "results/tab/gmr/log_region_model_summary.html"
 )
 
+saveRDS(m_region_log, "data/output/gmr/m_region_log.rds")

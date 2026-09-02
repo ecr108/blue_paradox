@@ -118,6 +118,7 @@ modelsummary(
   output = "results/tab/pipa/log_pixel_model_summary.html"
 )
 
+saveRDS(m_pixel_log, "data/output/pipa/m_pixel_log.rds")
 
 # Unit of observation is the region --------------------------------------------
 
@@ -228,3 +229,4 @@ modelsummary(
   output = "results/tab/pipa/log_region_model_summary.html"
 )
 
+saveRDS(m_region_log, "data/output/pipa/m_region_log.rds")
