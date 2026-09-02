@@ -65,10 +65,10 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 aoi_box <- st_as_sfc(  # convert geometry into sf object
   st_bbox(             # creates box
     c(
-      xmin = 168,      # defined in lat/lon
-      xmax = 210,
-      ymin = -12,
-      ymax = 8
+      xmin = 178,      # defined in lat/lon
+      xmax = 220,
+      ymin = -13,
+      ymax = 7
     ),
     crs = 4326
   )
@@ -166,7 +166,7 @@ zoom_map <- ggplot() +
   geom_sf(
     data = pipa,
     fill = NA,
-    color = "#d73027",
+    color = "#D55E00",
     linewidth = 1.4
   ) +
 
@@ -287,36 +287,6 @@ p_map_pipa <- ggplot() +
 
 # Time series without standardizing for area -----------------------------------
 
-# Sample idea to label dates:
-events <- data.frame(
-  event = c("Announcement", "Implementation"),
-  date = c(announcement, implementation)
-)
-
-ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
-  stat_summary(fun = mean, geom = "line") +
-  stat_summary(fun.data = mean_se, geom = "pointrange", width = 0.2) +
-  geom_vline(
-    data = events,
-    aes(xintercept = date, color = event),
-    #color = "black"
-    linetype = "dashed"
-  ) +
-  scale_color_manual(
-    values = c("Announcement" = "red",
-               "Implementation" = "green",
-               "treatment" = "blue",
-               "control" = "purple")
-  ) +
-  labs(
-    title = "Mean catch over time",
-    y = "Catch (tons)",
-    x = "Date",
-    color = "Region",
-    linetype = "Policy milestone"
-  ) +
-  theme_classic()
-
 # Plot catch time series
 p_catch <- ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
   stat_summary(fun = mean, geom = "line") +
@@ -326,9 +296,15 @@ p_catch <- ggplot(pipa_data, aes(x = date, y = catch_tot, color = treatment)) +
              linetype = "dashed") +   # Better way to label these?
   labs(#title = "Mean catch over time",
        y = "Catch (tons)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -343,9 +319,15 @@ p_effort_day <- ggplot(pipa_data, aes(x = date, y = effort_day,
              linetype = "dashed") +
   labs(#title = "Mean fishing effort (days) over time",
        y = "Effort (days)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -360,9 +342,15 @@ p_effort_set <- ggplot(pipa_data, aes(x = date, y = effort_set,
              linetype = "dashed") +
   labs(#title = "Mean fishing effort (sets) over time",
        y = "Effort (sets)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -377,9 +365,15 @@ p_cpue_day <-  ggplot(pipa_data, aes(x = date,
              linetype = "dashed") +
   labs(#title = "Mean CPUE (tons per day) over time",
        y = "CPUE (tons/day)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -392,9 +386,15 @@ p_cpue_set <- ggplot(pipa_data, aes(x = date, y = cpue_set, color = treatment)) 
              linetype = "dashed") +
   labs(#title = "Mean CPUE (tons per set) over time",
        y = "CPUE (tons/set)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -418,9 +418,15 @@ p_catch_a <- pipa_data_kg |>
              linetype = "dashed") +
   labs(#title = "Region-level catch standardized by area over time",
   y = "Catch (kg)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -441,9 +447,15 @@ p_catch_a <- pipa_data_kg |>
     x = "Date",
     color = "Region"
   ) +
-  scale_color_discrete(
-    labels = c(control = "Control",
-               treatment = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -459,9 +471,15 @@ p_effort_day_a <- pipa_data_kg |>
              linetype = "dashed") +
   labs(#title = "Region-level effort (days) standardized by area over time",
        y = "Days", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -477,9 +495,15 @@ p_effort_set_a <- pipa_data_kg |>
              linetype = "dashed") +
   labs(#title = "Region-level effort (sets) standardized by area over time",
        y = "Sets", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -516,9 +540,15 @@ p_cpue_day_a <- ggplot(cpue_ts, aes(x = date, y = cpue_day, color = treatment)) 
              linetype = "dashed") +
   labs(#title = "Region-level CPUE (day) standardized by area over time",
        y = "CPUE (kg/day)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -531,12 +561,54 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment)) 
              linetype = "dashed") +
   labs(#title = "Region-level CPUE (set) standardized by area over time",
        y = "CPUE (kg/sets)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
+
+# Combine Figures ##############################################################
+figure <- p_effort_day + p_effort_set +
+  p_catch + p_cpue_day + p_cpue_set + zoom_map +
+  plot_layout(
+    design = "
+    AB
+    CD
+    EF
+    ",
+    widths = c(1, 1),
+    heights = c(1, 1, 1)
+  ) +
+  plot_annotation(
+    tag_levels = "A"
+  )
+
+figure
+
+# Area figures
+figure2 <- p_effort_day_a + p_effort_set_a +
+  p_catch_a + p_cpue_day_a + p_cpue_set_a + zoom_map +
+  plot_layout(
+    design = "
+    AB
+    CD
+    EF
+    ",
+    widths = c(1, 1),
+    heights = c(1, 1, 1)
+  ) +
+  plot_annotation(
+    tag_levels = "A"
+  )
+
+figure2
 
 # EXPORT #######################################################################
 
@@ -612,63 +684,15 @@ ggsave("results/figures/pipa_original/cpue_set_timeseries_area_standardized.png"
        height = 5,
        dpi = 300)
 
+ggsave("results/figures/pipa_original/BACI_timeseries_panels.png",
+       figure,
+       width = 15,
+       height = 10,
+       dpi = 600)
 
-# Combine Figures ##############################################################
+ggsave("results/figures/pipa_original/BACI_timeseries_panels_region.png",
+       figure2,
+       width = 15,
+       height = 10,
+       dpi = 600)
 
-library(patchwork)
-# Option 1
-figure <-
-  (p_effort_day | p_effort_set) /
-  (p_catch | p_cpue_day) +
-  (p_cpue_set) +
-  plot_annotation(
-    tag_levels = "A"
-  )
-
-# Option 2
-figure <- p_effort_day + p_effort_set +
-  p_catch + p_cpue_day + p_cpue_set +
-  plot_layout(
-    design = "
-    AB
-    CD
-    E#
-    "
-  ) +
-  plot_annotation(
-    tag_levels = "A"
-  )
-
-figure
-
-ggsave(
-  "results/figures/pipa_original/BACI_timeseries_panels.png",
-  figure,
-  width = 15,
-  height = 10,
-  dpi = 600
-)
-
-# Area figures
-figure2 <- p_effort_day_a + p_effort_set_a +
-  p_catch_a + p_cpue_day_a + p_cpue_set_a +
-  plot_layout(
-    design = "
-    AB
-    CD
-    E#
-    "
-  ) +
-  plot_annotation(
-    tag_levels = "A"
-  )
-
-figure2
-
-ggsave(
-  "results/figures/pipa_original/BACI_timeseries_panels_region.png",
-  figure2,
-  width = 15,
-  height = 10,
-  dpi = 600
-)
