@@ -573,10 +573,63 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment)) 
   ) +
   theme_classic()
 
+# Create a second zoomed in study region with control colors ###################
 
+# Create zoomed in study region
+
+zoom_map2 <- ggplot() +
+
+  geom_sf(
+    data = gilbert_eez,
+    fill = NA,
+    color = "#0072B2",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = phoenix_eez,
+    fill = NA,
+    color = "grey50",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = line_eez,
+    fill = NA,
+    color = "#0072B2",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = pipa,
+    fill = NA,
+    color = "#D55E00",
+    linewidth = 1.4
+  ) +
+
+  coord_sf(crs = "EPSG:8859") +
+
+  scale_x_continuous(breaks = c(-190, -180, -170, -160, -150)) +
+
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      hjust = 0.5
+    ),
+    panel.grid.major = element_blank(
+    ),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
+  )
 # Combine Figures ##############################################################
 figure <- p_effort_day + p_effort_set +
-  p_catch + p_cpue_day + p_cpue_set + zoom_map +
+  p_catch + p_cpue_day + p_cpue_set + zoom_map2 +
   plot_layout(
     design = "
     AB
@@ -594,7 +647,7 @@ figure
 
 # Area figures
 figure2 <- p_effort_day_a + p_effort_set_a +
-  p_catch_a + p_cpue_day_a + p_cpue_set_a + zoom_map +
+  p_catch_a + p_cpue_day_a + p_cpue_set_a + zoom_map2 +
   plot_layout(
     design = "
     AB
