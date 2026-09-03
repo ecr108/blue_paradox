@@ -19,6 +19,8 @@ pacman::p_load(
   mapview,
   lwgeom,
   viridis,
+  rnaturalearth,
+  rnaturalearthdata,
   patchwork
 )
 
@@ -31,6 +33,7 @@ gmr_data <- readRDS("data/processed/blue_paradox_gmr.rds")
 gmr <- st_read("data/raw/mpa/galapagos_world_heritage.gpkg")
 e_main_eez <- st_read("data/raw/eez/ecuador_eez_main.gpkg")
 e_gal_eez <- st_read("data/raw/eez/ecuador_eez_galapagos.gpkg")
+world <- ne_countries(scale = "medium", returnclass = "sf")
 
 # Define temporal boundaries ---------------------------------------------------
 
@@ -39,6 +42,67 @@ announcement   <- as.Date("1998-03-18")  # Announcement and implementation of GM
 implementation <- as.Date("2002-01-01")  # Implementation of enforcement date (need to find month)
 end_post       <- as.Date("2003-01-01")  # 1 year after implementation
 
+# Make study region map ########################################################
+study_region <- ggplot() +
+
+  geom_sf(
+    data = e_main_eez,
+    fill = NA,
+    color = "#0072B2",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = e_gal_eez,
+    fill = NA,
+    color = "grey50",
+    linewidth = 0.5
+  ) +
+
+  geom_sf(
+    data = gmr,
+    fill = NA,
+    color = "#D55E00",
+    linewidth = 1.4
+  ) +
+
+  geom_sf(
+    data = world,
+    fill = "grey85",
+    color = "grey50",
+    linewidth = 0.15
+  ) +
+
+  coord_sf(crs = "EPSG:32715",
+           xlim = c(-95.0, -79.0),  # Longitude degrees (West)
+           ylim = c(-5.2, 5.2),     # Latitude degrees (South/North)
+           default_crs = "EPSG:4326"
+  ) +
+
+  scale_x_continuous(breaks = seq(-95, -80, by = 5)) +
+
+  scale_y_continuous(breaks = seq(-5, 5, by = 5)) +
+
+
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      hjust = 0.5
+    ),
+    panel.grid.major = element_blank(
+    ),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
+  )
+study_region
+
+# Make time series plots #######################################################
 # Time series without standardizing for area -----------------------------------
 
 # Plot catch time series
@@ -201,12 +265,14 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment)) 
 
 
 # Pixel
-figure1 <- p_effort_set + p_catch + p_cpue_set +
+figure1 <- p_effort_set + p_catch + p_cpue_set + study_region +
   plot_layout(
     design = "
     AB
-    C#
-    "
+    CD
+    ",
+    widths = c(1, 1),
+    heights = c(1, 1, 1)
   ) +
   plot_annotation(
     tag_levels = "A"
@@ -214,12 +280,14 @@ figure1 <- p_effort_set + p_catch + p_cpue_set +
 
 # Area figures
 figure2 <- p_effort_set_a +
-  p_catch_a + p_cpue_set_a +
+  p_catch_a + p_cpue_set_a + study_region +
   plot_layout(
     design = "
     AB
-    C#
-    "
+    CD
+    ",
+    widths = c(1, 1),
+    heights = c(1, 1, 1)
   ) +
   plot_annotation(
     tag_levels = "A"
