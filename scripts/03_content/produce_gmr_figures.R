@@ -116,9 +116,15 @@ p_catch <- ggplot(gmr_data, aes(x = date, y = catch_tot, color = treatment)) +
     y = "Catch (tons)",
     x = "Date",
     color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -133,9 +139,15 @@ p_effort_set <- ggplot(gmr_data, aes(x = date, y = effort_set,
              linetype = "dashed") +
   labs(#title = "Mean fishing effort (sets) over time",
     y = "Effort (sets)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -149,9 +161,15 @@ p_cpue_set <- ggplot(gmr_data, aes(x = date, y = cpue_set, color = treatment)) +
              linetype = "dashed") +
   labs(#title = "Mean CPUE (tons per set) over time",
     y = "CPUE (tons/set)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -175,9 +193,15 @@ p_catch_a <- gmr_data_kg |>
              linetype = "dashed") +
   labs(#title = "Region-level catch standardized by area over time",
     y = "Catch (kg)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -198,9 +222,15 @@ p_catch_a <- gmr_data_kg |>
     x = "Date",
     color = "Region"
   ) +
-  scale_color_discrete(
-    labels = c(control = "Control",
-               treatment = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -216,9 +246,15 @@ p_effort_set_a <- gmr_data_kg |>
              linetype = "dashed") +
   labs(#title = "Region-level effort (sets) standardized by area over time",
     y = "Sets", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
@@ -255,9 +291,15 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set, color = treatment)) 
              linetype = "dashed") +
   labs(#title = "Region-level CPUE (set) standardized by area over time",
     y = "CPUE (kg/sets)", x = "Date", color = "Region") +
-  scale_color_discrete(
-    labels = c("control" = "Control",
-               "treatment" = "Treatment")
+  scale_color_manual(
+    values = c(
+      "control" = "#0072B2",
+      "treatment" = "#D55E00"
+    ),
+    labels = c(
+      "control" = "Control",
+      "treatment" = "Treatment"
+    )
   ) +
   theme_classic()
 
