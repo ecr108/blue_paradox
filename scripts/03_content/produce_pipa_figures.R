@@ -637,10 +637,17 @@ figure <- p_effort_day + p_effort_set +
     EF
     ",
     widths = c(1, 1),
-    heights = c(1, 1, 1)
+    heights = c(1, 1, 1),
+    guides = "collect"
   ) +
   plot_annotation(
     tag_levels = "A"
+  ) &
+  theme(
+    legend.position = "bottom",
+    legend.justification = "left",
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15)
   )
 
 figure
@@ -655,10 +662,17 @@ figure2 <- p_effort_day_a + p_effort_set_a +
     EF
     ",
     widths = c(1, 1),
-    heights = c(1, 1, 1)
+    heights = c(1, 1, 1),
+    guides = "collect"
   ) +
   plot_annotation(
     tag_levels = "A"
+  ) &
+  theme(
+    legend.position = "bottom",
+    legend.justification = "left",
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15)
   )
 
 figure2

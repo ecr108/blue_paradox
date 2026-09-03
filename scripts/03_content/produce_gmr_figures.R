@@ -314,10 +314,17 @@ figure1 <- p_effort_set + p_catch + p_cpue_set + study_region +
     CD
     ",
     widths = c(1, 1),
-    heights = c(1, 1, 1)
+    heights = c(1, 1, 1),
+    guides = "collect"
   ) +
   plot_annotation(
     tag_levels = "A"
+  ) &
+  theme(
+    legend.position = "bottom",
+    legend.justification = "left",
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15)
   )
 
 # Area figures
@@ -329,10 +336,17 @@ figure2 <- p_effort_set_a +
     CD
     ",
     widths = c(1, 1),
-    heights = c(1, 1, 1)
+    heights = c(1, 1, 1),
+    guides = "collect"
   ) +
   plot_annotation(
     tag_levels = "A"
+  ) &
+  theme(
+    legend.position = "bottom",
+    legend.justification = "left",
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15)
   )
 
 # EXPORT #######################################################################
