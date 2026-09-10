@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Emily Rodriguez">
+
+<title>Testing the Blue Paradox in the Phoenix Islands Protected Area using RFMO catch and effort data</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="internship_paper_files/libs/clipboard/clipboard.min.js"></script>
+<script src="internship_paper_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="internship_paper_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="internship_paper_files/libs/quarto-html/popper.min.js"></script>
+<script src="internship_paper_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="internship_paper_files/libs/quarto-html/anchor.min.js"></script>
+<link href="internship_paper_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="internship_paper_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="internship_paper_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="internship_paper_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="internship_paper_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Testing the Blue Paradox in the Phoenix Islands Protected Area using RFMO catch and effort data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Emily Rodriguez </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>A rising question for marine conservation is whether announcing a marine protected area (MPA) can unintentionally increase fishing before protection begins. <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span> termed this phenomenon the “blue paradox” after documenting a surge in fishing effort hours prior to the implementation of the Phoenix Island Protected Area (PIPA). One explanation for anticipatory fishing behavior comes from psychological reactance, which suggests that people resist perceived threats to their freedom by attempting to restore it <span class="citation" data-cites="brehmTheoryPsychologicalReactance1966">(<a href="#ref-brehmTheoryPsychologicalReactance1966" role="doc-biblioref">Brehm 1966</a>)</span>. The restriction-sensitive choice model builds on this idea by formalizing how removing or restricting options can paradoxically make them more desirable <span class="citation" data-cites="boissonnetGrabbingForbiddenFruit2025">(<a href="#ref-boissonnetGrabbingForbiddenFruit2025" role="doc-biblioref">Boissonnet and Ghersengorin 2025</a>)</span>. Similar responses have been documented across environmental management. For example, when landowners in North Carolina learned that the red-cockaded woodpecker might be listed as endangered, some rushed to modify their properties, removing or destroying habitats that would soon become protected. This preemptive behavior ultimately reduced the very critical habitat that the listing of the species intended to protect, illustrating how anticipated regulatory constraints can trigger counterproductive or defensive actions <span class="citation" data-cites="lueckPreemptiveHabitatDestruction2000">(<a href="#ref-lueckPreemptiveHabitatDestruction2000" role="doc-biblioref">Lueck and Michael 2000</a>)</span>. Alternatively in fisheries management, closure announcements can inadvertently reveal information about the productivity of nearby fishing grounds. In Peru’s anchoveta fishery, regulators temporarily closed areas with high amounts of juvenile fish to reduce catch. However, these announcements also signaled to fishers that areas near the closures were productive, reducing search costs and prompting them to increase fishing effort outside the closure boundary. This information spillover ultimately counteracted the policy’s intended effect to protect the overharvest of juvenile fish <span class="citation" data-cites="englanderInformationSpilloversTargeting2023">(<a href="#ref-englanderInformationSpilloversTargeting2023" role="doc-biblioref">Englander 2023</a>)</span>. These examples suggest that conservation policies can unintentionally alter behavior before restrictions take effect, providing a theoretical framework for interpreting the blue paradox.</p>
+<p>MPAs, like other conservation interventions, are increasingly recognized as tools for biodiversity conservation. Target 3 of the Convention on Biological Diversity emphasizes that the establishment and management of protected areas should involve fishers and local communities to ensure transparency, participation, and resilient management <span class="citation" data-cites="secretariatoftheconventiononbiologicaldiversityTarget3Conserve2022">(<a href="#ref-secretariatoftheconventiononbiologicaldiversityTarget3Conserve2022" role="doc-biblioref">Secretariat of the Convention on Biological Diversity 2022</a>)</span>. However, early disclosure of MPAs can create a tension: informing fishers in advance may encourage preemptive exploitation of resources, potentially undermining conservation objectives. Understanding how these competing goals interact is critical for the effective design and implementation of MPAs.</p>
+<p>Given this tension, it is critical to consider how MPA implementation impacts fishing grounds. <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span> reported that the announcement of the future no-take MPA, PIPA, triggered a surge in fishing effort within the area slated for protection prior to establishment. The recorded fishing effort was measured as equivalent to 1.5 years of banned fishing (130% increase). However, two competing explanations have been proposed for the observed increase in fishing effort. <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span> interpreted the increased fishing effort as an anticipatory behavioral response to the announced closure. Under this hypothesis, fishing effort would increase without a corresponding increase in fish abundance, resulting in a declining catch per unit effort (CPUE). In contrast, <span class="citation" data-cites="hanichUnravelingBlueParadox2018">Hanich et al. (<a href="#ref-hanichUnravelingBlueParadox2018" role="doc-biblioref">2018</a>)</span> argued that favorable environmental conditions, particularly El Niño, increased tuna abundance and attracted greater fishing activity. Under this explanation, CPUE would be expected to increase across the region because more fish were available.</p>
+<p>The existing evaluation of the blue paradox relies primarily on fishing effort. It is important to consider, however, that fishing effort alone cannot distinguish whether increased activity reflects a behavioral response by fishers or changing ecological conditions. In order to revalute the blue paradox, this study makes three contributions. First, we assess whether the patterns previously reported for PIPA can be reproduced using Regional Fisheries Management Organization (RFMO) data. Second, we extend the previous analysis by incorporating total catch to calculate CPUE, allowing us to distinguish changes in fishing activity from changes in fishing success and fish availability. Third, because our approach does not rely on Global Fishing Watch’s AIS-derived fishing effort data, which begins in 2012 <!--need GFW citation, not sure if to cite the dataset, github, etc.-->, we demonstrate whether RFMO data can detect similar patterns to those found in AIS records, thereby expanding the range of applications for RFMO datasets.</p>
+</section>
+<section id="methods" class="level1">
+<h1>Methods</h1>
+<section id="catch-and-effort-data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="catch-and-effort-data-preparation">Catch and effort data preparation</h2>
+<p>This study uses publicly available data from Regional Fisheries Management Organizations (RFMOs) to evaluate evidence of the Blue Paradox in the Phoenix Island Protected Area. The primary sources are the Inter-American Tropical Tuna Commission (IATTC) and the Western and Central Pacific Fisheries Commission (WCPFC). Both RFMOs provide monthly catch and effort data at a 1° × 1° spatial resolution.</p>
+<p>For each grid cell and month, the following variables were calculated across both RFMOs:</p>
+<ul>
+<li><strong>Effort (days):</strong> number of fishing days</li>
+<li><strong>Effort (sets):</strong> number of fishing sets</li>
+<li><strong>Total catch (mt):</strong> metric tons of all species combined</li>
+<li><strong>CPUE (days):</strong> total catch divided by fishing days</li>
+<li><strong>CPUE (sets):</strong> total catch divided by fishing sets.</li>
+</ul>
+<p>CPUE values were set to NA when effort was zero. The data from each RFMO was harmonized into a singular dataset used for this study <span class="citation" data-cites="emilyrodriguezRFMOTunaCatch2026">(<a href="#ref-emilyrodriguezRFMOTunaCatch2026" role="doc-biblioref">Rodriguez and Juan Carlos Villaseñor-Derbez 2026</a>)</span>.</p>
+</section>
+<section id="spatial-processing" class="level2">
+<h2 class="anchored" data-anchor-id="spatial-processing">Spatial processing</h2>
+<section id="pipa-data" class="level3">
+<h3 class="anchored" data-anchor-id="pipa-data">PIPA Data</h3>
+<p>Spatial data for MPAs and related EEZs were obtained from the mregions2 package <span class="citation" data-cites="guevaraMregions2AccessData2024">(<a href="#ref-guevaraMregions2AccessData2024" role="doc-biblioref">Guevara et al. 2024</a>)</span> <!--(*need to check this package, DOI and R citation show two different things*)-->.</p>
+<p>Because RFMO data are reported at the grid-cell level (1° × 1°), each observation was converted into a polygon representing the corresponding spatial cell. For each record, a square polygon was generated by offsetting the reported longitude and latitude by ±0.5. Spatial boundaries were then used to to classify cells into the following categories: treatment (cells that are inside or intersect with the border of PIPA) and control (cells that are inside or intersect with the border of either the Line Islands EEZ or the Gilbert Islands EEZ). All other cells that did not fall within these two categories were discarded. Cells that intersected the border of PIPA (even if they overlapped into the un-closed surrounding EEZ) were kept to ensure substantial data were available, as excluding these cells did not provide enough data for the analysis.</p>
+<p>The total area of PIPA, Line Islands EEZ, and Gilbert Islands EEZ were calculated by projecting the boundaries in EPSG:6933 and computing polygon area in km².</p>
+</section>
+<section id="additional-case-studies" class="level3">
+<h3 class="anchored" data-anchor-id="additional-case-studies">Additional case studies</h3>
+<p>Different rules for spatial clipping were set on a case by case basis. For GMR, cells within or intersected with the GMR border were kept, except those whose centroid did not fall within the GMR. This rule was changed for GMR in order to ensure substantial data was available, but noise from the legal fishing areas did not contribute.</p>
+<p>The control region for Revillagigedo was established as pixels within 200 nm of the MPA and within Mexico’s EEZ. Pixels that were on the border of the treatment region but whose centroid did not fall within Revillagigedo were removed from the analysis and not considered for the control region.</p>
+<p>All control and treatment region areas were calculated by projecting the boundaries in EPSG:6933 and computing polygon area in km².</p>
+</section>
+</section>
+<section id="temporal-boundaries" class="level2">
+<h2 class="anchored" data-anchor-id="temporal-boundaries">Temporal boundaries</h2>
+<section id="pipa-data-1" class="level3">
+<h3 class="anchored" data-anchor-id="pipa-data-1">PIPA Data</h3>
+<p>The original announcement and implementation dates selected by <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span> were used for this analysis <a href="#tbl-dates" class="quarto-xref">Table&nbsp;1</a>.</p>
+<div id="tbl-dates" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Study dates for the PIPA blue paradox analysis defined by <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span>.
+</figcaption>
+<div aria-describedby="tbl-dates-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 26%">
+<col style="width: 47%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Period</th>
+<th style="text-align: left;">Date</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Start of pre-period</td>
+<td style="text-align: left;">2012-09-01</td>
+<td style="text-align: left;">One year before the 2013 MPA announcement</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Announcement</td>
+<td style="text-align: left;">2013-09-01</td>
+<td style="text-align: left;">Online announcement date, as defined by the PIPA paper</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Implementation</td>
+<td style="text-align: left;">2015-01-01</td>
+<td style="text-align: left;">Policy implementation date</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">End of post-period</td>
+<td style="text-align: left;">2016-01-01</td>
+<td style="text-align: left;">One year after implementation</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="additional-case-studies-1" class="level3">
+<h3 class="anchored" data-anchor-id="additional-case-studies-1">Additional case studies</h3>
+<p>For the GMR analysis, the dates were defined differently compared to other case studies. The “announcement date” was marked as the day GMR was signed into law (1998), while the “implementation” date was defined as the day enforcement was added to the MPA region (2002) <span class="citation" data-cites="boerderInteractionsTunaFisheries2017">(<a href="#ref-boerderInteractionsTunaFisheries2017" role="doc-biblioref">Boerder et al. 2017</a>)</span>. <!--(*insert papers used, policy announcement date, etc.*)-->.</p>
+<p>Revillagigedo was also considered for analysis. The announcement date of the MPA was on October 5, 2017 while the date of implementation was on November 27, 2017. Because of the limited temporal gap between announcement and implementation, a full analysis to test for the blue paradox is not possible with the data used for this paper.</p>
+<p>Palau discuss: - implementation - 5 year plan - switched location of domestic fishing region in 2019</p>
+<!--maybe insert a table here for all other mpa annoucnement/implementation dates?-->
+</section>
+</section>
+<section id="pixel-level-model-creation" class="level2">
+<h2 class="anchored" data-anchor-id="pixel-level-model-creation">Pixel-level Model creation</h2>
+<p>To estimate preemptive fishing behavior, the analysis uses a before-after-control-impact (BACI) design. The unit of observation is the grid cell -month. The panel dataset includes all treatment and control cells, all months before implementation, a treatment indicator (equal to 1 for cells within for PIPA), and a post-announcement indicator (equal to 1 during the anticipation period)</p>
+<p>The baseline regression model is:</p>
+<p><span class="math display">\[\text{log}(Y_{it}) = \beta_0 + \beta_1\text{Treatment}_i + \beta_2\text{Post}_t + \beta_3(\text{Treatment}_i \times \text{Post}_t) + \epsilon_{it}\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Y_{it}\)</span> is the outcome (catch, effort, or CPUE) in grid cell <span class="math inline">\(i\)</span> during month <span class="math inline">\(t\)</span>.</li>
+<li><span class="math inline">\(\beta_0\)</span> is the intercept, representing the log outcome for control grid cells before the announcement.</li>
+<li><span class="math inline">\(\text{Treatment}_i\)</span> is an indicator equal to 1 for grid cells within the future MPA and 0 for control grid cells.</li>
+<li><span class="math inline">\(\beta_1\)</span> measures the baseline difference in the log outcome between treatment and control grid cells before the announcement.</li>
+<li><span class="math inline">\(\text{Post}_t\)</span> is an indicator equal to 1 for months during the anticipation period and 0 for months before the announcement.</li>
+<li><span class="math inline">\(\beta_2\)</span> measures the change in the log outcome over time for control grid cells.</li>
+<li><span class="math inline">\(\text{Treatment}_i \times \text{Post}_t\)</span> is the interaction term.</li>
+<li><span class="math inline">\(\beta_3\)</span> is the BACI (difference-in-differences) estimator, measuring the additional change in the log outcome for treatment grid cells during the anticipation period relative to the change observed in control grid cells (blue paradox effect). Because the dependent variable is log-transformed, 100<span class="math inline">\((e^{\beta_3} - 1)\)</span> gives the estimated percentage change associated with the announcement.</li>
+<li><span class="math inline">\(\epsilon_{it}\)</span> is the error term.</li>
+</ul>
+<p>The model was repeated for the following variables: effort (days), effort (sets), total catch (mt), CPUE (sets), and CPUE (days). Models were estimated using Conley standard errors to account for spatial correlation.</p>
+<p>For the GMR analysis, effort and CPUE in days were not available.</p>
+</section>
+<section id="region-level-model-creation" class="level2">
+<h2 class="anchored" data-anchor-id="region-level-model-creation">Region-level model creation</h2>
+<p>The models were repeated using data at aggregated the region-by-month level. For each region and month, total catch, total effort (days and sets) were calculated by summing observations across all fishing events. Catch was converted from tonnes to kilograms to improve model coefficient interpretation. CPUE was then calculated as the ratio of total catch to total fishing effort, rather than aggregating observation-level CPUE values. To account for differences in region size, total catch and total fishing effort were standardized by region area and expressed per 10,000 km².</p>
+<section id="processing" class="level3">
+<h3 class="anchored" data-anchor-id="processing">Processing</h3>
+<p>All processing and analyses were conducted in R <!--need R package citation-->. Spatial data for MPAs and related EEZs were obtained from the mregions2 package <span class="citation" data-cites="guevaraMregions2AccessData2024">(<a href="#ref-guevaraMregions2AccessData2024" role="doc-biblioref">Guevara et al. 2024</a>)</span> <!--need to check this package, DOI and R citation show two different things-->. Models were fit using the fixest package <span class="citation" data-cites="bergeFixestFastFeaturerich2026">(<a href="#ref-bergeFixestFastFeaturerich2026" role="doc-biblioref">Bergé et al. 2026</a>)</span>. Coefficients from the log-linear models were exponentiated to express effects as percentage changes. Percentage change was calculated as <span class="math inline">\((e^{\beta}-1) \times 100\)</span>, where <span class="math inline">\(\beta\)</span> represents the estimated regression coefficient. This provides the exact percentage change associated with a one-unit change in the predictor.</p>
+</section>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<section id="pipa" class="level3">
+<h3 class="anchored" data-anchor-id="pipa">PIPA</h3>
+<p>Cumulative fishing effort in days five years prior to announcement demonstrates varying patterns across the study region (<a href="#fig-fishing-effort" class="quarto-xref">Figure&nbsp;1</a>). The Line Islands EEZ presents lower log-fishing effort within its EEZ. Higher concentrations of fishing effort are clustered around the eastern and southern EEZ of the Gilbert Islands. The Phoenix islands display mixed concentrations of effort. <!--should we include cells here outside of PIPA?-->.</p>
+<div id="fig-fishing-effort" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fishing-effort-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="results/figures/pipa_original/map_pipa.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fishing-effort-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Sum of monthly fishing effort (days) across the Kiribati study region from 2010-2015, prior to the implementation of PIPA in 2015.
+</figcaption>
+</figure>
+</div>
+<!--should we define table coefficient names here?-->
+<p>Log-linear pixel-level BACI models indicated little significant evidence that the announcement of PIPA closure produced changes in fishing behavior during the anticipation period (<a href="#tbl-pipa-pixel" class="quarto-xref">Table&nbsp;2</a>). Prior to the announcement, treatment pixels exhibited significantly lower fishing effort than control pixels, averaging approximately -34% lower fishing effort measured in days (<span class="math inline">\(\beta\)</span> = -0.419, SE = 0.157, <em>p</em> &lt; 0.01). Total catch was marginally lower in treatment versus control pixels by approximately -28% (<span class="math inline">\(\beta\)</span> = -0.334, SE = 0.188, <em>p</em> &lt; 0.10). Baseline differences in CPUE and effort measured in sets were not statistically significant.</p>
+<p>During the anticipation period, control pixels demonstrated little change in fishing effort or total catch. There was a significant temporal change by +13% in CPUE measured per fishing day among control pixels (<span class="math inline">\(\beta\)</span> = 0.118, SE = 0.055, <em>p</em> &lt; 0.05). All treatment cells showed a percent increase for each coefficient relative to the control region. The BACI interaction term for CPUE measured per fishing day was positive, indicating that CPUE in PIPA pixels increased by an estimated +19% relative to the change observed in control region pixels (<span class="math inline">\(\beta\)</span> = 0.177, SE = 0.116, <em>p</em> &lt; 0.10). CPUE in sets increased by approximately 28% (<span class="math inline">\(\beta\)</span> = 0.245, SE = 0.162, <em>p</em> &lt; 0.68). Total catch in PIPA pixels increased by an estimated +36% relative to control region pixels (<span class="math inline">\(\beta\)</span> = 0.304, SE = 0.215, <em>p</em> &lt; 0.10). Effort measured in sets had the smallest percent increase in the PIPA cells relative to the control region cells (+5.9%, <span class="math inline">\(\beta\)</span> = 0.058, SE = 0.259, <em>p</em> &lt; 0.10) (<a href="#fig-pipa-pixel" class="quarto-xref">Figure&nbsp;2</a>). However, none of the BACI interaction terms were statistically significant, providing no evidence that fishing effort, total catch, or CPUE changed significantly between treatment and control pixels during the anticipation period.</p>
+<!--this method does not work for PDF-->
+<div id="tbl-pipa-pixel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-pipa-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2
+</figcaption>
+<div aria-describedby="tbl-pipa-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<!-- preamble start -->
+ 
+
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tinytable_cto7c4bca1252inh4zsr</title>
+    
+  
+  
+<!-- preamble end -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_cto7c4bca1252inh4zsr = TinyTable.createTableFunctions("tinytable_cto7c4bca1252inh4zsr");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '12', j: 2 }, { i: '12', j: 3 }, { i: '12', j: 4 }, { i: '12', j: 5 }, { i: '12', j: 6 } ], css_id: 'tinytable_css_eoc6r9imfzyh871imwb3',}, 
+          { positions: [ { i: '6', j: 2 }, { i: '6', j: 3 }, { i: '6', j: 4 }, { i: '6', j: 5 }, { i: '6', j: 6 } ], css_id: 'tinytable_css_9unaxqdvc61fjj99mchn',}, 
+          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 }, { i: '7', j: 4 }, { i: '8', j: 4 }, { i: '9', j: 4 }, { i: '10', j: 4 }, { i: '11', j: 4 }, { i: '1', j: 5 }, { i: '2', j: 5 }, { i: '3', j: 5 }, { i: '4', j: 5 }, { i: '5', j: 5 }, { i: '7', j: 5 }, { i: '8', j: 5 }, { i: '9', j: 5 }, { i: '10', j: 5 }, { i: '11', j: 5 }, { i: '1', j: 6 }, { i: '2', j: 6 }, { i: '3', j: 6 }, { i: '4', j: 6 }, { i: '5', j: 6 }, { i: '7', j: 6 }, { i: '8', j: 6 }, { i: '9', j: 6 }, { i: '10', j: 6 }, { i: '11', j: 6 } ], css_id: 'tinytable_css_i5a1dyr683cv2gpyrfm5',}, 
+          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 } ], css_id: 'tinytable_css_jikh97slkjh75xf0nby7',}, 
+          { positions: [ { i: '12', j: 1 } ], css_id: 'tinytable_css_9jlf3lmjyf5ouly7uoh1',}, 
+          { positions: [ { i: '6', j: 1 } ], css_id: 'tinytable_css_tqwogmj6c7xtw2ybv7x7',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 } ], css_id: 'tinytable_css_fj0hnibj2fplddper9wx',}, 
+          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_em8786qig7o73j4rx4sk',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_cto7c4bca1252inh4zsr.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_eoc6r9imfzyh871imwb3, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_eoc6r9imfzyh871imwb3 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_9unaxqdvc61fjj99mchn, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_9unaxqdvc61fjj99mchn {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_i5a1dyr683cv2gpyrfm5, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_i5a1dyr683cv2gpyrfm5 { text-align: center }
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_jikh97slkjh75xf0nby7, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_jikh97slkjh75xf0nby7 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_9jlf3lmjyf5ouly7uoh1, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_9jlf3lmjyf5ouly7uoh1 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_tqwogmj6c7xtw2ybv7x7, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_tqwogmj6c7xtw2ybv7x7 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_fj0hnibj2fplddper9wx, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_fj0hnibj2fplddper9wx { text-align: left }
+    #tinytable_cto7c4bca1252inh4zsr td.tinytable_css_em8786qig7o73j4rx4sk, #tinytable_cto7c4bca1252inh4zsr th.tinytable_css_em8786qig7o73j4rx4sk {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_cto7c4bca1252inh4zsr" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <caption>Log-linear pixel-level BACI models of effort, catch, and CPUE</caption>
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1"> </th>
+                <th scope="col" data-row="0" data-col="2">log Effort (days)</th>
+                <th scope="col" data-row="0" data-col="3">log Effort (sets)</th>
+                <th scope="col" data-row="0" data-col="4">log Total Catch (mt)</th>
+                <th scope="col" data-row="0" data-col="5">CPUE (mt/days)</th>
+                <th scope="col" data-row="0" data-col="6">CPUE (mt/sets)</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="6">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr>
+<tr><td colspan="6">Log-linear BACI regression estimates at the pixel-month level.
+  The interaction term estimates the percentage change in treated pixels
+  relative to control pixels during the anticipation period. Conley standard
+  errors are used.</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">Treatment region</td>
+                  <td data-row="1" data-col="2">−0.419**</td>
+                  <td data-row="1" data-col="3">−0.220</td>
+                  <td data-row="1" data-col="4">−0.334+</td>
+                  <td data-row="1" data-col="5">0.030</td>
+                  <td data-row="1" data-col="6">−0.113</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1"></td>
+                  <td data-row="2" data-col="2">(0.157)</td>
+                  <td data-row="2" data-col="3">(0.194)</td>
+                  <td data-row="2" data-col="4">(0.188)</td>
+                  <td data-row="2" data-col="5">(0.106)</td>
+                  <td data-row="2" data-col="6">(0.130)</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">Anticipation period</td>
+                  <td data-row="3" data-col="2">−0.038</td>
+                  <td data-row="3" data-col="3">−0.014</td>
+                  <td data-row="3" data-col="4">0.030</td>
+                  <td data-row="3" data-col="5">0.118*</td>
+                  <td data-row="3" data-col="6">0.044</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1"></td>
+                  <td data-row="4" data-col="2">(0.096)</td>
+                  <td data-row="4" data-col="3">(0.113)</td>
+                  <td data-row="4" data-col="4">(0.128)</td>
+                  <td data-row="4" data-col="5">(0.055)</td>
+                  <td data-row="4" data-col="6">(0.059)</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">BACI effect (Treatment × Anticipation)</td>
+                  <td data-row="5" data-col="2">0.076</td>
+                  <td data-row="5" data-col="3">0.058</td>
+                  <td data-row="5" data-col="4">0.304</td>
+                  <td data-row="5" data-col="5">0.177</td>
+                  <td data-row="5" data-col="6">0.245</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1"></td>
+                  <td data-row="6" data-col="2">(0.195)</td>
+                  <td data-row="6" data-col="3">(0.259)</td>
+                  <td data-row="6" data-col="4">(0.215)</td>
+                  <td data-row="6" data-col="5">(0.116)</td>
+                  <td data-row="6" data-col="6">(0.162)</td>
+                </tr>
+                <tr>
+                  <td data-row="7" data-col="1">Num.Obs.</td>
+                  <td data-row="7" data-col="2">1618</td>
+                  <td data-row="7" data-col="3">1675</td>
+                  <td data-row="7" data-col="4">1675</td>
+                  <td data-row="7" data-col="5">1618</td>
+                  <td data-row="7" data-col="6">1675</td>
+                </tr>
+                <tr>
+                  <td data-row="8" data-col="1">R2</td>
+                  <td data-row="8" data-col="2">0.029</td>
+                  <td data-row="8" data-col="3">0.005</td>
+                  <td data-row="8" data-col="4">0.003</td>
+                  <td data-row="8" data-col="5">0.024</td>
+                  <td data-row="8" data-col="6">0.009</td>
+                </tr>
+                <tr>
+                  <td data-row="9" data-col="1">R2 Adj.</td>
+                  <td data-row="9" data-col="2">0.027</td>
+                  <td data-row="9" data-col="3">0.003</td>
+                  <td data-row="9" data-col="4">0.001</td>
+                  <td data-row="9" data-col="5">0.022</td>
+                  <td data-row="9" data-col="6">0.008</td>
+                </tr>
+                <tr>
+                  <td data-row="10" data-col="1">AIC</td>
+                  <td data-row="10" data-col="2">4197.0</td>
+                  <td data-row="10" data-col="3">4815.2</td>
+                  <td data-row="10" data-col="4">5357.5</td>
+                  <td data-row="10" data-col="5">3371.9</td>
+                  <td data-row="10" data-col="6">3478.4</td>
+                </tr>
+                <tr>
+                  <td data-row="11" data-col="1">BIC</td>
+                  <td data-row="11" data-col="2">4218.5</td>
+                  <td data-row="11" data-col="3">4836.9</td>
+                  <td data-row="11" data-col="4">5379.2</td>
+                  <td data-row="11" data-col="5">3393.4</td>
+                  <td data-row="11" data-col="6">3500.1</td>
+                </tr>
+                <tr>
+                  <td data-row="12" data-col="1">RMSE</td>
+                  <td data-row="12" data-col="2">0.88</td>
+                  <td data-row="12" data-col="3">1.02</td>
+                  <td data-row="12" data-col="4">1.19</td>
+                  <td data-row="12" data-col="5">0.68</td>
+                  <td data-row="12" data-col="6">0.68</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- postamble start -->
+  
+
+
+
+
+</div>
+</figure>
+</div>
+<div id="fig-pipa-pixel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pipa-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="results/figures/pipa_original/BACI_timeseries_panels.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pipa-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the pixel-month level. Panels show monthly trajectories for (A) effort (days), (B) effort (sets), (C) total catch (mt), (D) CPUE (mt/day), and (E) CPUE (mt/set) from 2013-2016. The vertical marker indicates the announcement date of PIPA, while the second vertical marker notes the implementation of PIPA.
+</figcaption>
+</figure>
+</div>
+<p>Standardizing for area, the region-level log-linear BACI models showed significant increases in effort (sets and days) and catch in the control region (<a href="#tbl-pipa-region" class="quarto-xref">Table&nbsp;3</a>). Effort density increased by approximately 277% for fishing days (<span class="math inline">\(\beta\)</span> = 1.328, SE = 0.434, <em>p</em> &lt; 0.01) and 311% for fishing sets (<span class="math inline">\(\beta\)</span> = 1.414, SE = 0.458, <em>p</em> &lt; 0.01), while catch density increased by approximately 302% (<span class="math inline">\(\beta\)</span> = 1.391, SE = 0.448, <em>p</em> &lt; 0.01) (<a href="#fig-pipa-region" class="quarto-xref">Figure&nbsp;3</a>). The interaction terms were positive across effort and catch metrics, suggesting larger increases in the treatment region relative to controls (approximately 40–46%), but these effects were not statistically significant.</p>
+<div id="tbl-pipa-region" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-pipa-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3
+</figcaption>
+<div aria-describedby="tbl-pipa-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<!-- preamble start -->
+ 
+
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tinytable_xvdof2hshyfq73784bjo</title>
+    
+  
+  
+<!-- preamble end -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_xvdof2hshyfq73784bjo = TinyTable.createTableFunctions("tinytable_xvdof2hshyfq73784bjo");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '12', j: 2 }, { i: '12', j: 3 }, { i: '12', j: 4 }, { i: '12', j: 5 }, { i: '12', j: 6 } ], css_id: 'tinytable_css_vztdtr72kv45z8krpbfp',}, 
+          { positions: [ { i: '6', j: 2 }, { i: '6', j: 3 }, { i: '6', j: 4 }, { i: '6', j: 5 }, { i: '6', j: 6 } ], css_id: 'tinytable_css_jqj61etigu39liao46m5',}, 
+          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 }, { i: '7', j: 4 }, { i: '8', j: 4 }, { i: '9', j: 4 }, { i: '10', j: 4 }, { i: '11', j: 4 }, { i: '1', j: 5 }, { i: '2', j: 5 }, { i: '3', j: 5 }, { i: '4', j: 5 }, { i: '5', j: 5 }, { i: '7', j: 5 }, { i: '8', j: 5 }, { i: '9', j: 5 }, { i: '10', j: 5 }, { i: '11', j: 5 }, { i: '1', j: 6 }, { i: '2', j: 6 }, { i: '3', j: 6 }, { i: '4', j: 6 }, { i: '5', j: 6 }, { i: '7', j: 6 }, { i: '8', j: 6 }, { i: '9', j: 6 }, { i: '10', j: 6 }, { i: '11', j: 6 } ], css_id: 'tinytable_css_xw53ha7mndzbvhvmjwor',}, 
+          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 }, { i: '0', j: 5 }, { i: '0', j: 6 } ], css_id: 'tinytable_css_ncjke4mguuf5z9y71fkg',}, 
+          { positions: [ { i: '12', j: 1 } ], css_id: 'tinytable_css_6povsm9suh66kk6w40jm',}, 
+          { positions: [ { i: '6', j: 1 } ], css_id: 'tinytable_css_d5w0nwdmirrkl4ucqryf',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 } ], css_id: 'tinytable_css_tgnh6gsi6gmptehwrlsx',}, 
+          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_1mn1z2f9f6jisn976no1',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_xvdof2hshyfq73784bjo.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_vztdtr72kv45z8krpbfp, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_vztdtr72kv45z8krpbfp {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_jqj61etigu39liao46m5, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_jqj61etigu39liao46m5 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_xw53ha7mndzbvhvmjwor, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_xw53ha7mndzbvhvmjwor { text-align: center }
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_ncjke4mguuf5z9y71fkg, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_ncjke4mguuf5z9y71fkg {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_6povsm9suh66kk6w40jm, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_6povsm9suh66kk6w40jm {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_d5w0nwdmirrkl4ucqryf, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_d5w0nwdmirrkl4ucqryf {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_tgnh6gsi6gmptehwrlsx, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_tgnh6gsi6gmptehwrlsx { text-align: left }
+    #tinytable_xvdof2hshyfq73784bjo td.tinytable_css_1mn1z2f9f6jisn976no1, #tinytable_xvdof2hshyfq73784bjo th.tinytable_css_1mn1z2f9f6jisn976no1 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_xvdof2hshyfq73784bjo" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <caption>Log-linear region-level BACI models of effort, catch, and CPUE</caption>
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1"> </th>
+                <th scope="col" data-row="0" data-col="2">log Effort (days) / km²</th>
+                <th scope="col" data-row="0" data-col="3">log Effort (sets) / km²</th>
+                <th scope="col" data-row="0" data-col="4">log Total Catch (kg) / km²</th>
+                <th scope="col" data-row="0" data-col="5">CPUE (kg/days)</th>
+                <th scope="col" data-row="0" data-col="6">CPUE (kg/sets)</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="6">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr>
+<tr><td colspan="6">Log-linear BACI regression estimates at the region-level.
+  The interaction term estimates the percentage change in the treatment region
+  relative to control region during the anticipation period.</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">Treatment region</td>
+                  <td data-row="1" data-col="2">−0.025</td>
+                  <td data-row="1" data-col="3">−0.044</td>
+                  <td data-row="1" data-col="4">0.110</td>
+                  <td data-row="1" data-col="5">0.135</td>
+                  <td data-row="1" data-col="6">0.154</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1"></td>
+                  <td data-row="2" data-col="2">(0.518)</td>
+                  <td data-row="2" data-col="3">(0.547)</td>
+                  <td data-row="2" data-col="4">(0.536)</td>
+                  <td data-row="2" data-col="5">(0.152)</td>
+                  <td data-row="2" data-col="6">(0.143)</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">Anticipation period</td>
+                  <td data-row="3" data-col="2">1.328**</td>
+                  <td data-row="3" data-col="3">1.414**</td>
+                  <td data-row="3" data-col="4">1.391**</td>
+                  <td data-row="3" data-col="5">0.063</td>
+                  <td data-row="3" data-col="6">−0.022</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1"></td>
+                  <td data-row="4" data-col="2">(0.434)</td>
+                  <td data-row="4" data-col="3">(0.458)</td>
+                  <td data-row="4" data-col="4">(0.448)</td>
+                  <td data-row="4" data-col="5">(0.127)</td>
+                  <td data-row="4" data-col="6">(0.120)</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">BACI effect (Treatment × Anticipation)</td>
+                  <td data-row="5" data-col="2">0.336</td>
+                  <td data-row="5" data-col="3">0.354</td>
+                  <td data-row="5" data-col="4">0.383</td>
+                  <td data-row="5" data-col="5">0.047</td>
+                  <td data-row="5" data-col="6">0.029</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1"></td>
+                  <td data-row="6" data-col="2">(0.656)</td>
+                  <td data-row="6" data-col="3">(0.692)</td>
+                  <td data-row="6" data-col="4">(0.678)</td>
+                  <td data-row="6" data-col="5">(0.192)</td>
+                  <td data-row="6" data-col="6">(0.181)</td>
+                </tr>
+                <tr>
+                  <td data-row="7" data-col="1">Num.Obs.</td>
+                  <td data-row="7" data-col="2">52</td>
+                  <td data-row="7" data-col="3">52</td>
+                  <td data-row="7" data-col="4">52</td>
+                  <td data-row="7" data-col="5">52</td>
+                  <td data-row="7" data-col="6">52</td>
+                </tr>
+                <tr>
+                  <td data-row="8" data-col="1">R2</td>
+                  <td data-row="8" data-col="2">0.313</td>
+                  <td data-row="8" data-col="3">0.315</td>
+                  <td data-row="8" data-col="4">0.334</td>
+                  <td data-row="8" data-col="5">0.082</td>
+                  <td data-row="8" data-col="6">0.075</td>
+                </tr>
+                <tr>
+                  <td data-row="9" data-col="1">R2 Adj.</td>
+                  <td data-row="9" data-col="2">0.270</td>
+                  <td data-row="9" data-col="3">0.272</td>
+                  <td data-row="9" data-col="4">0.293</td>
+                  <td data-row="9" data-col="5">0.025</td>
+                  <td data-row="9" data-col="6">0.017</td>
+                </tr>
+                <tr>
+                  <td data-row="10" data-col="1">AIC</td>
+                  <td data-row="10" data-col="2">164.6</td>
+                  <td data-row="10" data-col="3">170.3</td>
+                  <td data-row="10" data-col="4">168.1</td>
+                  <td data-row="10" data-col="5">36.8</td>
+                  <td data-row="10" data-col="6">31.0</td>
+                </tr>
+                <tr>
+                  <td data-row="11" data-col="1">BIC</td>
+                  <td data-row="11" data-col="2">172.4</td>
+                  <td data-row="11" data-col="3">178.1</td>
+                  <td data-row="11" data-col="4">175.9</td>
+                  <td data-row="11" data-col="5">44.6</td>
+                  <td data-row="11" data-col="6">38.8</td>
+                </tr>
+                <tr>
+                  <td data-row="12" data-col="1">RMSE</td>
+                  <td data-row="12" data-col="2">1.09</td>
+                  <td data-row="12" data-col="3">1.15</td>
+                  <td data-row="12" data-col="4">1.13</td>
+                  <td data-row="12" data-col="5">0.32</td>
+                  <td data-row="12" data-col="6">0.30</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- postamble start -->
+  
+
+
+
+
+</div>
+</figure>
+</div>
+<div id="fig-pipa-region" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pipa-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="results/figures/pipa_original/BACI_timeseries_panels_region.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pipa-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the region-month level. Panels show monthly trajectories for (A) effort (days)/km², (B) effort (sets)/km², (C) total catch (kg)/km², (D) CPUE (kg/day), and (E) CPUE (kg/set) from 2013-2016. The vertical marker indicates the announcement date of PIPA, while the second vertical marker notes the implementation of PIPA.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="gmr" class="level3">
+<h3 class="anchored" data-anchor-id="gmr">GMR</h3>
+<p>Log-linear pixel-level models for GMR indicated that effort (sets), total catch (mt), and CPUE (mt/sets) were generally higher (approximately 10%-36%) in the treatment region cells relative to the control region cells prior to the announcement of GMR (<a href="#tbl-gmr-pixel" class="quarto-xref">Table&nbsp;4</a>). After the implementation of GMR, total catch (kg) and CPUE measured in sets significantly increased in the control region area by approximately +47% and +42% (<span class="math inline">\(\beta\)</span> = 0.386, SE = 0.146, <em>p</em> &lt; 0.01; <span class="math inline">\(\beta\)</span> = 0.348, SE = 0.120, <em>p</em> &lt; 0.01)(<a href="#fig-gmr-pixel" class="quarto-xref">Figure&nbsp;4</a>). Effort measured in sets was minimally higher in the control region after implementation of GMR by approximately 3.9% but was not significant (<em>p</em> &lt; 0.1).</p>
+<p>Within the treatment region, effort (sets) decreased by approximately -1.7% ((<span class="math inline">\(\beta\)</span> = -0.017, SE = 0.137, <em>p</em> &lt; 0.1) while catch and CPUE increased by about +15.7% and +17.7%, but none were significant (<a href="#tbl-gmr-pixel" class="quarto-xref">Table&nbsp;4</a>).</p>
+<div id="tbl-gmr-pixel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-gmr-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4
+</figcaption>
+<div aria-describedby="tbl-gmr-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<!-- preamble start -->
+ 
+
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tinytable_pkh3y650db6e04qe7cko</title>
+    
+  
+  
+<!-- preamble end -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_pkh3y650db6e04qe7cko = TinyTable.createTableFunctions("tinytable_pkh3y650db6e04qe7cko");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '12', j: 2 }, { i: '12', j: 3 }, { i: '12', j: 4 } ], css_id: 'tinytable_css_2m7phoubbvl6vlpz4vnq',}, 
+          { positions: [ { i: '6', j: 2 }, { i: '6', j: 3 }, { i: '6', j: 4 } ], css_id: 'tinytable_css_u9s2yvexdxopsa4cwdu7',}, 
+          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 }, { i: '7', j: 4 }, { i: '8', j: 4 }, { i: '9', j: 4 }, { i: '10', j: 4 }, { i: '11', j: 4 } ], css_id: 'tinytable_css_bvzdmc451ps8ia9gt8q2',}, 
+          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_jec92m70q3fmzk2kaje5',}, 
+          { positions: [ { i: '12', j: 1 } ], css_id: 'tinytable_css_cbv7ghcdtonthrjo278j',}, 
+          { positions: [ { i: '6', j: 1 } ], css_id: 'tinytable_css_ldy37ml6jm7ec7quhj4v',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 } ], css_id: 'tinytable_css_j0c6lhwcdwfdq83lv2cs',}, 
+          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_491mj0ecojdxvgwdwi03',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_pkh3y650db6e04qe7cko.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_2m7phoubbvl6vlpz4vnq, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_2m7phoubbvl6vlpz4vnq {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_u9s2yvexdxopsa4cwdu7, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_u9s2yvexdxopsa4cwdu7 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_bvzdmc451ps8ia9gt8q2, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_bvzdmc451ps8ia9gt8q2 { text-align: center }
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_jec92m70q3fmzk2kaje5, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_jec92m70q3fmzk2kaje5 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_cbv7ghcdtonthrjo278j, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_cbv7ghcdtonthrjo278j {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_ldy37ml6jm7ec7quhj4v, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_ldy37ml6jm7ec7quhj4v {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_j0c6lhwcdwfdq83lv2cs, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_j0c6lhwcdwfdq83lv2cs { text-align: left }
+    #tinytable_pkh3y650db6e04qe7cko td.tinytable_css_491mj0ecojdxvgwdwi03, #tinytable_pkh3y650db6e04qe7cko th.tinytable_css_491mj0ecojdxvgwdwi03 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_pkh3y650db6e04qe7cko" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <caption>Log-linear pixel-level BACI models of effort, catch, and CPUE</caption>
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1"> </th>
+                <th scope="col" data-row="0" data-col="2">log Effort (sets)</th>
+                <th scope="col" data-row="0" data-col="3">log Total Catch (mt)</th>
+                <th scope="col" data-row="0" data-col="4">CPUE (mt/sets)</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr>
+<tr><td colspan="4">Log-linear BACI regression estimates at the pixel-month level.
+  The interaction term estimates the percentage change in treated pixels
+  relative to control pixels during the anticipation period. Conley standard
+  errors are used.</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">Treatment region</td>
+                  <td data-row="1" data-col="2">0.210</td>
+                  <td data-row="1" data-col="3">0.306</td>
+                  <td data-row="1" data-col="4">0.095</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1"></td>
+                  <td data-row="2" data-col="2">(0.424)</td>
+                  <td data-row="2" data-col="3">(0.394)</td>
+                  <td data-row="2" data-col="4">(0.146)</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">Anticipation period</td>
+                  <td data-row="3" data-col="2">0.038</td>
+                  <td data-row="3" data-col="3">0.386**</td>
+                  <td data-row="3" data-col="4">0.348**</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1"></td>
+                  <td data-row="4" data-col="2">(0.083)</td>
+                  <td data-row="4" data-col="3">(0.137)</td>
+                  <td data-row="4" data-col="4">(0.120)</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">BACI effect (Treatment × Anticipation)</td>
+                  <td data-row="5" data-col="2">−0.017</td>
+                  <td data-row="5" data-col="3">0.146</td>
+                  <td data-row="5" data-col="4">0.163+</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1"></td>
+                  <td data-row="6" data-col="2">(0.137)</td>
+                  <td data-row="6" data-col="3">(0.128)</td>
+                  <td data-row="6" data-col="4">(0.092)</td>
+                </tr>
+                <tr>
+                  <td data-row="7" data-col="1">Num.Obs.</td>
+                  <td data-row="7" data-col="2">1691</td>
+                  <td data-row="7" data-col="3">1691</td>
+                  <td data-row="7" data-col="4">1691</td>
+                </tr>
+                <tr>
+                  <td data-row="8" data-col="1">R2</td>
+                  <td data-row="8" data-col="2">0.004</td>
+                  <td data-row="8" data-col="3">0.020</td>
+                  <td data-row="8" data-col="4">0.022</td>
+                </tr>
+                <tr>
+                  <td data-row="9" data-col="1">R2 Adj.</td>
+                  <td data-row="9" data-col="2">0.003</td>
+                  <td data-row="9" data-col="3">0.018</td>
+                  <td data-row="9" data-col="4">0.020</td>
+                </tr>
+                <tr>
+                  <td data-row="10" data-col="1">AIC</td>
+                  <td data-row="10" data-col="2">5249.8</td>
+                  <td data-row="10" data-col="3">6407.8</td>
+                  <td data-row="10" data-col="4">5357.9</td>
+                </tr>
+                <tr>
+                  <td data-row="11" data-col="1">BIC</td>
+                  <td data-row="11" data-col="2">5271.5</td>
+                  <td data-row="11" data-col="3">6429.5</td>
+                  <td data-row="11" data-col="4">5379.6</td>
+                </tr>
+                <tr>
+                  <td data-row="12" data-col="1">RMSE</td>
+                  <td data-row="12" data-col="2">1.14</td>
+                  <td data-row="12" data-col="3">1.61</td>
+                  <td data-row="12" data-col="4">1.18</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- postamble start -->
+  
+
+
+
+
+</div>
+</figure>
+</div>
+<!--need to fix height of figures below-->
+<div id="fig-gmr-pixel" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gmr-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="results/figures/gmr/BACI_timeseries_panels.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gmr-pixel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the pixel-month level. Panels show monthly trajectories for (A) effort (sets), (B) total catch (mt), (C) CPUE (mt/set) from 2013-2016. The vertical marker indicates the implementation of GMR, while the second vertical marker notes the implementation of enforcement within GMR.
+</figcaption>
+</figure>
+</div>
+<p>Log-linear region-level revealed effort measured in sets was significantly lower in the treatment region relative to the control by approximately -66.4% prior to the implementation of GMR (<span class="math inline">\(\beta\)</span> = -1.092, SE = .524, <em>p</em> &lt; 0.05). Total catch was also lower, but not significantly (<span class="math inline">\(\beta\)</span> = -0.848, SE = .590, <em>p</em> &lt; 0.1) (<a href="#tbl-gmr-region" class="quarto-xref">Table&nbsp;5</a>).</p>
+<p>After the implementation of GMR, effort and catch within the treatment region decreased by -41% and -38.2% (<span class="math inline">\(\beta\)</span> = -0.528, SE = .605, <em>p</em> &lt; 0.1; <span class="math inline">\(\beta\)</span> = -0.482, SE = .681, <em>p</em> &lt; 0.1) (<a href="#tbl-gmr-region" class="quarto-xref">Table&nbsp;5</a>). CPUE increased marginally by 4.7%, but none of the modeled changes were significant.</p>
+<div id="tbl-gmr-region" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-gmr-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5
+</figcaption>
+<div aria-describedby="tbl-gmr-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<!-- preamble start -->
+ 
+
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tinytable_uy9j7w8o61o5m4g4fn2d</title>
+    
+  
+  
+<!-- preamble end -->
+
+    <script src="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.js"></script>
+
+    <script>
+      // Create table-specific functions using external factory
+      const tableFns_uy9j7w8o61o5m4g4fn2d = TinyTable.createTableFunctions("tinytable_uy9j7w8o61o5m4g4fn2d");
+      // tinytable span after
+      window.addEventListener('load', function () {
+          var cellsToStyle = [
+            // tinytable style arrays after
+          { positions: [ { i: '12', j: 2 }, { i: '12', j: 3 }, { i: '12', j: 4 } ], css_id: 'tinytable_css_lj8ucf6qxypqf0u5f0js',}, 
+          { positions: [ { i: '6', j: 2 }, { i: '6', j: 3 }, { i: '6', j: 4 } ], css_id: 'tinytable_css_mha0kfpndulairsqa3yp',}, 
+          { positions: [ { i: '1', j: 2 }, { i: '2', j: 2 }, { i: '3', j: 2 }, { i: '4', j: 2 }, { i: '5', j: 2 }, { i: '7', j: 2 }, { i: '8', j: 2 }, { i: '9', j: 2 }, { i: '10', j: 2 }, { i: '11', j: 2 }, { i: '1', j: 3 }, { i: '2', j: 3 }, { i: '3', j: 3 }, { i: '4', j: 3 }, { i: '5', j: 3 }, { i: '7', j: 3 }, { i: '8', j: 3 }, { i: '9', j: 3 }, { i: '10', j: 3 }, { i: '11', j: 3 }, { i: '1', j: 4 }, { i: '2', j: 4 }, { i: '3', j: 4 }, { i: '4', j: 4 }, { i: '5', j: 4 }, { i: '7', j: 4 }, { i: '8', j: 4 }, { i: '9', j: 4 }, { i: '10', j: 4 }, { i: '11', j: 4 } ], css_id: 'tinytable_css_sza4ghf76cpuogxsqbvm',}, 
+          { positions: [ { i: '0', j: 2 }, { i: '0', j: 3 }, { i: '0', j: 4 } ], css_id: 'tinytable_css_w2drar60fqg2ieoimfz4',}, 
+          { positions: [ { i: '12', j: 1 } ], css_id: 'tinytable_css_ith368rd478yz6327d7c',}, 
+          { positions: [ { i: '6', j: 1 } ], css_id: 'tinytable_css_n1i01vlqr2xsxqwjx778',}, 
+          { positions: [ { i: '1', j: 1 }, { i: '2', j: 1 }, { i: '3', j: 1 }, { i: '4', j: 1 }, { i: '5', j: 1 }, { i: '7', j: 1 }, { i: '8', j: 1 }, { i: '9', j: 1 }, { i: '10', j: 1 }, { i: '11', j: 1 } ], css_id: 'tinytable_css_nlr8yipj4e5jt76kafek',}, 
+          { positions: [ { i: '0', j: 1 } ], css_id: 'tinytable_css_oeli3d6nhqy352m35mn2',}, 
+          ];
+
+          // Loop over the arrays to style the cells
+          cellsToStyle.forEach(function (group) {
+              group.positions.forEach(function (cell) {
+                  tableFns_uy9j7w8o61o5m4g4fn2d.styleCell(cell.i, cell.j, group.css_id);
+              });
+          });
+      });
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/vincentarelbundock/tinytable@main/inst/tinytable.css">
+    <style>
+    /* tinytable css entries after */
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_lj8ucf6qxypqf0u5f0js, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_lj8ucf6qxypqf0u5f0js {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_mha0kfpndulairsqa3yp, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_mha0kfpndulairsqa3yp {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_sza4ghf76cpuogxsqbvm, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_sza4ghf76cpuogxsqbvm { text-align: center }
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_w2drar60fqg2ieoimfz4, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_w2drar60fqg2ieoimfz4 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: center }
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_ith368rd478yz6327d7c, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_ith368rd478yz6327d7c {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.08em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_n1i01vlqr2xsxqwjx778, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_n1i01vlqr2xsxqwjx778 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 0; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.1em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_nlr8yipj4e5jt76kafek, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_nlr8yipj4e5jt76kafek { text-align: left }
+    #tinytable_uy9j7w8o61o5m4g4fn2d td.tinytable_css_oeli3d6nhqy352m35mn2, #tinytable_uy9j7w8o61o5m4g4fn2d th.tinytable_css_oeli3d6nhqy352m35mn2 {  position: relative; --border-bottom: 1; --border-left: 0; --border-right: 0; --border-top: 1; --line-color-bottom: var(--tt-line-color); --line-color-left: var(--tt-line-color); --line-color-right: var(--tt-line-color); --line-color-top: var(--tt-line-color); --line-width-bottom: 0.05em; --line-width-left: 0.1em; --line-width-right: 0.1em; --line-width-top: 0.08em; --trim-bottom-left: 0%; --trim-bottom-right: 0%; --trim-left-bottom: 0%; --trim-left-top: 0%; --trim-right-bottom: 0%; --trim-right-top: 0%; --trim-top-left: 0%; --trim-top-right: 0%; ; text-align: left }
+    </style>
+    <div class="container">
+      <table class="tinytable" id="tinytable_uy9j7w8o61o5m4g4fn2d" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <caption>Log-linear region-level BACI models of effort, catch, and CPUE</caption>
+        <thead>
+              <tr>
+                <th scope="col" data-row="0" data-col="1"> </th>
+                <th scope="col" data-row="0" data-col="2">log Effort (sets) / km²</th>
+                <th scope="col" data-row="0" data-col="3">log Total Catch (kg) / km²</th>
+                <th scope="col" data-row="0" data-col="4">CPUE (kg/sets)</th>
+              </tr>
+        </thead>
+        <tfoot><tr><td colspan="4">+ p &lt; 0.1, * p &lt; 0.05, ** p &lt; 0.01, *** p &lt; 0.001</td></tr>
+<tr><td colspan="4">Log-linear BACI regression estimates at the region-level.
+  The interaction term estimates the percentage change in the treatment region
+  relative to control region during the anticipation period.</td></tr></tfoot>
+        <tbody>
+                <tr>
+                  <td data-row="1" data-col="1">Treatment region</td>
+                  <td data-row="1" data-col="2">−1.092*</td>
+                  <td data-row="1" data-col="3">−0.848</td>
+                  <td data-row="1" data-col="4">0.244</td>
+                </tr>
+                <tr>
+                  <td data-row="2" data-col="1"></td>
+                  <td data-row="2" data-col="2">(0.524)</td>
+                  <td data-row="2" data-col="3">(0.590)</td>
+                  <td data-row="2" data-col="4">(0.277)</td>
+                </tr>
+                <tr>
+                  <td data-row="3" data-col="1">Anticipation period</td>
+                  <td data-row="3" data-col="2">0.228</td>
+                  <td data-row="3" data-col="3">0.479</td>
+                  <td data-row="3" data-col="4">0.251</td>
+                </tr>
+                <tr>
+                  <td data-row="4" data-col="1"></td>
+                  <td data-row="4" data-col="2">(0.412)</td>
+                  <td data-row="4" data-col="3">(0.464)</td>
+                  <td data-row="4" data-col="4">(0.218)</td>
+                </tr>
+                <tr>
+                  <td data-row="5" data-col="1">BACI effect (Treatment × Anticipation)</td>
+                  <td data-row="5" data-col="2">−0.528</td>
+                  <td data-row="5" data-col="3">−0.482</td>
+                  <td data-row="5" data-col="4">0.046</td>
+                </tr>
+                <tr>
+                  <td data-row="6" data-col="1"></td>
+                  <td data-row="6" data-col="2">(0.605)</td>
+                  <td data-row="6" data-col="3">(0.681)</td>
+                  <td data-row="6" data-col="4">(0.320)</td>
+                </tr>
+                <tr>
+                  <td data-row="7" data-col="1">Num.Obs.</td>
+                  <td data-row="7" data-col="2">112</td>
+                  <td data-row="7" data-col="3">112</td>
+                  <td data-row="7" data-col="4">112</td>
+                </tr>
+                <tr>
+                  <td data-row="8" data-col="1">R2</td>
+                  <td data-row="8" data-col="2">0.235</td>
+                  <td data-row="8" data-col="3">0.142</td>
+                  <td data-row="8" data-col="4">0.061</td>
+                </tr>
+                <tr>
+                  <td data-row="9" data-col="1">R2 Adj.</td>
+                  <td data-row="9" data-col="2">0.213</td>
+                  <td data-row="9" data-col="3">0.118</td>
+                  <td data-row="9" data-col="4">0.035</td>
+                </tr>
+                <tr>
+                  <td data-row="10" data-col="1">AIC</td>
+                  <td data-row="10" data-col="2">394.2</td>
+                  <td data-row="10" data-col="3">421.0</td>
+                  <td data-row="10" data-col="4">251.7</td>
+                </tr>
+                <tr>
+                  <td data-row="11" data-col="1">BIC</td>
+                  <td data-row="11" data-col="2">405.1</td>
+                  <td data-row="11" data-col="3">431.9</td>
+                  <td data-row="11" data-col="4">262.6</td>
+                </tr>
+                <tr>
+                  <td data-row="12" data-col="1">RMSE</td>
+                  <td data-row="12" data-col="2">1.36</td>
+                  <td data-row="12" data-col="3">1.53</td>
+                  <td data-row="12" data-col="4">0.72</td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- postamble start -->
+  
+
+
+
+
+</div>
+</figure>
+</div>
+<!--this figure below for CPUE seems strange, need to check code-->
+<div id="fig-gmr-region" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gmr-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="results/figures/gmr/BACI_timeseries_panels_region.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gmr-region-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the pixel-month level. Panels show monthly trajectories for (A) effort (sets)/km², (B) total catch (kg)/km², (C) CPUE (kg/set) from 2013-2016. The vertical marker indicates the implementation of GMR, while the second vertical marker notes the implementation of enforcement within GMR.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<!--line about the blue paradox as anticipatory vs. ecological drivers, why CPUE is essential, why RFMO data offers new lens-->
+<section id="pipa-1" class="level3">
+<h3 class="anchored" data-anchor-id="pipa-1">PIPA</h3>
+<p>This study reassesses prior analysis of the blue paradox effect on PIPA. Previous work by <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span> found that fishing effort increased 130% in response to the announcement of PIPA. We find non-significant increases in fishing catch and effort within PIPA from the announcement date leading up to the implementation of the MPA.</p>
+<p>From the pixel-level model, all five coefficients increased during the announcement period within PIPA. Effort measured in days only increased by about 7.8%, while CPUE measured in mt/days increased by almost 20%. Comparably, effort in sets only increased by about 6%, while CPUE measured in mt/sets increased by about 28% (<a href="#tbl-pipa-pixel" class="quarto-xref">Table&nbsp;2</a>). This model suggests that fishing did not increase in response to the announcement of PIPA, but rather because of favorable fishing conditions yielding higher profitability, similar to the argument presented by <span class="citation" data-cites="hanichUnravelingBlueParadox2018">Hanich et al. (<a href="#ref-hanichUnravelingBlueParadox2018" role="doc-biblioref">2018</a>)</span>. <!--source here about conditions this year-->.</p>
+<p>However, the PIPA region-level model suggests a different explanation. Though not significant, catch, effort (days), and effort (sets) are noticeably greater in the treatment region compared to the control during the anticipation period (<a href="#fig-pipa-region" class="quarto-xref">Figure&nbsp;3</a>). This model suggests that CPUE in kg/days only modestly increased by approximately by 4.8%, while effort in days/km²increased by almost 40%. Directionally, these results are more consistent with arguments made by <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span> on anticipatory behavioral responses rather than an increase in fish availability. However, the results are not statistically conclusive. This model does not demonstrate a decline in CPUE that would be expected under a blue paradox mechanism, but neither does it provide substantial evidence of an increase in catch efficiency that would be expected if increased tuna abundance were the primary driver.</p>
+<p>Notably through the region-level model, we are also able to recreate the change in fishing behavior related to the announcement of PIPA as produced by <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#ref-mcdermottBlueParadoxPreemptive2019" role="doc-biblioref">2019</a>)</span>, indicating that RFMO data can yield similar ecological results. This trend is most distinct within <a href="#fig-pipa-region" class="quarto-xref">Figure&nbsp;3</a> <!-- specify panel -->. <!--Note about RFMO data reproducing broad patterns of fishing activity expanding the temporal coverage beyond AIS availability--></p>
+<!--need to discuss noise in PIPA figures, some overlapping cells-->
+</section>
+<section id="other-case-studies" class="level3">
+<h3 class="anchored" data-anchor-id="other-case-studies">Other Case Studies</h3>
+<!--fix title -->
+<p>GMR showed little evidence of the blue paradox. Prior to the implementation of GMR, effort, catch, and CPUE were already higher within the treatment region relative to the control per the pixel-level model. This indicates that the treatment region already attracted higher levels of fishing without the implication of an MPA implementation. After the implementation of GMR, the only significant changes occurred outside the soon-to-be closed region. Total catch and CPUE increased substantially (+47% and +42%). Effort only increased slightly and was not significant. This could indicate a redistribution of effort towards more productive cells <!--source?-->. The treatment region had little response to the implementation of GMR. Effort declined slightly by -1.7%, while catch and CPUE had modest increases (+15.7% and +17.7%), but none were significant. The lack of strong trends suggest that the implementation of GMR had little effect on the decisions of fishers. The region-level model reveals larger decreases within GMR after implementation. Effort specifically decreased by -41%, while catch decreased -38.2%, the opposite of a blue paradox effect.</p>
+<p>Revillagigedo was implemented a little over a month after its announcement, which would likely not allow for a blue paradox to occur. Even if it were to occur, the data we use does not allow a test for it. <!--not sure if data should be included in the results or as supplementary material--></p>
+<!--for Palau, should address changing locations of PNMS)-->
+</section>
+</section>
+<section id="references" class="level2 unnumbered">
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-bergeFixestFastFeaturerich2026" class="csl-entry" role="listitem">
+Bergé, Laurent R., Kyle Butts, and Grant McDermott. 2026. <em>Fixest: <span>A</span> Fast and Feature-Rich Framework for Econometric Estimations in <span>R</span></em>. arXiv. <a href="https://doi.org/10.48550/ARXIV.2601.21749">https://doi.org/10.48550/ARXIV.2601.21749</a>.
+</div>
+<div id="ref-boerderInteractionsTunaFisheries2017" class="csl-entry" role="listitem">
+Boerder, K, A Bryndum-Buchholz, and B Worm. 2017. <span>“Interactions of Tuna Fisheries with the <span>Galápagos</span> Marine Reserve.”</span> <em>Marine Ecology Progress Series</em> 585 (December): 1–15. <a href="https://doi.org/10.3354/meps12399">https://doi.org/10.3354/meps12399</a>.
+</div>
+<div id="ref-boissonnetGrabbingForbiddenFruit2025" class="csl-entry" role="listitem">
+Boissonnet, Niels, and Alexis Ghersengorin. 2025. <em>Grabbing the <span>Forbidden Fruit</span>: <span>Restriction-Sensitive Choice</span></em>. arXiv:2509.11673. arXiv. <a href="https://doi.org/10.48550/arXiv.2509.11673">https://doi.org/10.48550/arXiv.2509.11673</a>.
+</div>
+<div id="ref-brehmTheoryPsychologicalReactance1966" class="csl-entry" role="listitem">
+Brehm, Jack Williams. 1966. <em>A <span>Theory</span> of <span>Psychological Reactance</span></em>. University of Michigan. Academic Press.
+</div>
+<div id="ref-englanderInformationSpilloversTargeting2023" class="csl-entry" role="listitem">
+Englander, Gabriel. 2023. <span>“Information and <span>Spillovers</span> from <span>Targeting Policy</span> in <span>Peru</span>’s <span>Anchoveta Fishery</span>.”</span> <em>American Economic Journal: Economic Policy</em> 15 (4): 390–427. <a href="https://doi.org/10.1257/pol.20210812">https://doi.org/10.1257/pol.20210812</a>.
+</div>
+<div id="ref-guevaraMregions2AccessData2024" class="csl-entry" role="listitem">
+Guevara, Michelle, Salvador Jesús Fernández Bejarano, and Lotte Pohl. 2024. <em>Mregions2: <span>Access Data</span> from <span>Marineregions</span>.org: <span>Gazetteer</span> &amp; <span>Data Products</span></em>. Comprehensive R Archive Network. <a href="https://doi.org/10.32614/CRAN.package.mregions2">https://doi.org/10.32614/CRAN.package.mregions2</a>.
+</div>
+<div id="ref-hanichUnravelingBlueParadox2018" class="csl-entry" role="listitem">
+Hanich, Quentin, Randi Rotjan, Transform Aqorau, et al. 2018. <span>“Unraveling the Blue Paradox: <span>Incomplete</span> Analysis Yields Incorrect Conclusions about <span>Phoenix Islands Protected Area</span> Closure.”</span> <em>Proceedings of the National Academy of Sciences</em> 115 (52). <a href="https://doi.org/10.1073/pnas.1815600115">https://doi.org/10.1073/pnas.1815600115</a>.
+</div>
+<div id="ref-lueckPreemptiveHabitatDestruction2000" class="csl-entry" role="listitem">
+Lueck, Dean, and Jeffrey A. Michael. 2000. <span>“Preemptive <span>Habitat Destruction Under</span> the <span>Endangered Species Act</span>.”</span> <em>SSRN Electronic Journal</em>, ahead of print. <a href="https://doi.org/10.2139/ssrn.223871">https://doi.org/10.2139/ssrn.223871</a>.
+</div>
+<div id="ref-mcdermottBlueParadoxPreemptive2019" class="csl-entry" role="listitem">
+McDermott, Grant R., Kyle C. Meng, Gavin G. McDonald, and Christopher J. Costello. 2019. <span>“The Blue Paradox: <span>Preemptive</span> Overfishing in Marine Reserves.”</span> <em>Proceedings of the National Academy of Sciences</em> 116 (12): 5319–25. <a href="https://doi.org/10.1073/pnas.1802862115">https://doi.org/10.1073/pnas.1802862115</a>.
+</div>
+<div id="ref-emilyrodriguezRFMOTunaCatch2026" class="csl-entry" role="listitem">
+Rodriguez, Emily, and Juan Carlos Villaseñor-Derbez. 2026. <em><span>RFMO Tuna Catch</span> and <span>Effort Data</span></em>. Zenodo. <a href="https://doi.org/10.5281/ZENODO.21494710">https://doi.org/10.5281/ZENODO.21494710</a>.
+</div>
+<div id="ref-secretariatoftheconventiononbiologicaldiversityTarget3Conserve2022" class="csl-entry" role="listitem">
+Secretariat of the Convention on Biological Diversity. 2022. <span>“Target 3: <span>Conserve</span> 30 % of <span>Land</span>, <span>Waters</span> and <span>Seas</span>.”</span> In <em>Convention on Biological Diversity</em>. Https://www.cbd.int/gbf/targets/3; Secretariat of the Convention on Biological Diversity.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
