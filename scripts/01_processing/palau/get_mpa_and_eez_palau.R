@@ -28,18 +28,19 @@ palau_sf <- st_sf(
 # Save
 st_write(palau_sf, "data/raw/eez/palau_eez.gpkg", delete_dsn = TRUE)
 
-##################################
-# Palau National Marine Sanctuary
-##################################
+# Palau National Marine Sanctuary (2020 Updated) -------------------------------
 
 pnms <- st_read("data/raw/mpa/palau/PNMS.shp")
 
 
-st_write(pnms, "data/raw/mpa/pnms.gpkg")
+st_write(pnms, "data/raw/mpa/pnms_2020.gpkg")
 
-##############################
-# Control region option 2: FSM
-##############################
+# PNMS original 2015 -----------------------------------------------------------
+pnms_og <- st_read("data/raw/mpa/palau/palau_2015/palau_2015_shp/WDPA_WDOECM_Sep2026_Public_555622118_shp-polygons.shp")
+
+st_write(pnms_og, "data/raw/mpa/pnms_2015.gpkg")
+
+# Control region option 2: FSM -------------------------------------------------
 
 # Search
 fsm_search <- gaz_search("Micronesia")
@@ -56,3 +57,5 @@ fsm_sf <- st_sf(
 # Save
 st_write(fsm_sf, "data/raw/eez/fsm_eez.gpkg", delete_dsn = TRUE)
 
+
+#

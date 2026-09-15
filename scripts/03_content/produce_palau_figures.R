@@ -28,7 +28,7 @@ pacman::p_load(
 palau_data <- readRDS("data/processed/blue_paradox_palau.rds")
 
 # Spatial data
-pnms <- st_read("data/raw/mpa/pnms.gpkg")
+pnms <- st_read("data/raw/mpa/pnms_2015.gpkg")
 palau <- st_read("data/raw/eez/palau_eez.gpkg")
 fsm <- st_read("data/raw/eez/fsm_eez.gpkg")
 
@@ -38,6 +38,11 @@ start_pre      <- as.Date("2014-10-22")  # 1 year before 2015 announcement
 announcement   <- as.Date("2015-10-22")  # Announcement of Palau (per MPA dataset)
 implementation <- as.Date("2020-01-01")  # Implementation of Palau
 end_post       <- as.Date("2021-01-01")  # 1 year after implementation
+
+# Map
+mapview(palau_data, zcol = "treatment") +
+  mapview(pnms, col.regions = "red", alpha.regions = 0.3) +
+  mapview(fsm, col.regions = "blue", alpha.regions = 0.2)
 
 # Time series without standardizing for area -----------------------------------
 
