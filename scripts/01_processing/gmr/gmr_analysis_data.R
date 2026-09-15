@@ -142,7 +142,7 @@ tuna_region <- tuna_polys_rm |>
 
 # VISUALIZE ####################################################################
 
-# Map RFMO data, PIPA, and EEZ
+# Map RFMO data, GMR, and EEZ
 mapview(tuna_region, zcol = "treatment") +
   mapview(gmr, col.regions = "red", alpha.regions = 0.3) +
   mapview(e_main_eez, col.regions = "blue", alpha.regions = 0.2)
