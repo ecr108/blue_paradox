@@ -194,7 +194,7 @@ zoom_map <- ggplot() +
 # Combine figures
 # Remove titles
 
-study_area_map <- (global_map / zoom_map) +
+study_area_map <- (global_map + zoom_map) +
   plot_annotation(tag_levels = "A")
 
 study_area_map
@@ -239,9 +239,6 @@ p_map_pipa <- ggplot() +
           fill = NA,
           color = "grey60",
           linewidth = 0.4) +
-  geom_sf(data = pipa,
-          fill = NA, color = "red",
-          linewidth = 1.5) +
 
   geom_sf(
     data = pipa,
@@ -282,8 +279,7 @@ p_map_pipa <- ggplot() +
   # Headings
   labs(fill = "Fishing effort\n(log-days)",
        x = "Longitude",
-       y = "Latitude",
-       caption = "Data sources: IATTC, WCPFC, *missing MPA citation")
+       y = "Latitude")
 
 # Time series without standardizing for area -----------------------------------
 
