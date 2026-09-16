@@ -72,21 +72,15 @@ end_post       <- as.Date("2021-01-01")  # 1 year after implementation
 
 # Define spatial areas ---------------------------------------------------------
 pnms_area <- pnms |>
-  st_transform(6933) |>
   st_area() |>
-  sum() |>
   as.numeric() / 1e6 # m2 -> km2
 
 palau_area <- palau |>
-  st_transform(6933) |>
   st_area() |>
-  sum() |>
   as.numeric() / 1e6 # m2 -> km2
 
 fsm_area <- fsm |>
-  st_transform(6933) |>
   st_area() |>
-  sum() |>
   as.numeric() / 1e6 # m2 -> km2
 
 

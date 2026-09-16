@@ -83,12 +83,10 @@ end_post       <- as.Date("2003-01-01")  # 1 year after implementation
 
 # Define spatial areas ---------------------------------------------------------
 gmr_area <- gmr |>
-  st_transform(6933) |>
   st_area() |>
   as.numeric() / 1e6 # convert m2 -> km2
 
 control_area <- e_main_eez |>
-  st_transform(6933) |>
   st_area() |>
   as.numeric() / 1e6 # convert m2 -> km2
 

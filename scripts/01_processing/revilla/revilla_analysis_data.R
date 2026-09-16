@@ -131,13 +131,10 @@ tuna_polys_rm <- tuna_polys |>
 # Calculate treatment and control areas
 treatment_area <- revilla_proj |>
   st_area() |>
-  sum() |>
   as.numeric() / 1e6 # km2
 
 control_area <- control_region |>
-  st_transform(6933) |>
   st_area() |>
-  sum() |>
   as.numeric() / 1e6 # km2
 
 # There is a duplicate cell in the Mexico EEZ ----------------------------------
