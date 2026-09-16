@@ -105,6 +105,7 @@ study_region
 # Map RFMO data, GMR, and EEZ
 mapview(gmr_data, zcol = "treatment") +
   mapview(gmr, col.regions = "red", alpha.regions = 0.3) +
+  mapview(e_gal_eez, col.regions = "green", alpha.regions = 0.2) +
   mapview(e_main_eez, col.regions = "blue", alpha.regions = 0.2)
 
 
