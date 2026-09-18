@@ -57,25 +57,27 @@ tuna_sf <- tuna |>
     remove = FALSE
   )
 
+# Rasterize
+tuna_rast <- rasterize(tuna_sf, ref_rast)
+
 # Identify tuna cells entirely within GMR ------------------------------------
 
-treated_cells <- tuna_sf |>
-  st_filter(
-    gmr,
-    .predicate = st_intersects
-  ) |>
-  st_drop_geometry() |>
+treated_cells <- exact_extract(tuna_rast, gmr, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
   select(lon, lat) |>
   distinct() |>
   mutate(treatment = 1)
 
 # Identify tuna cells entirely within control region --------------------------
-control_cells <- tuna_sf |>
-  st_filter(
-    e_main_eez,
-    .predicate = st_intersects
-  ) |>
-  st_drop_geometry() |>
+
+control_cells <- exact_extract(tuna_rast, e_main_eez, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
   select(lon, lat) |>
   distinct() |>
   mutate(treatment = 0)
@@ -93,13 +95,8 @@ tuna_region <- tuna |>
     by = join_by(lon, lat)
   ) |>
   mutate(
-    group = ifelse(treatment == 1, "Treatment", "Control")
-  ) |>
-  mutate(
-    date = as.Date(
-      paste(year, month, "01", sep = "-")
-    )
-  ) |>
+    group = ifelse(treatment == 1, "Treatment", "Control"),
+    date = as.Date(paste(year, month, "01", sep = "-"))) |>
   mutate(
     region_area = case_when(
       treatment == 1 ~ gmr_area,

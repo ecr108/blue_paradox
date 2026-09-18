@@ -52,6 +52,15 @@ control_area <- st_union(
   st_area() |>
   as.numeric() / 1e6
 
+# Create reference raster
+
+ref_rast <- rast(
+  xmin = -180, xmax = 180,
+  ymin = -90, ymax = 90,
+  res = 1,
+  crs = "EPSG:4326"
+)
+
 # PROCESSING ###################################################################
 
 # Convert tuna data to spatial points ------------------------------------------
@@ -63,31 +72,28 @@ tuna_sf <- tuna |>
     remove = FALSE
   )
 
-# Identify tuna cells entirely within PIPA ------------------------------------
+# Rasterize
+tuna_rast <- rasterize(tuna_sf, ref_rast)
 
-treated_cells <- tuna_sf |>
-  st_filter(
-    pipa,
-    .predicate = st_intersects
-  ) |>
-  st_drop_geometry() |>
+# Identify tuna cells within PIPA ----------------------------------------------
+
+treated_cells <- exact_extract(tuna_rast, pipa, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
   select(lon, lat) |>
   distinct() |>
   mutate(treatment = 1)
 
-# Identify tuna cells entirely within control region --------------------------
-control_area_sf <- st_union(
-  st_transform(line_eez, st_crs(tuna_sf)),
-  st_transform(gilbert_eez, st_crs(tuna_sf))
-)
+# Identify tuna cells within control region ------------------------------------
+control_area_rast <- st_union(line_eez, gilbert_eez)
 
-
-control_cells <- tuna_sf |>
-  st_filter(
-    control_area_sf,
-    .predicate = st_intersects
-  ) |>
-  st_drop_geometry() |>
+control_cells <- exact_extract(tuna_rast, control_area_rast, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
   select(lon, lat) |>
   distinct() |>
   mutate(treatment = 0)
@@ -99,19 +105,13 @@ cell_categories <- bind_rows(
   control_cells
 )
 
+# Join raster cell categories back to tuna data
+
 tuna_region <- tuna |>
-  inner_join(
-    cell_categories,
-    by = join_by(lon, lat)
-  ) |>
+  inner_join(cell_categories, by = join_by(lon, lat)) |>
   mutate(
-    group = ifelse(treatment == 1, "Treatment", "Control")
-  ) |>
-  mutate(
-    date = as.Date(
-      paste(year, month, "01", sep = "-")
-    )
-  ) |>
+    group = ifelse(treatment == 1, "Treatment", "Control"),
+    date = as.Date(paste(year, month, "01", sep = "-"))) |>
   mutate(
     region_area = case_when(
       treatment == 1 ~ pipa_area,
@@ -138,14 +138,40 @@ tuna_region <- tuna |>
   ) |>
   arrange(treatment, date)
 
-# Check it worked
 
+
+ggplot(tuna_region) +
+  geom_tile(
+    aes(
+      x = lon,
+      y = lat,
+      fill = cpue_day
+    )
+  ) +
+  scale_fill_viridis_c(na.value = "transparent") +
+  coord_sf() +
+  theme_minimal()
+
+# Convert tuna_region to sf
 tuna_region_sf <- tuna_region |>
-  st_as_sf(
-    coords = c("lon", "lat"),
-    crs = 4326,
-    remove = FALSE
-  )
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+
+# Rasterize treatment onto the reference grid
+treatment_rast <- rasterize(
+  tuna_region_sf,
+  ref_rast,
+  field = "treatment"
+)
+
+cell_categories_sf <- cell_categories |>
+  st_as_sf(coords = c("lon", "lat", crs = 4326))
+
+# Plot
+ggplot() +
+  geom_spatraster(data = treatment_rast) +
+  scale_fill_viridis_c()
+
+#
 
 # Map RFMO data, PIPA, and EEZ
 mapview(tuna_region_sf, zcol = "treatment") +
