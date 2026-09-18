@@ -68,7 +68,7 @@ tuna_sf <- tuna |>
 treated_cells <- tuna_sf |>
   st_filter(
     pipa,
-    .predicate = st_within
+    .predicate = st_intersects
   ) |>
   st_drop_geometry() |>
   select(lon, lat) |>
@@ -85,7 +85,7 @@ control_area_sf <- st_union(
 control_cells <- tuna_sf |>
   st_filter(
     control_area_sf,
-    .predicate = st_within
+    .predicate = st_intersects
   ) |>
   st_drop_geometry() |>
   select(lon, lat) |>
