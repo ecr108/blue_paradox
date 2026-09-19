@@ -99,6 +99,6 @@ m <- modelsummary(
   relative to control region during the anticipation period.",
   output = "results/tab/gmr/log_region_model_summary.html"
 )
-
+m
 saveRDS(m_region_log, "data/output/gmr/m_region_log.rds")
 
