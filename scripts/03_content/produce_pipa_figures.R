@@ -38,8 +38,9 @@ k_eez <- st_read("data/raw/eez/kiribati_eez.gpkg")
 line_eez <- st_read("data/raw/eez/kiribati_eez_line.gpkg")
 phoenix_eez <- st_read("data/raw/eez/kiribati_eez_phoenix.gpkg")
 gilbert_eez <- st_read("data/raw/eez/kiribati_eez_gilbert.gpkg")
-
-world_eez <- st_read("data/raw/eez/world_eez.gpkg")
+world <- ne_countries(scale = "medium", returnclass = "sf")
+world_eez <- st_read("data/raw/eez/world_eez.gpkg") |>
+  filter(pol_type == "200NM") # only main EEZ, no intersecting boundaries or treaty agreements
 
 # Define temporal boundaries ---------------------------------------------------
 start_pre      <- as.Date("2012-09-01")  # 1 year before 2013 announcement
@@ -56,9 +57,6 @@ mapview(pipa_data, zcol = "treatment") +
 
 
 # Create area of interest plot -------------------------------------------------
-
-## World map
-world <- ne_countries(scale = "medium", returnclass = "sf")
 
 # Create area of interest box
 
@@ -141,24 +139,27 @@ global_map <- ggplot() +
 # Create zoomed in study region
 
 zoom_map <- ggplot() +
+  geom_sf(data = world_eez, fill = NA) +
+
+  geom_sf(data = world) +
 
   geom_sf(
     data = gilbert_eez,
-    fill = NA,
+    #fill = NA,
     color = "grey50",
     linewidth = 0.5
   ) +
 
   geom_sf(
     data = phoenix_eez,
-    fill = NA,
+    #fill = NA,
     color = "grey50",
     linewidth = 0.5
   ) +
 
   geom_sf(
     data = line_eez,
-    fill = NA,
+    #fill = NA,
     color = "grey50",
     linewidth = 0.5
   ) +
@@ -170,7 +171,13 @@ zoom_map <- ggplot() +
     linewidth = 1.4
   ) +
 
-  coord_sf(crs = "EPSG:8859") +
+  coord_sf(
+    crs = "EPSG:8859",
+    default_crs = "EPSG:4326",
+    xlim = c(-195, -145),
+    ylim = c(-15, 10)
+  ) +
+
 
   scale_x_continuous(breaks = c(-190, -180, -170, -160, -150)) +
 
@@ -199,100 +206,25 @@ study_area_map <- (global_map + zoom_map) +
 
 study_area_map
 
-
-# Create fishing effort plot ---------------------------------------------------
-
-# Aggregate and fix meridian issue for RFMO data
-tuna_tiles <- pipa_data |>
-  filter(year >= 2010, year <= 2015) |>
-  group_by(lon, lat) |>
-  summarize(effort = sum(effort_day, na.rm = TRUE)) |>
-  st_as_sf(coords = c("lon", "lat"), crs = "EPSG:4326")
-
-# Plot fishing effort (days) over study region
-p_map_pipa <- ggplot() +
-
-  geom_sf(
-    data = tuna_tiles,
-    aes(fill = log(effort)),
-    color = "transparent"
-  ) +
-
-  scale_fill_viridis(
-    option = "G",
-    na.value = "transparent",
-    end = 0.95,
-    alpha = 0.9
-  ) +
-
-  # Place islands on top
-  geom_sf(data = line_eez,
-          fill = NA, color = "grey60",
-          linewidth = 0.4) +
-
-  geom_sf(data = gilbert_eez,
-          fill = NA,
-          color = "grey60",
-          linewidth = 0.4) +
-
-  geom_sf(data = phoenix_eez,
-          fill = NA,
-          color = "grey60",
-          linewidth = 0.4) +
-
-  geom_sf(
-    data = pipa,
-    aes(color = "PIPA"),
-    fill = NA,
-    linewidth = 1.5,
-    show.legend = TRUE
-  ) +
-
-  coord_sf(expand = FALSE, crs = "EPSG:8859") +
-
-  scale_color_manual(name = NULL, values = c("PIPA" = "#d73027")) +
-
-  scale_x_continuous(
-    breaks = seq(150, 210, by = 5),
-    labels = function(x) paste0(x, "°")
-  ) +
-
-  theme_bw(base_size = 13) +
-
-  theme(
-    legend.position = "bottom",
-    panel.background = element_rect(fill = "#eaf2f8", color = NA)
-  ) +
-
-  # Add north arrow
-  annotation_north_arrow(
-    location = "bl",
-    height = unit(0.8, "cm"),
-    width  = unit(0.8, "cm"),
-    style = north_arrow_fancy_orienteering()
-  ) +
-
-  # Add scale bar
-  annotation_scale(location = "bl",
-                   pad_x = unit(1, "cm"),
-                   pad_y = unit(0.5, "cm")) +
-  # Headings
-  labs(fill = "Fishing effort\n(log-days)",
-       x = "Longitude",
-       y = "Latitude")
-
 # Create plot of fishing points ------------------------------------------------
 pipa_sf <- pipa_data |>
   distinct(lon, lat, treatment) |>   # one point per cell
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
 pipa_map <- ggplot() +
+  geom_sf(data = world_eez, fill = NA) +
+  geom_sf(data = world) +
   geom_sf(data = k_eez) +
   geom_sf(data = pipa, fill = "#D55E00", alpha = 0.3) +
   geom_sf(data = line_eez, fill = "#0072B2", alpha = 0.3) +
   geom_sf(data = gilbert_eez, fill = "#0072B2", alpha = 0.3) +
   geom_sf(data = pipa_sf, aes(color = factor(treatment)), size = 2) +
-  coord_sf(crs = "EPSG:8859") +
+  coord_sf(
+    crs = "EPSG:8859",
+    default_crs = "EPSG:4326",
+    xlim = c(-195, -145),
+    ylim = c(-15, 10)
+  ) +
   scale_color_manual(
     values = c("0" = "#0072B2", "1" = "#D55E00"),
     labels = c("Control", "Treatment"),
@@ -452,47 +384,32 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set,
 
 # Create zoomed in study region
 
-zoom_map2 <- ggplot() +
-
-  geom_sf(
-    data = gilbert_eez,
-    fill = NA,
-    color = "#0072B2",
-    linewidth = 0.5
+pipa_map_mini <- ggplot() +
+  geom_sf(data = world_eez, fill = NA) +
+  geom_sf(data = world) +
+  geom_sf(data = k_eez) +
+  geom_sf(data = pipa, fill = "#D55E00", alpha = 0.5) +
+  geom_sf(data = line_eez, fill = "#0072B2", alpha = 0.5) +
+  geom_sf(data = gilbert_eez, fill = "#0072B2", alpha = 0.5) +
+  coord_sf(
+    crs = "EPSG:8859",
+    default_crs = "EPSG:4326",
+    xlim = c(-195, -145),
+    ylim = c(-15, 10)
   ) +
-
-  geom_sf(
-    data = phoenix_eez,
-    fill = NA,
-    color = "grey50",
-    linewidth = 0.5
+  scale_color_manual(
+    values = c("0" = "#0072B2", "1" = "#D55E00"),
+    labels = c("Control", "Treatment"),
+    name = "Region"
   ) +
-
-  geom_sf(
-    data = line_eez,
-    fill = NA,
-    color = "#0072B2",
-    linewidth = 0.5
-  ) +
-
-  geom_sf(
-    data = pipa,
-    fill = NA,
-    color = "#D55E00",
-    linewidth = 1.4
-  ) +
-
-  coord_sf(crs = "EPSG:8859") +
-
-  scale_x_continuous(breaks = c(-190, -180, -170, -160, -150)) +
 
   theme(
-    plot.title = element_text(
-      face = "bold",
-      hjust = 0.5
-    ),
-    panel.grid.major = element_blank(
-    ),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
     panel.background = element_rect(
       fill = "aliceblue",
       color = NA),
@@ -504,43 +421,17 @@ zoom_map2 <- ggplot() +
   )
 
 
-pipa_map_mini <- ggplot() +
-  geom_sf(data = k_eez) +
-  geom_sf(data = pipa, fill = "#D55E00", alpha = 0.5) +
-  geom_sf(data = line_eez, fill = "#0072B2", alpha = 0.5) +
-  geom_sf(data = gilbert_eez, fill = "#0072B2", alpha = 0.5) +
-  coord_sf(crs = "EPSG:8859") +
-  scale_color_manual(
-    values = c("0" = "#0072B2", "1" = "#D55E00"),
-    labels = c("Control", "Treatment"),
-    name = "Region"
-  ) +
-  scale_x_continuous(
-    breaks = seq(150, 210, by = 10),
-    labels = function(x) paste0(x, "°")
-  ) +
-  theme_bw() +
-  labs(
-    x = "Longitude",
-    y = "Latitude"
-  ) +
-  theme(
-    panel.grid.major = element_blank()
-  ) +
-theme(
-  panel.grid.major = element_blank()
-)
-
 # Combine Figures ##############################################################
 
 # Area figures
 figure <- p_effort_day_a + p_effort_set_a +
   p_catch_a + p_cpue_day_a + p_cpue_set_a + pipa_map_mini +
+  patchwork::guide_area() +
   plot_layout(
     design = "
-    AB
-    CD
-    EF
+    ABG
+    CD#
+    EF#
     ",
     widths = c(1, 1),
     heights = c(1, 1, 1.5),
@@ -550,8 +441,8 @@ figure <- p_effort_day_a + p_effort_set_a +
     tag_levels = "A"
   ) &
   theme(
-    legend.position = "bottom",
-    legend.justification = "left",
+    legend.position = "right",
+    #legend.justification = "left",
     legend.text = element_text(size = 15),
     legend.title = element_text(size = 15)
   )

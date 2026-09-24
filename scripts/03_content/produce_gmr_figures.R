@@ -52,7 +52,7 @@ gmr_sf <- gmr_data |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
 gmr_map <- ggplot() +
-  geom_sf(data = world_eez, alpha = 0.3) +
+  geom_sf(data = world_eez, fill = NA) +
   geom_sf(data = world) +
   geom_sf(data = e_gal_eez) +
   geom_sf(data = gmr, fill = "#D55E00", alpha = 0.3) +
@@ -180,7 +180,7 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set,
 
 # Create a second zoomed in study region with control colors ###################
 gmr_map_mini <- ggplot() +
-  geom_sf(data = world_eez, alpha = 0.5) +
+  geom_sf(data = world_eez, fill = NA) +
   geom_sf(data = world) +
   geom_sf(data = e_gal_eez, alpha = 0.5) +
   geom_sf(data = gmr, fill = "#D55E00", alpha = 0.5) +
@@ -195,24 +195,32 @@ gmr_map_mini <- ggplot() +
     labels = c("Control", "Treatment"),
     name = "Region"
   ) +
-  theme_bw() +
   theme(
-    panel.grid.major = element_blank()
-  ) +
-  theme(
-    panel.grid.major = element_blank()
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
   )
 
 # Combine Figures ##############################################################
 
 # Area figures
 figure <- p_effort_set_a +
-  p_catch_a + p_cpue_set_a + gmr_map_mini +
+  p_catch_a + p_cpue_set_a + gmr_map_mini + patchwork::guide_area() +
   plot_layout(
     design = "
-    AB
-    CD
-    EF
+    ABF
+    CD#
     ",
     widths = c(1, 1),
     heights = c(1, 1, 1),
@@ -222,8 +230,7 @@ figure <- p_effort_set_a +
     tag_levels = "A"
   ) &
   theme(
-    legend.position = "bottom",
-    legend.justification = "left",
+    legend.position = "right",
     legend.text = element_text(size = 15),
     legend.title = element_text(size = 15)
   )

@@ -20,6 +20,10 @@ revilla_data <- readRDS("data/processed/revilla_rasterized.rds")
 revilla <- st_read("data/raw/mpa/revillagigedo_park.gpkg")
 mexico_eez <- st_read("data/raw/eez/mexico_eez.gpkg") |>
   st_make_valid()
+world <- ne_countries(scale = "medium", returnclass = "sf")
+world_eez <- st_read("data/raw/eez/world_eez.gpkg") |>
+  filter(pol_type == "200NM") # only main EEZ, no intersecting boundaries or treaty agreements
+
 
 # Create buffer ----------------------------------------------------------------
 nm200 <- 200 * 1852
@@ -44,12 +48,18 @@ revilla_sf <- revilla_data |>
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
 revilla_map <- ggplot() +
-  #geom_sf(data = world_crop, fill = "grey90", color = "grey70") +
-  #geom_sf(data = world_eez_crop, fill = NA, color = "grey50") +
+  geom_sf(data = world_eez, fill = NA) +
+  geom_sf(data = world) +
   geom_sf(data = mexico_eez) +
   geom_sf(data = control_region, fill = "#0072B2", alpha = 0.3) +
   geom_sf(data = revilla, fill = "#D55E00", alpha = 0.3) +
   geom_sf(data = revilla_sf, aes(color = factor(treatment)), size = 2) +
+  coord_sf(
+    crs = "EPSG:6365",
+    default_crs = "EPSG:4326",
+    xlim = c(-125, -90),
+    ylim = c(10, 35)
+  ) +
   scale_color_manual(
     values = c("0" = "#0072B2", "1" = "#D55E00"),
     labels = c("Control", "Treatment"),
@@ -166,36 +176,48 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set,
 
 # Create a second zoomed in study region with control colors ###################
 revilla_map_mini <- ggplot() +
+  geom_sf(data = world_eez, fill = NA) +
+  geom_sf(data = world) +
   geom_sf(data = mexico_eez) +
   geom_sf(data = revilla, fill = "#D55E00", alpha = 0.5) +
   geom_sf(data = control_region, fill = "#0072B2", alpha = 0.5) +
+  coord_sf(
+    crs = "EPSG:6365",
+    default_crs = "EPSG:4326",
+    xlim = c(-125, -90),
+    ylim = c(10, 35)
+  ) +
   scale_color_manual(
     values = c("0" = "#0072B2", "1" = "#D55E00"),
     labels = c("Control", "Treatment"),
     name = "Region"
   ) +
-  theme_bw() +
   theme(
-    panel.grid.major = element_blank()
-  ) +
-  theme(
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid.major = element_blank()
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
   )
 
 # Combine Figures ##############################################################
 
 # Area figures
 figure <- p_effort_set_a +
-  p_catch_a + p_cpue_set_a + revilla_map_mini +
+  p_catch_a + p_cpue_set_a + revilla_map_mini + patchwork::guide_area() +
   plot_layout(
     design = "
-    AB
-    CD
-    EF
+    ABF
+    CD#
     ",
     widths = c(1, 1),
     heights = c(1, 1, 1),
@@ -205,8 +227,7 @@ figure <- p_effort_set_a +
     tag_levels = "A"
   ) &
   theme(
-    legend.position = "bottom",
-    legend.justification = "left",
+    legend.position = "right",
     legend.text = element_text(size = 15),
     legend.title = element_text(size = 15)
   )
