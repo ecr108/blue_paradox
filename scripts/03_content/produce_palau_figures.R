@@ -266,7 +266,7 @@ palau_map_mini <- ggplot() +
 
 # Area figures
 figure <- p_effort_day_a + p_effort_set_a +
-  p_catch_a + p_cpue_day_a + p_cpue_set_a + pipa_map_mini +
+  p_catch_a + p_cpue_day_a + p_cpue_set_a + palau_map_mini +
   patchwork::guide_area() +
   plot_layout(
     design = "
@@ -289,7 +289,6 @@ figure <- p_effort_day_a + p_effort_set_a +
   )
 
 figure
-
 
 # EXPORT #######################################################################
 ggsave("results/figures/palau/palau_map.png",
