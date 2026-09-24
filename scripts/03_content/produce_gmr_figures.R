@@ -34,7 +34,8 @@ gmr <- st_read("data/raw/mpa/galapagos_world_heritage.gpkg")
 e_main_eez <- st_read("data/raw/eez/ecuador_eez_main.gpkg")
 e_gal_eez <- st_read("data/raw/eez/ecuador_eez_galapagos.gpkg")
 world <- ne_countries(scale = "medium", returnclass = "sf")
-world_eez <- st_read("data/raw/eez/world_eez.gpkg")
+world_eez <- st_read("data/raw/eez/world_eez.gpkg") |>
+  filter(pol_type == "200NM") # only main EEZ, no intersecting boundaries or treaty agreements
 
 # Define temporal boundaries ---------------------------------------------------
 
@@ -45,41 +46,12 @@ end_post       <- as.Date("2003-01-01")  # 1 year after implementation
 
 # Make study region map ########################################################
 
-# Build a study area mask
-#study_area <- st_union(e_gal_eez, e_main_eez)
-
-# Crop world map and eez
-#world_crop <- st_intersects(world, study_area)
-#world_eez_crop <- st_intersects(world_eez, study_area)
-
-library(sf)
-
-# Define crop area
-crop_bbox <- st_bbox(
-  c(
-    xmin = -95.0,
-    xmax = -79.0,
-    ymin = -5.2,
-    ymax = 5.2
-  ),
-  crs = st_crs(4326)
-)
-
-# Crop shapefiles
-world_crop <- st_crop(world, crop_bbox)
-world_eez_crop <- st_crop(world_eez, crop_bbox)
-
-
-
-
 # Transform data
 gmr_sf <- gmr_data |>
   distinct(lon, lat, treatment) |>   # one point per cell
   st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
 gmr_map <- ggplot() +
-  #geom_sf(data = world_crop, fill = "grey90", color = "grey70") +
-  #geom_sf(data = world_eez_crop, fill = NA, color = "grey50") +
   geom_sf(data = world_eez, alpha = 0.3) +
   geom_sf(data = world) +
   geom_sf(data = e_gal_eez) +
@@ -88,8 +60,8 @@ gmr_map <- ggplot() +
 
   geom_sf(data = gmr_sf, aes(color = factor(treatment)), size = 2) +
   coord_sf(crs = "EPSG:32715",
-           xlim = c(-95.0, -79.0),  # Longitude degrees (West)
-           ylim = c(-5.2, 5.2),     # Latitude degrees (South/North)
+           xlim = c(-95.0, -79.0),  # Longitude degrees
+           ylim = c(-5.2, 5.2),     # Latitude degrees
            default_crs = "EPSG:4326"
   ) +
   scale_color_manual(
@@ -208,10 +180,16 @@ p_cpue_set_a <- ggplot(cpue_ts, aes(x = date, y = cpue_set,
 
 # Create a second zoomed in study region with control colors ###################
 gmr_map_mini <- ggplot() +
-  geom_sf(data = e_gal_eez) +
+  geom_sf(data = world_eez, alpha = 0.5) +
+  geom_sf(data = world) +
+  geom_sf(data = e_gal_eez, alpha = 0.5) +
   geom_sf(data = gmr, fill = "#D55E00", alpha = 0.5) +
   geom_sf(data = e_main_eez, fill = "#0072B2", alpha = 0.5) +
-  #coord_sf(crs = "EPSG:8859") +
+  coord_sf(crs = "EPSG:32715",
+           xlim = c(-95.0, -79.0),  # Longitude degrees
+           ylim = c(-5.2, 5.2),     # Latitude degrees
+           default_crs = "EPSG:4326"
+  ) +
   scale_color_manual(
     values = c("0" = "#0072B2", "1" = "#D55E00"),
     labels = c("Control", "Treatment"),
@@ -222,10 +200,6 @@ gmr_map_mini <- ggplot() +
     panel.grid.major = element_blank()
   ) +
   theme(
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.ticks.y = element_blank(),
     panel.grid.major = element_blank()
   )
 
@@ -233,7 +207,7 @@ gmr_map_mini <- ggplot() +
 
 # Area figures
 figure <- p_effort_set_a +
-  p_catch_a + p_cpue_set_a + revilla_map_mini +
+  p_catch_a + p_cpue_set_a + gmr_map_mini +
   plot_layout(
     design = "
     AB
@@ -283,7 +257,7 @@ ggsave("results/figures/gmr/cpue_set_timeseries_area_standardized.png",
 
 ggsave("results/figures/gmr/BACI_timeseries_panels_region.png",
       figure,
-      width = 15,
+      width = 12,
       height = 8,
       dpi = 600)
 

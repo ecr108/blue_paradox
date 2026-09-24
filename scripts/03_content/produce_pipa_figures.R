@@ -304,7 +304,7 @@ pipa_map <- ggplot() +
   ) +
 
   theme_bw() +
-    labs(
+  labs(
     x = "Longitude",
     y = "Latitude"
   ) +
@@ -515,15 +515,19 @@ pipa_map_mini <- ggplot() +
     labels = c("Control", "Treatment"),
     name = "Region"
   ) +
+  scale_x_continuous(
+    breaks = seq(150, 210, by = 10),
+    labels = function(x) paste0(x, "°")
+  ) +
   theme_bw() +
+  labs(
+    x = "Longitude",
+    y = "Latitude"
+  ) +
   theme(
     panel.grid.major = element_blank()
   ) +
 theme(
-  axis.text.x = element_blank(),
-  axis.text.y = element_blank(),
-  axis.ticks.x = element_blank(),
-  axis.ticks.y = element_blank(),
   panel.grid.major = element_blank()
 )
 
@@ -539,7 +543,7 @@ figure <- p_effort_day_a + p_effort_set_a +
     EF
     ",
     widths = c(1, 1),
-    heights = c(1, 1, 1),
+    heights = c(1, 1, 1.5),
     guides = "collect"
   ) +
   plot_annotation(
@@ -563,7 +567,7 @@ ggsave("results/figures/pipa_original/map_studyarea.png",
        dpi = 300)
 
 ggsave("results/figures/pipa_original/map_pipa.png",
-       plot = p_map_pipa,
+       plot = pipa_map,
        width = 8,
        height = 6,
        dpi = 300)

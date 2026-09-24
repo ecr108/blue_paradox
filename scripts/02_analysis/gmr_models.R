@@ -70,8 +70,8 @@ region_panel <- region_std_df |>
 
 m_region_log <- feols(
   c(
-    log(effort_set_per_km2),
     log(catch_per_km2),
+    log(effort_set_per_km2),
     log(cpue_set)
   ) ~ treatment * post,
   data = region_panel
@@ -80,8 +80,8 @@ m_region_log <- feols(
 m_region_log_list <- as.list(m_region_log)
 
 names(m_region_log_list) <- c(
-  "log Effort (sets) / km²",
   "log Total Catch (kg) / km²",
+  "log Effort (sets) / km²",
   "CPUE (kg/sets)"
 )
 
@@ -101,4 +101,3 @@ m <- modelsummary(
 )
 m
 saveRDS(m_region_log, "data/output/gmr/m_region_log.rds")
-

@@ -68,7 +68,11 @@ palau_map <- ggplot() +
     labels = c("Control", "Treatment"),
     name = "Region"
   ) +
-
+  coord_sf(
+    xlim = c(125, 150),
+    ylim = c(-2, 15),
+    expand = FALSE
+  ) +
   theme_bw() +
   labs(
     x = "Longitude",
@@ -226,6 +230,11 @@ palau_map_mini <- ggplot() +
     values = c("0" = "#0072B2", "1" = "#D55E00"),
     labels = c("Control", "Treatment"),
     name = "Region"
+  ) +
+  coord_sf(
+    xlim = c(125, 150),
+    ylim = c(-2, 15),
+    expand = FALSE
   ) +
   theme_bw() +
   theme(
