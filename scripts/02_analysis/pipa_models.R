@@ -71,10 +71,9 @@ region_panel <- region_std_df |>
 # BACI models
 
 m_region_log <- feols(
-  c(
-    log(catch_per_km2),
-    log(effort_day_per_km2),
+  c(log(effort_day_per_km2),
     log(effort_set_per_km2),
+    log(catch_per_km2),
     log(cpue_day),
     log(cpue_set)
   ) ~ treatment * post,
@@ -84,9 +83,9 @@ m_region_log <- feols(
 m_region_log_list <- as.list(m_region_log)
 
 names(m_region_log_list) <- c(
-  "log Total Catch (kg) / km²",
   "log Effort (days) / km²",
   "log Effort (sets) / km²",
+  "log Total Catch (kg) / km²",
   "CPUE (kg/days)",
   "CPUE (kg/sets)"
 )
@@ -106,6 +105,10 @@ modelsummary(
   output = "results/tab/pipa/log_region_model_summary.html"
 )
 
+
+saveRDS(m_region_log, "data/output/pipa/m_region_log.rds")
+
+
 # Obtain # of observations
 # Total
 n <- nrow(region_panel)
@@ -115,3 +118,17 @@ n
 nt <- region_panel |>
   count(treatment)
 nt
+
+# Number of rows
+nrow(region_panel)
+
+# Treated and control observatoins
+region_panel |>
+  count(treatment)
+
+# Number of grid cells
+pipa_data |>
+  group_by(treatment) |>
+  summarise(
+    n_grid_cells = n_distinct(id)
+  )
