@@ -50,12 +50,6 @@ end_post       <- as.Date("2016-01-01")  # 1 year after implementation
 
 # VISUALIZE ####################################################################
 
-# Map RFMO data, PIPA, and EEZ
-mapview(pipa_data, zcol = "treatment") +
-  mapview(pipa, col.regions = "red", alpha.regions = 0.3) +
-  mapview(k_eez, col.regions = "blue", alpha.regions = 0.2)
-
-
 # Create area of interest plot -------------------------------------------------
 
 # Create area of interest box
@@ -202,7 +196,12 @@ zoom_map <- ggplot() +
 # Remove titles
 
 study_area_map <- (global_map + zoom_map) +
+  plot_layout(
+    widths = c(1, 1),
+    heights = 1
+  ) +
   plot_annotation(tag_levels = "A")
+
 
 study_area_map
 
