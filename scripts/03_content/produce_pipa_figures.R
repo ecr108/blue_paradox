@@ -196,11 +196,16 @@ zoom_map <- ggplot() +
 # Remove titles
 
 study_area_map <- (global_map + zoom_map) +
-  plot_layout(
-    widths = c(1, 1),
-    heights = 1
-  ) +
   plot_annotation(tag_levels = "A")
+
+library(cowplot)
+
+study_area_map <- plot_grid(
+  global_map,
+  zoom_map,
+  labels = c("A", "B"),
+  label_size = 14
+)
 
 
 study_area_map
@@ -453,7 +458,7 @@ figure
 ggsave("results/figures/pipa_original/map_studyarea.png",
        plot = study_area_map,
        width = 8,
-       height = 6,
+       height = 3,
        dpi = 300)
 
 ggsave("results/figures/pipa_original/map_pipa.png",
