@@ -19,6 +19,7 @@ pacman::p_load(
   mapview,
   lwgeom,
   viridis,
+  rnaturalearth,
   patchwork
 )
 
@@ -287,8 +288,6 @@ figure <- p_effort_day_a + p_effort_set_a +
     legend.text = element_text(size = 15),
     legend.title = element_text(size = 15)
   )
-
-figure
 
 # EXPORT #######################################################################
 ggsave("results/figures/palau/palau_map.png",
