@@ -145,40 +145,5 @@ tuna_region <- tuna |>
   ) |>
   arrange(treatment, date)
 
-
-
-ggplot(tuna_region) +
-  geom_tile(
-    aes(
-      x = lon,
-      y = lat,
-      fill = cpue_set
-    )
-  ) +
-  scale_fill_viridis_c(na.value = "transparent") +
-  coord_sf() +
-  theme_minimal()
-
-# Convert tuna_region to sf
-tuna_region_sf <- tuna_region |>
-  st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
-# Rasterize treatment onto the reference grid
-treatment_rast <- rasterize(
-  tuna_region_sf,
-  ref_rast,
-  field = "treatment"
-)
-
-# Plot
-ggplot() +
-  geom_spatraster(data = treatment_rast) +
-  scale_fill_viridis_c()
-
-# Map RFMO data, PIPA, and EEZ
-mapview(tuna_region_sf, zcol = "treatment") +
-  mapview(revilla, col.regions = "red", alpha.regions = 0.3) +
-  mapview(mexico_eez, col.regions = "blue", alpha.regions = 0.2)
-
 # EXPORT #######################################################################
 saveRDS(tuna_region, "data/processed/revilla_rasterized.rds")

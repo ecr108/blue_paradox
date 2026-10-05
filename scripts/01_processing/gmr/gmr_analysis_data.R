@@ -132,11 +132,6 @@ tuna_region_sf <- tuna_region |>
     remove = FALSE
   )
 
-# Map RFMO data, PIPA, and EEZ
-mapview(tuna_region_sf, zcol = "treatment") +
-  mapview(gmr, col.regions = "red", alpha.regions = 0.3) +
-  mapview(e_main_eez, col.regions = "blue", alpha.regions = 0.2)
-
 # EXPORT #######################################################################
 
 saveRDS(tuna_region, "data/processed/gmr_rastered.rds")
