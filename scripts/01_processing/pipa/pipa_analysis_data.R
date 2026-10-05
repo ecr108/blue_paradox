@@ -14,9 +14,13 @@
 
 ## Load packages ---------------------------------------------------------------
 
-library(tidyverse)
-library(sf)
-library(mapview)
+pacman::p_load(
+  tidyverse,
+  exactextractr,
+  terra,
+  sf,
+  mapview
+)
 
 ## Load data -------------------------------------------------------------------
 
@@ -29,28 +33,6 @@ gilbert_eez <- st_read("data/raw/eez/kiribati_eez_gilbert.gpkg")
 
 # Tuna data
 tuna <- readRDS("data/raw/rfmo/allrfmo_month_1deg_purseseine.rds")
-
-# PROCESSING ###################################################################
-
-# Rasterize tuna data ----------------------------------------------------------
-make_cell <- function(lon, lat) {
-  st_polygon(list(rbind(
-    c(lon - 0.5, lat - 0.5),
-    c(lon + 0.5, lat - 0.5),
-    c(lon + 0.5, lat + 0.5),
-    c(lon - 0.5, lat + 0.5),
-    c(lon - 0.5, lat - 0.5)
-  )))
-}
-
-tuna_polys <- tuna |>
-  mutate(
-    cell = purrr::map2(lon, lat, make_cell)
-  ) |>
-  mutate(
-    cell = st_sfc(cell, crs = 4326)
-  ) |>
-  st_as_sf(sf_column_name = "cell")
 
 # Define temporal boundaries ---------------------------------------------------
 start_pre      <- as.Date("2012-09-01")  # 1 year before 2013 announcement
@@ -70,39 +52,76 @@ control_area <- st_union(
   st_area() |>
   as.numeric() / 1e6
 
-# Filter -----------------------------------------------------------------------
-tuna_region <- tuna_polys |>
+# Create reference raster
+
+ref_rast <- rast(
+  xmin = -180, xmax = 180,
+  ymin = -90, ymax = 90,
+  res = 1,
+  crs = "EPSG:4326"
+)
+
+# PROCESSING ###################################################################
+
+# Convert tuna data to spatial points ------------------------------------------
+
+tuna_sf <- tuna |>
+  st_as_sf(
+    coords = c("lon", "lat"),
+    crs = "EPSG:4326",
+    remove = FALSE
+  )
+
+# Rasterize
+tuna_rast <- rasterize(tuna_sf, ref_rast)
+
+# Identify tuna cells within PIPA ----------------------------------------------
+
+treated_cells <- exact_extract(tuna_rast, pipa, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
+  select(lon, lat) |>
+  distinct() |>
+  mutate(treatment = 1)
+
+# Identify tuna cells within control region ------------------------------------
+control_area_rast <- st_union(line_eez, gilbert_eez)
+
+control_cells <- exact_extract(tuna_rast, control_area_rast, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
+  select(lon, lat) |>
+  distinct() |>
+  mutate(treatment = 0)
+
+# Combine treatment and control cells -----------------------------------------
+
+cell_categories <- bind_rows(
+  treated_cells,
+  control_cells
+)
+
+# Join raster cell categories back to tuna data
+
+tuna_region <- tuna |>
+  inner_join(cell_categories, by = join_by(lon, lat)) |>
   mutate(
-    in_pipa = as.integer(st_intersects(cell, pipa, sparse = FALSE)),
-    in_line = as.integer(st_intersects(cell, line_eez, sparse = FALSE)),
-    in_gilbert = as.integer(st_intersects(cell, gilbert_eez, sparse = FALSE)),
-
-    # Treatment = inside PIPA
-    # Control = inside Line Islands and Gilbert EEZ
-    treatment = case_when(
-      in_pipa == 1 ~ "treatment",
-      in_line == 1 | in_gilbert == 1 ~ "control",
-      TRUE ~ "other"
-    ),
-    date = as.Date(paste(year, month, "01", sep = "-")) # this adds 01 as day to date in set, not sure if this would be correct approach
-  ) |>
-
-  # Add column of region area
+    group = ifelse(treatment == 1, "Treatment", "Control"),
+    date = as.Date(paste(year, month, "01", sep = "-"))) |>
   mutate(
     region_area = case_when(
-      treatment == "treatment" ~ pipa_area,
-      treatment == "control"   ~ control_area
+      treatment == 1 ~ pipa_area,
+      treatment == 0 ~ control_area
     )
   ) |>
-
-  # Filter for time
   filter(
-    treatment %in% c("treatment", "control"),
     date >= start_pre,
     date <= end_post
   ) |>
-
-  # Add tags to time periods
   mutate(
     period = case_when(
       date < announcement ~ "pre",
@@ -110,14 +129,55 @@ tuna_region <- tuna_polys |>
       date >= implementation ~ "post"
     )
   ) |>
-
-  # Add CPUE day and set
+  mutate(
+    id = paste(lat, lon, sep = "_")
+  ) |>
   mutate(
     cpue_day = ifelse(effort_day > 0, catch_tot / effort_day, NA),
     cpue_set = ifelse(effort_set > 0, catch_tot / effort_set, NA)
   ) |>
   arrange(treatment, date)
 
+
+
+ggplot(tuna_region) +
+  geom_tile(
+    aes(
+      x = lon,
+      y = lat,
+      fill = cpue_day
+    )
+  ) +
+  scale_fill_viridis_c(na.value = "transparent") +
+  coord_sf() +
+  theme_minimal()
+
+# Convert tuna_region to sf
+tuna_region_sf <- tuna_region |>
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+
+# Rasterize treatment onto the reference grid
+treatment_rast <- rasterize(
+  tuna_region_sf,
+  ref_rast,
+  field = "treatment"
+)
+
+cell_categories_sf <- cell_categories |>
+  st_as_sf(coords = c("lon", "lat", crs = 4326))
+
+# Plot
+ggplot() +
+  geom_spatraster(data = treatment_rast) +
+  scale_fill_viridis_c()
+
+#
+
+# Map RFMO data, PIPA, and EEZ
+mapview(tuna_region_sf, zcol = "treatment") +
+  mapview(pipa, col.regions = "red", alpha.regions = 0.3) +
+  mapview(k_eez, col.regions = "blue", alpha.regions = 0.2)
+
 # EXPORT #######################################################################
 
-saveRDS(tuna_region, "data/processed/blue_paradox_pipa.rds")
+saveRDS(tuna_region, "data/processed/pipa_rastered.rds")

@@ -22,7 +22,7 @@ library(gt)
 ## Load data -------------------------------------------------------------------
 
 # Filtered RFMO Data
-pipa_data <- readRDS("data/processed/blue_paradox_pipa.rds")
+pipa_data <- readRDS("data/processed/pipa_rastered.rds")
 
 ## Prepare data ----------------------------------------------------------------
 
@@ -32,93 +32,6 @@ announcement   <- as.Date("2013-09-01")  # Announcement online defined by PIPA p
 implementation <- as.Date("2015-01-01")  # Implementation date
 
 # Test Analysis ################################################################
-
-# Unit of observation is pixel by month ----------------------------------------
-
-# Create estimation panel
-estimation_panel <- pipa_data |>
-  st_drop_geometry() |>
-  filter(date < implementation) |>
-  mutate(treatment = 1 * (treatment == "treatment"),  # treatment indicator
-         post      = 1 * (period == "anticipation"))  # post indicator
-
-# BACI models
-
-m_pixel <- feols(
-  c(
-    effort_day,
-    effort_set,
-    catch_tot,
-    cpue_day,
-    cpue_set
-  ) ~ treatment * post,
-  data = estimation_panel,
-  vcov = vcov_conley()
-)
-
-m_pixel_list <- as.list(m_pixel)
-
-names(m_pixel_list) <- c(
-  "Effort (days)",
-  "Effort (sets)",
-  "Total Catch (mt)",
-  "CPUE (mt/days)",
-  "CPUE (mt/sets)"
-)
-
-# Get model summary
-modelsummary(
-  m_pixel_list,
-  stars = TRUE,
-  title = "Pixel-level BACI models of effort, catch, and CPUE",
-  notes = "BACI regression estimates at the pixel‑month level. The interaction
-  term estiamtes the change in treated pixels relative to the control pixels
-  during the anticiaption period. Conley standard errors are used.",
-  output = "results/tab/pipa/pixel_model_summary.html"
-)
-
-# Repeat with log wrap
-
-m_pixel_log <- feols(
-  c(
-    log(effort_day),
-    log(effort_set),
-    log(catch_tot),
-    log(cpue_day),
-    log(cpue_set)
-  ) ~ treatment * post,
-  data = estimation_panel,
-  vcov = vcov_conley()
-)
-
-m_pixel_log_list <- as.list(m_pixel_log)
-
-names(m_pixel_log_list) <- c(
-  "log Effort (days)",
-  "log Effort (sets)",
-  "log Total Catch (mt)",
-  "CPUE (mt/days)",
-  "CPUE (mt/sets)"
-)
-
-
-modelsummary(
-  m_pixel_log_list,
-  stars = TRUE,
-  coef_map = c(
-    "treatment" = "Treatment region",               # Sample labeling
-    "post" = "Anticipation period",
-    "treatment:post" = "BACI effect (Treatment × Anticipation)"
-  ),
-  title = "Log-linear pixel-level BACI models of effort, catch, and CPUE",
-  note = "Log-linear BACI regression estimates at the pixel-month level.
-  The interaction term estimates the percentage change in treated pixels
-  relative to control pixels during the anticipation period. Conley standard
-  errors are used.",
-  output = "results/tab/pipa/log_pixel_model_summary.html"
-)
-
-saveRDS(m_pixel_log, "data/output/pipa/m_pixel_log.rds")
 
 # Unit of observation is the region --------------------------------------------
 
@@ -152,50 +65,13 @@ region_std_df <- region_df |>
 region_panel <- region_std_df |>
   st_drop_geometry() |>
   filter(date < implementation) |>
-  mutate(
-    treatment = 1 * (treatment == "treatment"),
-    post      = 1 * (date >= announcement & date < implementation) # see if this can be fixed to match first panel
+  mutate(post = 1 * (date >= announcement & date < implementation)
   )
-
 
 # BACI models
 
-m_region <- feols(
-  c(
-    effort_day_per_km2,
-    effort_set_per_km2,
-    catch_per_km2,
-    cpue_day,
-    cpue_set
-  ) ~ treatment * post,
-  data = region_panel
-)
-
-m_region_list <- as.list(m_region)
-
-names(m_region_list) <- c(
-  "Effort (days) / km²",
-  "Effort (sets) / km²",
-  "Total Catch (kg) / km²",
-  "CPUE (kg/days)",
-  "CPUE (kg/sets)"
-)
-
-modelsummary(
-  m_region_list,
-  stars = TRUE,
-  title = "Region-level BACI models of effort, catch, and CPUE",
-  note = "BACI regression estimates at the region-level. The interaction
-  term estiamtes the change in treatment region relative to the control region
-  during the anticiaption period.",
-  output = "results/tab/pipa/region_model_summary.html"
-)
-
-
-# Repeat with log wrap
 m_region_log <- feols(
-  c(
-    log(effort_day_per_km2),
+  c(log(effort_day_per_km2),
     log(effort_set_per_km2),
     log(catch_per_km2),
     log(cpue_day),
@@ -229,4 +105,30 @@ modelsummary(
   output = "results/tab/pipa/log_region_model_summary.html"
 )
 
+
 saveRDS(m_region_log, "data/output/pipa/m_region_log.rds")
+
+
+# Obtain # of observations
+# Total
+n <- nrow(region_panel)
+n
+
+# By region
+nt <- region_panel |>
+  count(treatment)
+nt
+
+# Number of rows
+nrow(region_panel)
+
+# Treated and control observatoins
+region_panel |>
+  count(treatment)
+
+# Number of grid cells
+pipa_data |>
+  group_by(treatment) |>
+  summarise(
+    n_grid_cells = n_distinct(id)
+  )

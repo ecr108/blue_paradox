@@ -13,11 +13,13 @@
 
 ## Load packages ---------------------------------------------------------------
 
-library(tidyverse)
-library(sf)
-library(lubridate)
-library(mapview)
-
+pacman::p_load(
+  tidyverse,
+  exactextractr,
+  terra,
+  sf,
+  mapview
+)
 ## Load data -------------------------------------------------------------------
 
 # Spatial data
@@ -27,52 +29,6 @@ e_gal_eez <- st_read("data/raw/eez/ecuador_eez_galapagos.gpkg")
 
 # Tuna data
 tuna <- readRDS("data/raw/rfmo/allrfmo_month_1deg_purseseine.rds")
-
-# PROCESSING ###################################################################
-
-# Rasterize tuna data ----------------------------------------------------------
-make_cell <- function(lon, lat) {
-  st_polygon(list(rbind(
-    c(lon - 0.5, lat - 0.5),
-    c(lon + 0.5, lat - 0.5),
-    c(lon + 0.5, lat + 0.5),
-    c(lon - 0.5, lat + 0.5),
-    c(lon - 0.5, lat - 0.5)
-  )))
-}
-
-tuna_polys <- tuna |>
-  mutate(
-    cell = purrr::map2(lon, lat, make_cell)
-  ) |>
-  mutate(
-    cell = st_sfc(cell, crs = 4326)
-  ) |>
-  st_as_sf(sf_column_name = "cell")
-
-# Remove border cells ----------------------------------------------------------
-
-# Identify cells that intersect GMR
-tuna_polys$intersects_gmr <- st_intersects(
-  tuna_polys,
-  gmr,
-  sparse = FALSE
-)[, 1]
-
-# Compute centroids
-centroids <- st_centroid(tuna_polys)
-
-# Identify cells whose centroid is inside GMR
-tuna_polys$centroid_inside_gmr <- st_within(
-  centroids,
-  gmr,
-  sparse = FALSE
-)[, 1]
-
-# Remove border cells
-# Rule is set to keep cells whose centroid is inside GMR
-tuna_polys_rm <- tuna_polys |>
-  filter(!(intersects_gmr & !centroid_inside_gmr))
 
 # Define temporal boundaries ---------------------------------------------------
 
@@ -90,39 +46,67 @@ control_area <- e_main_eez |>
   st_area() |>
   as.numeric() / 1e6 # convert m2 -> km2
 
+# PROCESSING ###################################################################
 
-# Filter -----------------------------------------------------------------------
-tuna_region <- tuna_polys_rm |>
-  mutate(
-    in_gmr = as.integer(st_intersects(cell, gmr, sparse = FALSE)),
-    in_eez = as.integer(st_intersects(cell, e_main_eez, sparse = FALSE)),
+# Convert tuna data to spatial points ------------------------------------------
 
-    # Treatment = inside GMR
-    # Control = inside main Ecudar EEZ
-    treatment = case_when(
-      in_gmr == 1 ~ "treatment",
-      in_eez == 1 ~ "control",
-      TRUE ~ "other"
-    ),
-    date = as.Date(paste(year, month, "01", sep = "-")) # this adds 01 as day to date in set, not sure if this would be correct approach
+tuna_sf <- tuna |>
+  st_as_sf(
+    coords = c("lon", "lat"),
+    crs = "EPSG:4326",
+    remove = FALSE
+  )
+
+# Rasterize
+tuna_rast <- rasterize(tuna_sf, ref_rast)
+
+# Identify tuna cells entirely within GMR ------------------------------------
+
+treated_cells <- exact_extract(tuna_rast, gmr, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
+  select(lon, lat) |>
+  distinct() |>
+  mutate(treatment = 1)
+
+# Identify tuna cells entirely within control region --------------------------
+
+control_cells <- exact_extract(tuna_rast, e_main_eez, include_xy = TRUE) |>
+  bind_rows() |>
+  as.data.frame() |>
+  rename(lon = x, lat = y) |>
+  filter(coverage_fraction > 0) |>
+  select(lon, lat) |>
+  distinct() |>
+  mutate(treatment = 0)
+
+# Combine treatment and control cells -----------------------------------------
+
+cell_categories <- bind_rows(
+  treated_cells,
+  control_cells
+)
+
+tuna_region <- tuna |>
+  inner_join(
+    cell_categories,
+    by = join_by(lon, lat)
   ) |>
-
-  # Add column of region area
+  mutate(
+    group = ifelse(treatment == 1, "Treatment", "Control"),
+    date = as.Date(paste(year, month, "01", sep = "-"))) |>
   mutate(
     region_area = case_when(
-      treatment == "treatment" ~ gmr_area,
-      treatment == "control"   ~ control_area
+      treatment == 1 ~ gmr_area,
+      treatment == 0 ~ control_area
     )
   ) |>
-
-  # Filter for time
   filter(
-    treatment %in% c("treatment", "control"),
     date >= start_pre,
     date <= end_post
   ) |>
-
-  # Add tags to time periods
   mutate(
     period = case_when(
       date < announcement ~ "pre",
@@ -130,22 +114,29 @@ tuna_region <- tuna_polys_rm |>
       date >= implementation ~ "post"
     )
   ) |>
-
-  # Add CPUE day and set
+  mutate(
+    id = paste(lat, lon, sep = "_")
+  ) |>
   mutate(
     cpue_day = ifelse(effort_day > 0, catch_tot / effort_day, NA),
     cpue_set = ifelse(effort_set > 0, catch_tot / effort_set, NA)
   ) |>
   arrange(treatment, date)
 
-# VISUALIZE ####################################################################
+# Check it worked
 
-# Map RFMO data, GMR, and EEZ
-mapview(tuna_region, zcol = "treatment") +
+tuna_region_sf <- tuna_region |>
+  st_as_sf(
+    coords = c("lon", "lat"),
+    crs = 4326,
+    remove = FALSE
+  )
+
+# Map RFMO data, PIPA, and EEZ
+mapview(tuna_region_sf, zcol = "treatment") +
   mapview(gmr, col.regions = "red", alpha.regions = 0.3) +
   mapview(e_main_eez, col.regions = "blue", alpha.regions = 0.2)
 
 # EXPORT #######################################################################
-saveRDS(tuna_region, "data/processed/blue_paradox_gmr.rds")
-saveRDS(tuna_polys, "data/processed/unfiltered_blue_paradox_gmr.rds")
 
+saveRDS(tuna_region, "data/processed/gmr_rastered.rds")
