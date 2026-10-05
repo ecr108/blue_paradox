@@ -30,7 +30,7 @@ pacman::p_load(
 ## Load data -------------------------------------------------------------------
 
 # Filtered RFMO Data
-pipa_data <- readRDS("data/processed/pipa_rastered.rds")
+pipa_data <- readRDS("data/processed/pipa_rasterized.rds")
 
 # EEZs and MPA
 pipa <- st_read("data/raw/mpa/pipa.gpkg")
@@ -206,9 +206,6 @@ study_area_map <- plot_grid(
   labels = c("A", "B"),
   label_size = 14
 )
-
-
-study_area_map
 
 # Create plot of fishing points ------------------------------------------------
 pipa_sf <- pipa_data |>
@@ -451,7 +448,6 @@ figure <- p_effort_day_a + p_effort_set_a +
     legend.title = element_text(size = 15)
   )
 
-figure
 
 # EXPORT #######################################################################
 

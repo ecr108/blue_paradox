@@ -27,7 +27,7 @@ pacman::p_load(
 ## Load data -------------------------------------------------------------------
 
 # Filtered RFMO Data
-gmr_data <- readRDS("data/processed/gmr_rastered.rds")
+gmr_data <- readRDS("data/processed/gmr_rasterized.rds")
 
 # Spatial data
 gmr <- st_read("data/raw/mpa/galapagos_world_heritage.gpkg")
@@ -234,8 +234,6 @@ figure <- p_effort_set_a +
     legend.text = element_text(size = 15),
     legend.title = element_text(size = 15)
   )
-
-figure
 
 # EXPORT #######################################################################
 ggsave("results/figures/gmr/gmr_map.png",
