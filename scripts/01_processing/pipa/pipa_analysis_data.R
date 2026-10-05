@@ -152,32 +152,6 @@ ggplot(tuna_region) +
   coord_sf() +
   theme_minimal()
 
-# Convert tuna_region to sf
-tuna_region_sf <- tuna_region |>
-  st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
-# Rasterize treatment onto the reference grid
-treatment_rast <- rasterize(
-  tuna_region_sf,
-  ref_rast,
-  field = "treatment"
-)
-
-cell_categories_sf <- cell_categories |>
-  st_as_sf(coords = c("lon", "lat", crs = 4326))
-
-# Plot
-ggplot() +
-  geom_spatraster(data = treatment_rast) +
-  scale_fill_viridis_c()
-
-#
-
-# Map RFMO data, PIPA, and EEZ
-mapview(tuna_region_sf, zcol = "treatment") +
-  mapview(pipa, col.regions = "red", alpha.regions = 0.3) +
-  mapview(k_eez, col.regions = "blue", alpha.regions = 0.2)
-
 # EXPORT #######################################################################
 
 saveRDS(tuna_region, "data/processed/pipa_rastered.rds")

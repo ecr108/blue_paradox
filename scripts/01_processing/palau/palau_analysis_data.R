@@ -144,17 +144,5 @@ tuna_region <- tuna |>
   ) |>
   arrange(treatment, date)
 
-# Convert tuna_region to sf
-tuna_region_sf <- tuna_region |>
-  st_as_sf(coords = c("lon", "lat"), crs = 4326)
-
-
-# Map RFMO data, PIPA, and EEZ
-mapview(tuna_region_sf, zcol = "treatment") +
-  mapview(pnms, col.regions = "red", alpha.regions = 0.3) +
-  mapview(fsm, col.regions = "blue", alpha.regions = 0.2) +
-  mapview(palau, col.region = "yellow", alpha.regions = 0.2)
-
-
 # EXPORT #######################################################################
 saveRDS(tuna_region, "data/processed/palau_rasterized.rds")
