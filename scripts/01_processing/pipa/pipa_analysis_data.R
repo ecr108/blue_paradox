@@ -139,19 +139,6 @@ tuna_region <- tuna |>
   arrange(treatment, date)
 
 
-
-ggplot(tuna_region) +
-  geom_tile(
-    aes(
-      x = lon,
-      y = lat,
-      fill = cpue_day
-    )
-  ) +
-  scale_fill_viridis_c(na.value = "transparent") +
-  coord_sf() +
-  theme_minimal()
-
 # EXPORT #######################################################################
 
-saveRDS(tuna_region, "data/processed/pipa_rastered.rds")
+saveRDS(tuna_region, "data/processed/pipa_rasterized.rds")

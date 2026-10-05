@@ -77,27 +77,4 @@ m_region_log <- feols(
   data = region_panel
 )
 
-m_region_log_list <- as.list(m_region_log)
-
-names(m_region_log_list) <- c(
-  "log Effort (sets) / km²",
-  "log Total Catch (kg) / km²",
-  "CPUE (kg/sets)"
-)
-
-m <- modelsummary(
-  m_region_log_list,
-  stars = TRUE,
-  coef_map = c(
-    "treatment" = "Treatment region",               # Sample labeling
-    "post" = "Anticipation period",
-    "treatment:post" = "BACI effect (Treatment × Anticipation)"
-  ),
-  title = "Log-linear region-level BACI models of effort, catch, and CPUE",
-  note = "Log-linear BACI regression estimates at the region-level.
-  The interaction term estimates the percentage change in the treatment region
-  relative to control region during the anticipation period.",
-  output = "results/tab/gmr/log_region_model_summary.html"
-)
-m
 saveRDS(m_region_log, "data/output/revilla/m_region_log.rds")
