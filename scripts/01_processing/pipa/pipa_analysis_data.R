@@ -82,7 +82,7 @@ treated_cells <- exact_extract(tuna_rast, pipa, include_xy = TRUE) |>
   as.data.frame() |>
   rename(lon = x, lat = y) |>
   filter(coverage_fraction > 0) |>
-  select(lon, lat) |>
+  select(lon, lat, coverage_fraction) |>
   distinct() |>
   mutate(treatment = 1)
 
@@ -94,7 +94,7 @@ control_cells <- exact_extract(tuna_rast, control_area_rast, include_xy = TRUE) 
   as.data.frame() |>
   rename(lon = x, lat = y) |>
   filter(coverage_fraction > 0) |>
-  select(lon, lat) |>
+  select(lon, lat, coverage_fraction) |>
   distinct() |>
   mutate(treatment = 0)
 
