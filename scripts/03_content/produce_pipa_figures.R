@@ -198,15 +198,6 @@ zoom_map <- ggplot() +
 study_area_map <- (global_map + zoom_map) +
   plot_annotation(tag_levels = "A")
 
-library(cowplot)
-
-study_area_map <- plot_grid(
-  global_map,
-  zoom_map,
-  labels = c("A", "B"),
-  label_size = 14
-)
-
 # Create plot of fishing points ------------------------------------------------
 pipa_sf <- pipa_data |>
   distinct(lon, lat, treatment) |>   # one point per cell
@@ -435,7 +426,7 @@ figure <- p_effort_day_a + p_effort_set_a +
     EF#
     ",
     widths = c(1, 1),
-    heights = c(1, 1, 1.5),
+    heights = c(1, 1, 1),
     guides = "collect"
   ) +
   plot_annotation(
