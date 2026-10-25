@@ -363,7 +363,6 @@ p_dif_cpue_s <- plot_difference(
 
 # Combine Figures ##############################################################
 
-# Area figures
 figure2 <- p_dif_effort_days + p_dif_effort_sets +
   p_dif_cpue_d + p_dif_cpue_s + p_dif_catch + pipa_map_mini +
   patchwork::guide_area() +
