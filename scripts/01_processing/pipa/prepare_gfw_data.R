@@ -17,8 +17,7 @@ gfw_auth()
 # Compare GFW and RFMO Data
 ################################################################################
 #
-# This script loads and compares GFW data and RFMO data by month by purse seiners,
-# then aggregated at the region level.
+#
 #
 ################################################################################
 
