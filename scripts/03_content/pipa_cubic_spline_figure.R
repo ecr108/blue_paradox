@@ -35,11 +35,7 @@ start_pre      <- as.Date("2012-09-01")  # 1 year before 2013 announcement
 announcement   <- as.Date("2013-09-01")  # Announcement online defined by PIPA paper
 implementation <- as.Date("2015-01-01")  # Implementation date
 
-
-
-# Create a second zoomed in study region with control colors ###################
-
-# Create zoomed in study region
+# Create zoomed in study region ################################################
 
 pipa_map_mini <- ggplot() +
   geom_sf(data = world_eez, fill = NA) +
@@ -79,6 +75,7 @@ pipa_map_mini <- ggplot() +
 
 # PROCESSING ###################################################################
 
+## Prepare data ----------------------------------------------------------------
 # Change catch_tot to kg
 pipa_data_kg <- pipa_data |>
   mutate(catch_tot = catch_tot * 1000)
@@ -113,7 +110,7 @@ region_panel <- region_std_df |>
   )
 
 
-my_data <- region_panel |>
+spline_data <- region_panel |>
   mutate(event = interval(announcement, date) %/% months(1),
          treatment = treatment == 1) |>
   complete(nesting(date, event), treatment, fill = list(effort_day_per_km2 = 0,
@@ -122,321 +119,83 @@ my_data <- region_panel |>
                                                         cpue_set = 0,
                                                         cpue_day = 0))
 
-# Fit spline for each region ###################################################
-# Days
-spline_days <- feols(effort_day_per_km2 ~ treatment * rcs(event),
-                data = my_data)
-
-predictions_days <- my_data |>
-  cbind(predict(spline_days, se.fit = T))
-
-# Sets
-spline_sets <- feols(effort_set_per_km2 ~ treatment * rcs(event),
-                     data = my_data)
-
-predictions_sets <- my_data |>
-  cbind(predict(spline_sets, se.fit = T))
-
-# Catch
-spline_catch <- feols(catch_per_km2 ~ treatment * rcs(event),
-                      data = my_data)
-
-predictions_catch <- my_data |>
-  cbind(predict(spline_catch, se.fit = T))
-
-# CPUE days
+# Fit spline for each outcome of interest --------------------------------------
+spline_days   <- feols(effort_day_per_km2 ~ treatment * rcs(event),
+                     data = spline_data)
+spline_sets   <- feols(effort_set_per_km2 ~ treatment * rcs(event),
+                     data = spline_data)
+spline_catch  <- feols(catch_per_km2 ~ treatment * rcs(event),
+                      data = spline_data)
 spline_cpue_d <- feols(cpue_day ~ treatment * rcs(event),
-                       data = my_data)
-
-predictions_cpue_d <- my_data |>
-  cbind(predict(spline_cpue_d, se.fit = T))
-
-# CPUE sets
+                       data = spline_data)
 spline_cpue_s <- feols(cpue_set ~ treatment * rcs(event),
-                       data = my_data)
+                       data = spline_data)
 
-predictions_cpue_s <- my_data |>
-  cbind(predict(spline_cpue_s, se.fit = T))
-
-
-# plotted from model (example)
-ggplot(data = predictions_days,
-       aes(x = date, y = fit, color = treatment, fill = treatment)) +
-  geom_ribbon(aes(ymin = fit - se.fit, ymax = fit + se.fit), alpha = 0.5) +
-  geom_line(linewidth = 1) +
-  geom_point(aes(y = effort_day_per_km2)) +
-  geom_vline(xintercept = c(announcement, implementation)) +
-  geom_hline(yintercept = 0)
-
-# Plot #########################################################################
-
-# Effort Days
-p_effort_day_a <- ggplot(data = predictions_days,
-  aes(x = date,
-    y = fit,
-    color = treatment,
-    fill = treatment
-  )
-) +
-  geom_ribbon(
-    aes(ymin = fit - se.fit, ymax = fit + se.fit),
-    alpha = 0.2,
-    color = NA
-  ) +
-  geom_line(linewidth = 1) +
-  geom_point(
-    aes(y = effort_day_per_km2),
-    alpha = 0.6
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(yintercept = 0) +
-  labs(
-    y = "Effort (days per 10,000 km²)",
-    x = "Date",
-    color = "Region",
-    fill = "Region"
-  ) +
-  scale_color_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  scale_fill_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  theme_classic()
-
-# Sets
-p_effort_set_a <- ggplot(
-  data = predictions_sets,
-  aes(
-    x = date,
-    y = fit,
-    color = treatment,
-    fill = treatment
-  )
-) +
-  geom_ribbon(
-    aes(ymin = fit - se.fit, ymax = fit + se.fit),
-    alpha = 0.2,
-    color = NA
-  ) +
-  geom_line(linewidth = 1) +
-  geom_point(
-    aes(y = effort_set_per_km2),
-    alpha = 0.6
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(yintercept = 0) +
-  labs(
-    y = "Effort (sets per 10,000 km²)",
-    x = "Date",
-    color = "Region",
-    fill = "Region"
-  ) +
-  scale_color_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  scale_fill_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  theme_classic()
+# Get predictions
+predictions_days   <- spline_data |> cbind(predict(spline_days, se.fit = T))
+predictions_sets   <- spline_data |> cbind(predict(spline_sets, se.fit = T))
+predictions_catch  <- spline_data |> cbind(predict(spline_catch, se.fit = T))
+predictions_cpue_d <- spline_data |> cbind(predict(spline_cpue_d, se.fit = T))
+predictions_cpue_s <- spline_data |> cbind(predict(spline_cpue_s, se.fit = T))
 
 
-# Catch
+# Create plotting function
+plot_spline <- function(df, observed_var, y_label) {
 
-p_catch_a <- ggplot(
-  data = predictions_catch,
-  aes(
-    x = date,
-    y = fit,
-    color = treatment,
-    fill = treatment
-  )
-) +
-  geom_ribbon(
-    aes(ymin = fit - se.fit, ymax = fit + se.fit),
-    alpha = 0.2,
-    color = NA
-  ) +
-  geom_line(linewidth = 1) +
-  geom_point(
-    aes(y = catch_per_km2),
-    alpha = 0.6
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(yintercept = 0) +
-  labs(
-    y = "Catch (kg per 10,000 km²)",
-    x = "Date",
-    color = "Region",
-    fill = "Region"
-  ) +
-  scale_color_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  scale_fill_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  theme_classic()
+  ggplot(df, aes(x = date, y = fit, color = treatment, fill = treatment)) +
+    geom_ribbon(aes(ymin = fit - se.fit, ymax = fit + se.fit),
+                alpha = 0.2, color = NA) +
+    geom_line(linewidth = 1) +
+    geom_point(aes(y = .data[[observed_var]]), alpha = 0.6) +
+    geom_vline(xintercept = announcement, linetype = "dashed") +
+    geom_hline(yintercept = 0) +
+    labs(
+      x = "Date",
+      y = y_label,
+      color = "Region",
+      fill = "Region"
+    ) +
+    scale_color_manual(
+      values = c("FALSE" = "#0072B2", "TRUE" = "#D55E00"),
+      labels = c("FALSE" = "Control", "TRUE" = "Treatment")
+    ) +
+    scale_fill_manual(
+      values = c("FALSE" = "#0072B2", "TRUE" = "#D55E00"),
+      labels = c("FALSE" = "Control", "TRUE" = "Treatment")
+    ) +
+    theme_classic()
+}
 
-# CPUE Days
+# Plot data
+p_effort_day_a <- plot_spline(
+  predictions_days,
+  "effort_day_per_km2",
+  "Effort (days per 10,000 km²)"
+)
 
-p_cpue_day_a <- ggplot(
-  data = predictions_cpue_d,
-  aes(
-    x = date,
-    y = fit,
-    color = treatment,
-    fill = treatment
-  )
-) +
-  geom_ribbon(
-    aes(ymin = fit - se.fit, ymax = fit + se.fit),
-    alpha = 0.2,
-    color = NA
-  ) +
-  geom_line(linewidth = 1) +
-  geom_point(
-    aes(y = cpue_day),
-    alpha = 0.6
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(yintercept = 0) +
-  labs(
-    y = "CPUE (kg/day)",
-    x = "Date",
-    color = "Region",
-    fill = "Region"
-  ) +
-  scale_color_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  scale_fill_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  theme_classic()
+p_effort_set_a <- plot_spline(
+  predictions_sets,
+  "effort_set_per_km2",
+  "Effort (sets per 10,000 km²)"
+)
 
+p_catch_a <- plot_spline(
+  predictions_catch,
+  "catch_per_km2",
+  "Catch (kg per 10,000 km²)"
+)
 
-# CPUE sets
+p_cpue_day_a <- plot_spline(
+  predictions_cpue_d,
+  "cpue_day",
+  "CPUE (kg/day)"
+)
 
-p_cpue_set_a <- ggplot(
-  data = predictions_cpue_s,
-  aes(
-    x = date,
-    y = fit,
-    color = treatment,
-    fill = treatment
-  )
-) +
-  geom_ribbon(
-    aes(ymin = fit - se.fit, ymax = fit + se.fit),
-    alpha = 0.2,
-    color = NA
-  ) +
-  geom_line(linewidth = 1) +
-  geom_point(
-    aes(y = cpue_set),
-    alpha = 0.6
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(yintercept = 0) +
-  labs(
-    y = "CPUE (kg/set)",
-    x = "Date",
-    color = "Region",
-    fill = "Region"
-  ) +
-  scale_color_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  scale_fill_manual(
-    values = c(
-      "FALSE" = "#0072B2",
-      "TRUE" = "#D55E00"
-    ),
-    labels = c(
-      "FALSE" = "Control",
-      "TRUE" = "Treatment"
-    )
-  ) +
-  theme_classic()
+p_cpue_set_a <- plot_spline(
+  predictions_cpue_s,
+  "cpue_set",
+  "CPUE (kg/set)"
+)
 
 # Combine Figures ##############################################################
 
@@ -470,40 +229,9 @@ ggsave("results/figures/pipa_original/cubic_timeseries_panels_region.png",
        height = 10,
        dpi = 600)
 
+# DIFFERENCE FIGURES ###########################################################
 
-
-
-
-
-# uses gemo smooth from data
-ggplot(data = my_data,
-       aes(x = date, y = effort_day_per_km2, color = treatment, fill = treatment)) +
-  geom_point() +
-  geom_smooth(method = "lm", formula = y ~ rcs(x)) +
-  geom_point(aes(y = effort_day_per_km2)) +
-  geom_vline(xintercept = c(announcement, implementation)) +
-  geom_hline(yintercept = 0)
-
-
-
-# Differences ##################################################################
-
-# Calculate day-by-day difference and then fit another spline to this difference
-
-# Example
-diff_data_days <- predictions_days |>
-  select(date, event, treatment, fit) |>
-  pivot_wider(names_from = treatment, values_from = fit) |>
-  magrittr::set_colnames(c("date", "event", "control", "treated")) |>
-  mutate(change = treated-control)
-
-ggplot(data = diff_data_days,
-       aes(x = date, y = change)) +
-  geom_line(aes(y = change)) +
-  geom_line(linewidth = 2) +
-  geom_vline(xintercept = c(announcement, implementation)) +
-  geom_hline(yintercept = 0)
-
+# Calculate day-by-day difference then fit another spline to this difference
 
 # Effort days
 diff_data_days <- predictions_days |>
@@ -576,146 +304,62 @@ diff_data_cpue_s <- predictions_cpue_s |>
     change = treated - control
   )
 
-# Plot treatment-control difference
+# Create plotting function -----------------------------------------------------
 
+# Create plotting function for treatment-control differences
+plot_difference <- function(df, y_label, show_se = FALSE) {
+
+  ggplot(df, aes(x = date, y = change)) +
+    {
+      if (show_se && "se_change" %in% names(df)) {
+        geom_ribbon(aes(ymin = change - se_change,
+                        ymax = change + se_change),
+                    fill = "grey60", alpha = 0.2, color = NA)
+      }
+    } +
+    geom_line(color = "black", linewidth = 1) +
+    geom_vline(xintercept = announcement, linetype = "dashed") +
+    geom_hline(yintercept = 0, color = "grey60", linewidth = 0.4) +
+    labs(
+      x = "Date",
+      y = y_label,
+      title = ""
+    ) +
+    theme_classic()
+}
+
+
+# Generate figures -------------------------------------------------------------
 # Effort days
-p_dif_effort_days <- ggplot(
-  data = diff_data_days,
-  aes(x = date, y = change)
-) +
-  geom_ribbon(
-    aes(
-      ymin = change - se_change, # test to add SE
-      ymax = change + se_change
-    ),
-    fill = "grey60",
-    alpha = 0.2,
-    color = NA
-  ) +
-  geom_line(
-    color = "black",
-    linewidth = 1
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(
-    yintercept = 0,
-    color = "grey60",
-    linewidth = 0.4
-  ) +
-  labs(
-    x = "Date",
-    y = "Treatment - Control",
-    title = ""
-  ) +
-  theme_classic()
-
-
+p_dif_effort_days <- plot_difference(
+  diff_data_days,
+  "Treatment - Control (days per 10,000 km²)",
+  show_se = TRUE
+)
 
 # Effort sets
-p_dif_effort_sets <- ggplot(
-  data = diff_data_sets,
-  aes(x = date, y = change)
-) +
-  geom_line(
-    color = "black",
-    linewidth = 1
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(
-    yintercept = 0,
-    color = "grey60",
-    linewidth = 0.4
-  ) +
-  labs(
-    x = "Date",
-    y = "Treatment - Control",
-    title = ""
-  ) +
-  theme_classic()
-
+p_dif_effort_sets <- plot_difference(
+  diff_data_sets,
+  "Treatment - Control (sets per 10,000 km²)"
+)
 
 # Catch
-p_dif_catch <- ggplot(
-  data = diff_data_catch,
-  aes(x = date, y = change)
-) +
-  geom_line(
-    color = "black",
-    linewidth = 1
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(
-    yintercept = 0,
-    color = "grey60",
-    linewidth = 0.4
-  ) +
-  labs(
-    x = "Date",
-    y = "Treatment - Control",
-    title = ""
-  ) +
-  theme_classic()
-
+p_dif_catch <- plot_difference(
+  diff_data_catch,
+  "Treatment - Control (kg per 10,000 km²)"
+)
 
 # CPUE days
-p_dif_cpue_d <- ggplot(
-  data = diff_data_cpue_d,
-  aes(x = date, y = change)
-) +
-  geom_line(
-    color = "black",
-    linewidth = 1
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(
-    yintercept = 0,
-    color = "grey60",
-    linewidth = 0.4
-  ) +
-  labs(
-    x = "Date",
-    y = "Treatment - Control",
-    title = ""
-  ) +
-  theme_classic()
+p_dif_cpue_d <- plot_difference(
+  diff_data_cpue_d,
+  "Treatment - Control (kg/day)"
+)
 
 # CPUE sets
-p_dif_cpue_s <- ggplot(
-  data = diff_data_cpue_s,
-  aes(x = date, y = change)
-) +
-  geom_line(
-    color = "black",
-    linewidth = 1
-  ) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  geom_hline(
-    yintercept = 0,
-    color = "grey60",
-    linewidth = 0.4
-  ) +
-  labs(
-    x = "Date",
-    y = "Treatment - Control",
-    title = ""
-  ) +
-  theme_classic()
-
+p_dif_cpue_s <- plot_difference(
+  diff_data_cpue_s,
+  "Treatment - Control (kg/set)"
+)
 
 # Combine Figures ##############################################################
 
