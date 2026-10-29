@@ -46,6 +46,15 @@ control_area <- e_main_eez |>
   st_area() |>
   as.numeric() / 1e6 # convert m2 -> km2
 
+# Create reference raster
+
+ref_rast <- rast(
+  xmin = -180, xmax = 180,
+  ymin = -90, ymax = 90,
+  res = 1,
+  crs = "EPSG:4326"
+)
+
 # PROCESSING ###################################################################
 
 # Convert tuna data to spatial points ------------------------------------------
@@ -134,4 +143,5 @@ tuna_region_sf <- tuna_region |>
 
 # EXPORT #######################################################################
 
-saveRDS(tuna_region, "data/processed/gmr_rastered.rds")
+saveRDS(tuna_region, "data/processed/gmr_rasterized.rds")
+

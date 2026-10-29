@@ -30,7 +30,7 @@ pacman::p_load(
 ## Load data -------------------------------------------------------------------
 
 # Filtered RFMO Data
-pipa_data <- readRDS("data/processed/pipa_rastered.rds")
+pipa_data <- readRDS("data/processed/pipa_rasterized.rds")
 
 # EEZs and MPA
 pipa <- st_read("data/raw/mpa/pipa.gpkg")
@@ -197,18 +197,6 @@ zoom_map <- ggplot() +
 
 study_area_map <- (global_map + zoom_map) +
   plot_annotation(tag_levels = "A")
-
-library(cowplot)
-
-study_area_map <- plot_grid(
-  global_map,
-  zoom_map,
-  labels = c("A", "B"),
-  label_size = 14
-)
-
-
-study_area_map
 
 # Create plot of fishing points ------------------------------------------------
 pipa_sf <- pipa_data |>
@@ -429,7 +417,7 @@ pipa_map_mini <- ggplot() +
 
 # Area figures
 figure <- p_effort_day_a + p_effort_set_a +
-  p_catch_a + p_cpue_day_a + p_cpue_set_a + pipa_map_mini +
+  p_cpue_day_a + p_cpue_set_a + p_catch_a  + pipa_map_mini +
   patchwork::guide_area() +
   plot_layout(
     design = "
@@ -438,7 +426,7 @@ figure <- p_effort_day_a + p_effort_set_a +
     EF#
     ",
     widths = c(1, 1),
-    heights = c(1, 1, 1.5),
+    heights = c(1, 1, 1),
     guides = "collect"
   ) +
   plot_annotation(
@@ -451,7 +439,6 @@ figure <- p_effort_day_a + p_effort_set_a +
     legend.title = element_text(size = 15)
   )
 
-figure
 
 # EXPORT #######################################################################
 

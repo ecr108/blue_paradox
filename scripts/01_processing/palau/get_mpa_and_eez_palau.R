@@ -36,7 +36,7 @@ pnms <- st_read("data/raw/mpa/palau/PNMS.shp")
 st_write(pnms, "data/raw/mpa/pnms_2020.gpkg")
 
 # PNMS original 2015 -----------------------------------------------------------
-pnms_og <- st_read("data/raw/mpa/palau/palau_2015/palau_2015_shp/WDPA_WDOECM_Sep2026_Public_555622118_shp-polygons.shp")
+pnms_og <- st_read("data/raw/mpa/palau/palau_2015/WDPA_WDOECM_Sep2026_Public_555622118_shp-polygons.shp")
 
 st_write(pnms_og, "data/raw/mpa/pnms_2015.gpkg")
 

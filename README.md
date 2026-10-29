@@ -1,6 +1,4 @@
-# The Blue Paradox
-Assessing preemptive fishing responses to marine protected area announcements using RFMO catch and effort data.
-
+# Testing the Blue Paradox in the Phoenix Islands Protected Area using RFMO catch and effort data
 ## Overview
 
 This repository contains the data processing, models, and outputs used in the paper 
@@ -26,16 +24,14 @@ and the Palau National Marine Sanctuary (PNMS).
     - `scripts/03_content`: contains scripts to produce time series and maps for each analysis
 - `results/`:
     - `results/figures`: contains time series from blue paradox analyses
-    - `results/img`:
-    - `results/tab`: contains model summary tables
 
 ## Key Findings
 
 ### PIPA
-![Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the pixel-month level in PIPA. Panels show monthly trajectories for (A) effort (days), (B) effort (sets), (C) total catch (mt), (D) CPUE (mt/day), and (E) CPUE (mt/set) from 2013-2016. The first vertical marker indicates the announcement date of PIPA, while the second vertical marker notes the implementation of PIPA.](results/figures/pipa_original/BACI_timeseries_panels.png)
+![Temporal trends in our five outcomes of interest for control and treatment regions in the Phoenix Islands Protected Area (PIPA) at the region-month level. Panels show monthly trajectories for (A) effort (days/10,000 km$^2$), (B) effort (sets/10,000 km$^2$), (C) total catch (kg/10,000 km$^2$), (D) CPUE (kg/day), and (E) CPUE (kg/sets) from 2013-2016. The vertical line indicates the announcement of PIPA (2013-09-01). The final data point is on the date of the MPA implementation (2015-01-01). Panel F highlights the related control and treatment region.](results/figures/pipa_original/BACI_timeseries_panels_region.png){#fig-pipa-region}
 
 ### GMR
-![Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the pixel-month level in GMR. Panels show monthly trajectories for (A) effort (sets), (B) total catch (mt), (C) CPUE (mt/set) from 2013-2016. The first vertical marker indicates the implementation of GMR, while the second vertical marker notes the implementation of enforcement within GMR.](results/figures/gmr/BACI_timeseries_panels.png)
+![Temporal trends in our three outcomes of interest for control and treatment regions in the Galápagos Marine Reserve (GMR) at the region-month level. Panels show monthly trajectories for (A) effort (sets/10,000 km$^2$), (B) total catch (kg/10,000 km$^2$), (C) CPUE (kg/set) from 1998-2002. The vertical line indicates the implementation of GMR (1998-03-18). The final data point is on the estimated date of enforcement within GMR (2002-01-01). Panel D highlights the related control and treatment region.](results/figures/gmr/BACI_timeseries_panels_region.png){#fig-gmr-region}
 
 ## Data sources
 
