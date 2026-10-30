@@ -94,26 +94,29 @@ rfmo_gfw_monthly <- inner_join(
 )
 
 # Plot -------------------------------------------------------------------------
-ggplot(
+# Each point is a month of total effort within PIPA
+# RFMO vs GFW effort in PIPA
+days_v_hours <- ggplot(
   rfmo_gfw_monthly,
   aes(
     x = effort_day,
     y = fishing_hours
   )
 ) +
-  geom_point(size = 3) +
+  geom_point(
+    size = 3,
+    alpha = 0.6,
+    size = 3) +
   geom_smooth(
     method = "lm",
     se = FALSE,
-    color = "red"
+    color = "#D55E00"
   ) +
   labs(
     x = "RFMO effort (days)",
     y = "GFW fishing effort (hours)",
-    title = "RFMO vs GFW effort in PIPA",
-    subtitle = "Each point is a month of total effort within PIPA"
   ) +
-  theme_bw()
+  theme_classic()
 
 # Plot GFW vs RFMO data using n_distinct(days) #################################
 ## Identify GFW grid cells overlapping PIPA ------------------------------------
@@ -203,8 +206,8 @@ plot_df_pipa <- monthly_compare_pipa |>
   )
 
 ## Plot ------------------------------------------------------------------------
-
-ggplot(
+# Monthly fishing effort in PIPA using n_distinct days vs RFMO effort days
+days <- ggplot(
   plot_df_pipa,
   aes(date, effort, color = source)
 ) +
@@ -217,6 +220,30 @@ ggplot(
     x = NULL,
     y = "Fishing effort (days)",
     color = NULL,
-    title = "Monthly fishing effort in PIPA"
   ) +
-  theme_bw()
+  scale_color_manual(
+    values = c(
+      "rfmo" = "#0072B2",
+      "gfw" = "#D55E00"
+    ),
+    labels = c(
+      "rfmo" = "RFMO",
+      "gfw" = "GFW"
+    )
+  ) +
+  theme_classic()
+
+# EXPORT #######################################################################
+
+ggsave("results/figures/pipa_original/gfw_rfmo_days_v_hours.png",
+       plot = days_v_hours,
+       width = 8,
+       height = 5,
+       dpi = 300)
+
+ggsave("results/figures/pipa_original/gfw_rfmo_days.png",
+       plot = days,
+       width = 8,
+       height = 5,
+       dpi = 300)
+
