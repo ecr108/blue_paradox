@@ -250,73 +250,79 @@ diff_data_days <- predictions_days |>
 
 # Effort sets
 diff_data_sets <- predictions_sets |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_control^2 + se_treated^2)
   )
 
 # Catch
 diff_data_catch <- predictions_catch |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_control^2 + se_treated^2)
   )
 
 # CPUE days
 diff_data_cpue_d <- predictions_cpue_d |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_control^2 + se_treated^2)
   )
 
 # CPUE sets
 diff_data_cpue_s <- predictions_cpue_s |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_control^2 + se_treated^2)
   )
 
 # Create plotting function -----------------------------------------------------
 
 # Create plotting function for treatment-control differences
-plot_difference <- function(df, y_label, show_se = FALSE) {
+plot_difference <- function(df, y_label) {
 
   ggplot(df, aes(x = date, y = change)) +
-    {
-      if (show_se && "se_change" %in% names(df)) {
-        geom_ribbon(aes(ymin = change - se_change,
-                        ymax = change + se_change),
-                    fill = "grey60", alpha = 0.2, color = NA)
-      }
-    } +
+    geom_ribbon(
+      aes(
+        ymin = change - se_change,
+        ymax = change + se_change
+      ),
+      fill = "grey60",
+      alpha = 0.2,
+      color = NA
+    ) +
     geom_line(color = "black", linewidth = 1) +
     geom_vline(xintercept = announcement, linetype = "dashed") +
     geom_hline(yintercept = 0, color = "grey60", linewidth = 0.4) +
@@ -328,13 +334,11 @@ plot_difference <- function(df, y_label, show_se = FALSE) {
     theme_classic()
 }
 
-
 # Generate figures -------------------------------------------------------------
 # Effort days
 p_dif_effort_days <- plot_difference(
   diff_data_days,
-  "Treatment - Control (days per 10,000 km²)",
-  show_se = TRUE
+  "Treatment - Control (days per 10,000 km²)"
 )
 
 # Effort sets

@@ -204,59 +204,63 @@ ggsave("results/figures/gmr/cubic_timeseries_panels_region.png",
 
 # Effort sets
 diff_data_sets <- predictions_sets |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_control^2 + se_treated^2)
   )
 
 # Catch
 diff_data_catch <- predictions_catch |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_control^2 + se_treated^2)
   )
 
 # CPUE sets
 diff_data_cpue_s <- predictions_cpue_s |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_control^2 + se_treated^2)
   )
-
 # Create plotting function -----------------------------------------------------
 
 # Create plotting function for treatment-control differences
-plot_difference <- function(df, y_label, show_se = FALSE) {
+plot_difference <- function(df, y_label) {
 
   ggplot(df, aes(x = date, y = change)) +
-    {
-      if (show_se && "se_change" %in% names(df)) {
-        geom_ribbon(aes(ymin = change - se_change,
-                        ymax = change + se_change),
-                    fill = "grey60", alpha = 0.2, color = NA)
-      }
-    } +
+    geom_ribbon(
+      aes(
+        ymin = change - se_change,
+        ymax = change + se_change
+      ),
+      fill = "grey60",
+      alpha = 0.2,
+      color = NA
+    ) +
     geom_line(color = "black", linewidth = 1) +
     geom_vline(xintercept = announcement, linetype = "dashed") +
     geom_hline(yintercept = 0, color = "grey60", linewidth = 0.4) +
@@ -297,9 +301,8 @@ figure2 <- p_dif_effort_sets +
   patchwork::guide_area() +
   plot_layout(
     design = "
-    ABG
+    ABF
     CD#
-    EF#
     ",
     widths = c(1, 1),
     heights = c(1, 1, 1),
