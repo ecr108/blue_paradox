@@ -10,7 +10,8 @@ pacman::p_load(
 
 ## Load data -------------------------------------------------------------------
 rfmo <- readRDS("data/processed/kiribati_eez_points_rfmo.rds")
-gfw <- readRDS("data/processed/kiribati_eez_points_gfw.rds")
+gfw_daily <- readRDS("data/processed/kiribati_eez_points_daily_ps_gfw.rds")
+gfw_hours <- readRDS("data/processed/kiribati_eez_points_hours_gfw.rds")
 pipa <- st_read("data/raw/mpa/pipa.gpkg")
 
 # Define temporal boundaries ---------------------------------------------------
@@ -20,76 +21,16 @@ implementation <- as.Date("2015-01-01")  # Implementation date
 
 # PROCESSING ###################################################################
 
+# Plot rfmo effort days vs gfw hours ###########################################
+# Identify PIPA cells ----------------------------------------------------------
 
-# Join only matching cells and months ------------------------------------------
-grid_compare <- inner_join(
-  rfmo |>
-    select(lon, lat, year, month, effort_day),
-  gfw |>
-    rename(gfw_effort = effort_day),
-  by = c("lon", "lat", "year", "month")
-) |>
-  rename(
-    rfmo_effort = effort_day
-  )
-
-# Monthly totals using only overlapping cells ----------------------------------
-monthly_compare <- grid_compare |>
-  group_by(year, month) |>
-  summarise(
-    rfmo_effort = sum(rfmo_effort, na.rm = TRUE),
-    gfw_effort  = sum(gfw_effort, na.rm = TRUE),
-    n_cells = n(),
-    .groups = "drop"
-  ) |>
-  mutate(
-    date = make_date(year, month, 1)
-  )
-
-# Long format for plotting -----------------------------------------------------
-plot_df <- monthly_compare |>
-  pivot_longer(
-    c(rfmo_effort, gfw_effort),
-    names_to = "source",
-    values_to = "effort"
-  ) |>
-  mutate(
-    source = recode(
-      source,
-      rfmo_effort = "rfmo",
-      gfw_effort  = "gfw"
-    )
-  )
-
-# Plot -------------------------------------------------------------------------
-ggplot(plot_df,
-       aes(date, effort, color = source)) +
-  geom_line(linewidth = 1.1) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
-  ) +
-  labs(
-    x = NULL,
-    y = "Fishing effort (days)",
-    color = NULL,
-    title = "Monthly fishing effort in overlapping 1 degree cells (all Kiribati)",
-    subtitle = "Uses GFW data divided by 8 for daily effort"
-  ) +
-  theme_bw()
-
-
-# Compare data only in PIPA  ###################################################
-
-# Convert GFW cells to sf points
-gfw_sf <- gfw |>
+gfw_sf <- gfw_hours |>
   st_as_sf(
     coords = c("lon", "lat"),
     crs = "EPSG:4326",
     remove = FALSE
   )
 
-# Raster template
 ref_rast <- rast(
   xmin = -180, xmax = 180,
   ymin = -90, ymax = 90,
@@ -97,10 +38,8 @@ ref_rast <- rast(
   crs = "EPSG:4326"
 )
 
-# Rasterize cells
 gfw_rast <- rasterize(gfw_sf, ref_rast)
 
-# Identify cells overlapping PIPA
 pipa_cells <- exact_extract(
   gfw_rast,
   pipa,
@@ -112,104 +51,73 @@ pipa_cells <- exact_extract(
     lon = x,
     lat = y
   ) |>
-  filter(
-    coverage_fraction > 0
-  ) |>
-  select(
-    lon,
-    lat,
-    coverage_fraction
-  ) |>
+  filter(coverage_fraction > 0) |>
+  select(lon, lat) |>
   distinct()
 
-# Crop both datasets to PIPA
+# Crop datasets to PIPA --------------------------------------------------------
+
 rfmo_pipa <- rfmo |>
   inner_join(
     pipa_cells,
     by = c("lon", "lat")
   )
 
-gfw_pipa <- gfw |>
+gfw_pipa <- gfw_hours |>
   inner_join(
     pipa_cells,
     by = c("lon", "lat")
   )
 
-# Join only matching cells and months ------------------------------------------
+# Aggregate to monthly regional totals -----------------------------------------
 
-grid_compare_pipa <- inner_join(
-  rfmo_pipa |>
-    select(lon, lat, year, month, effort_day),
-  gfw_pipa |>
-    rename(gfw_effort = effort_day),
-  by = c("lon", "lat", "year", "month")
-) |>
-  rename(
-    rfmo_effort = effort_day
-  )
-
-# Monthly totals using only overlapping cells ----------------------------------
-
-monthly_compare_pipa <- grid_compare_pipa |>
+rfmo_monthly <- rfmo_pipa |>
   group_by(year, month) |>
   summarise(
-    rfmo_effort = sum(rfmo_effort, na.rm = TRUE),
-    gfw_effort  = sum(gfw_effort, na.rm = TRUE),
-    n_cells     = n(),
+    effort_day = sum(effort_day, na.rm = TRUE),
     .groups = "drop"
-  ) |>
-  mutate(
-    date = make_date(year, month, 1)
   )
 
-# Long format for plotting -----------------------------------------------------
-
-plot_df_pipa <- monthly_compare_pipa |>
-  pivot_longer(
-    c(rfmo_effort, gfw_effort),
-    names_to = "source",
-    values_to = "effort"
-  ) |>
-  mutate(
-    source = recode(
-      source,
-      rfmo_effort = "rfmo",
-      gfw_effort  = "gfw"
-    )
+gfw_monthly <- gfw_pipa |>
+  group_by(year, month) |>
+  summarise(
+    fishing_hours = sum(fishing_hours, na.rm = TRUE),
+    .groups = "drop"
   )
+
+# Join by month and year only --------------------------------------------------
+
+rfmo_gfw_monthly <- inner_join(
+  rfmo_monthly,
+  gfw_monthly,
+  by = c("year", "month")
+)
 
 # Plot -------------------------------------------------------------------------
-
 ggplot(
-  plot_df_pipa,
-  aes(date, effort, color = source)
+  rfmo_gfw_monthly,
+  aes(
+    x = effort_day,
+    y = fishing_hours
+  )
 ) +
-  geom_line(linewidth = 1.1) +
-  geom_vline(
-    xintercept = announcement,
-    linetype = "dashed"
+  geom_point(size = 3) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    color = "red"
   ) +
   labs(
-    x = NULL,
-    y = "Fishing effort (days)",
-    color = NULL,
-    title = "Monthly fishing effort in PIPA",
-    subtitle = "Uses GFW data divided by 8 for daily effort"
+    x = "RFMO effort (days)",
+    y = "GFW fishing effort (hours)",
+    title = "RFMO vs GFW effort in PIPA",
+    subtitle = "Each point is a month of total effort within PIPA"
   ) +
   theme_bw()
 
+# Plot GFW vs RFMO data using n_distinct(days) #################################
+## Identify GFW grid cells overlapping PIPA ------------------------------------
 
-# Compare using n_distinct(days) ###############################################
-
-## Load data -------------------------------------------------------------------
-gfw_daily <- readRDS("data/processed/kiribati_eez_points_daily_gfw.rds")
-
-# PROCESSING ###################################################################
-
-# ISSUE: Does not filter for purse seine
-# Compare data only in PIPA  ###################################################
-
-# Convert GFW cells to sf points
 gfw_sf <- gfw_daily |>
   st_as_sf(
     coords = c("lon", "lat"),
@@ -217,7 +125,6 @@ gfw_sf <- gfw_daily |>
     remove = FALSE
   )
 
-# Raster template
 ref_rast <- rast(
   xmin = -180, xmax = 180,
   ymin = -90, ymax = 90,
@@ -225,10 +132,8 @@ ref_rast <- rast(
   crs = "EPSG:4326"
 )
 
-# Rasterize cells
 gfw_rast <- rasterize(gfw_sf, ref_rast)
 
-# Identify cells overlapping PIPA
 pipa_cells <- exact_extract(
   gfw_rast,
   pipa,
@@ -238,50 +143,50 @@ pipa_cells <- exact_extract(
   as.data.frame() |>
   rename(lon = x, lat = y) |>
   filter(coverage_fraction > 0) |>
-  select(lon, lat, coverage_fraction) |>
+  select(lon, lat) |>
   distinct()
 
-# Crop both datasets to PIPA
+
+## Crop both datasets to PIPA --------------------------------------------------
+
 rfmo_pipa <- rfmo |>
-  inner_join(
-    pipa_cells,
-    by = c("lon", "lat")
-  )
+  inner_join(pipa_cells, by = c("lon", "lat"))
 
 gfw_pipa <- gfw_daily |>
-  inner_join(
-    pipa_cells,
-    by = c("lon", "lat")
-  )
+  inner_join(pipa_cells, by = c("lon", "lat"))
 
-# Join only matching cells and months ------------------------------------------
 
-grid_compare_pipa <- inner_join(
-  rfmo_pipa |>
-    select(lon, lat, year, month, effort_day),
-  gfw_pipa |>
-    rename(gfw_effort = effort_day),
-  by = c("lon", "lat", "year", "month")
-) |>
-  rename(
-    rfmo_effort = effort_day
-  )
+## Aggregate each dataset to monthly regional totals ---------------------------
 
-# Monthly totals using only overlapping cells ----------------------------------
-
-monthly_compare_pipa <- grid_compare_pipa |>
+rfmo_monthly <- rfmo_pipa |>
   group_by(year, month) |>
   summarise(
-    rfmo_effort = sum(rfmo_effort, na.rm = TRUE),
-    gfw_effort  = sum(gfw_effort, na.rm = TRUE),
-    n_cells     = n(),
+    rfmo_effort = sum(effort_day, na.rm = TRUE),
     .groups = "drop"
-  ) |>
-  mutate(
-    date = make_date(year, month, 1)
   )
 
-# Long format for plotting -----------------------------------------------------
+gfw_monthly <- gfw_pipa |>
+  group_by(year, month) |>
+  summarise(
+    gfw_effort = sum(effort_day, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+
+## Join by month and year only -------------------------------------------------
+
+monthly_compare_pipa <- inner_join(
+  rfmo_monthly,
+  gfw_monthly,
+  by = c("year", "month")
+) |>
+  mutate(
+    date = make_date(year, month, 1)
+  ) |>
+  arrange(date)
+
+
+## Long format for plotting ----------------------------------------------------
 
 plot_df_pipa <- monthly_compare_pipa |>
   pivot_longer(
@@ -293,11 +198,11 @@ plot_df_pipa <- monthly_compare_pipa |>
     source = recode(
       source,
       rfmo_effort = "rfmo",
-      gfw_effort  = "gfw"
+      gfw_effort = "gfw"
     )
   )
 
-# Plot -------------------------------------------------------------------------
+## Plot ------------------------------------------------------------------------
 
 ggplot(
   plot_df_pipa,
@@ -312,42 +217,6 @@ ggplot(
     x = NULL,
     y = "Fishing effort (days)",
     color = NULL,
-    title = "Monthly fishing effort in PIPA",
-    subtitle = "Uses n_distinct(days) for GFW"
-  ) +
-  theme_bw()
-
-# Comparing hours to effort_days ###############################################
-## Load data -------------------------------------------------------------------
-gfw_hours <- readRDS("data/processed/kiribati_eez_points_hours_gfw.rds")
-
-
-# Join data
-rfmo_gfw_hours <- inner_join(
-  rfmo |>
-    select(lon, lat, year, month, effort_day),
-  gfw_hours,
-  by = c("lon", "lat", "year", "month"))
-
-ggplot(
-  rfmo_gfw_hours,
-  aes(
-    x = effort_day,
-    y = fishing_hours
-  )
-) +
-  geom_point(
-    alpha = 0.3
-  ) +
-  geom_smooth(
-    method = "lm",
-    se = FALSE,
-    color = "red"
-  ) +
-  labs(
-    x = "RFMO effort (days)",
-    y = "GFW fishing effort (hours)",
-    title = "RFMO vs GFW effort in matched 1 degree cells",
-    subtitle = "Each point is a cell-month observation"
+    title = "Monthly fishing effort in PIPA"
   ) +
   theme_bw()
