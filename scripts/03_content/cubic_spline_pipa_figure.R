@@ -245,7 +245,7 @@ diff_data_days <- predictions_days |>
   ) |>
   mutate(
     change = treated - control,
-    se_change = sqrt(se_control^2 + se_treated^2) # test to calculate SE
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
 
 # Effort sets
@@ -260,7 +260,7 @@ diff_data_sets <- predictions_sets |>
   ) |>
   mutate(
     change = treated - control,
-    se_change = sqrt(se_control^2 + se_treated^2)
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
 
 # Catch
@@ -275,7 +275,7 @@ diff_data_catch <- predictions_catch |>
   ) |>
   mutate(
     change = treated - control,
-    se_change = sqrt(se_control^2 + se_treated^2)
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
 
 # CPUE days
@@ -290,7 +290,7 @@ diff_data_cpue_d <- predictions_cpue_d |>
   ) |>
   mutate(
     change = treated - control,
-    se_change = sqrt(se_control^2 + se_treated^2)
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
 
 # CPUE sets
@@ -305,7 +305,7 @@ diff_data_cpue_s <- predictions_cpue_s |>
   ) |>
   mutate(
     change = treated - control,
-    se_change = sqrt(se_control^2 + se_treated^2)
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
 
 # Create plotting function -----------------------------------------------------
@@ -395,3 +395,71 @@ ggsave("results/figures/pipa_original/differences.png",
        width = 15,
        height = 10,
        dpi = 600)
+
+# EXPORT INDIVIDUAL ############################################################
+
+# Effort days with map
+
+effort_map <- p_effort_day_a + pipa_map_mini +
+  patchwork::guide_area() +
+  plot_layout(
+    design = "A/B",
+    guides = "collect",
+    axes = "collect"
+  ) +
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    legend.position = "right",
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15),
+    plot.margin = margin(0, 0, 0, 0, unit = "pt")
+  )
+
+ggsave("results/figures/pipa_original/cubic_timeseries_effort_map.png",
+       plot = effort_map,
+       width = 8,
+       height = 3.5,
+       dpi = 300)
+
+
+effort_map <- p_effort_day_a / pipa_map_mini +
+  plot_layout(
+    ncol = 1,
+    heights = c(1, 1),
+    guides = "collect",
+    axes = "collect"
+  ) +
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    legend.position = "right",
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15),
+    plot.margin = margin(0, 0, 0, 0, unit = "pt")
+  )
+
+ggsave(
+  "results/figures/pipa_original/cubic_timeseries_effort_map.png",
+  plot = effort_map,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+
+# Effort days alone
+
+ggsave("results/figures/pipa_original/cubic_timeseries_effort.png",
+       plot = p_effort_day_a,
+       width = 8,
+       height = 5,
+       dpi = 300)
+
+# CPUE days alone
+ggsave("results/figures/pipa_original/cubic_timeseries_cpue_day.png",
+       plot = p_cpue_day_a,
+       width = 8,
+       height = 5,
+       dpi = 300)
