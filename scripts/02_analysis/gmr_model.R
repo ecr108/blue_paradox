@@ -74,7 +74,10 @@ m_region_log <- feols(
     log(catch_per_km2),
     log(cpue_set)
   ) ~ treatment * post,
-  data = region_panel
+  data = region_panel,
+  vcov = "NW",
+  panel.id = ~treatment + date
 )
 
 saveRDS(m_region_log, "data/output/gmr/m_region_log.rds")
+
