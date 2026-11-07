@@ -41,7 +41,7 @@ pipa_map_mini <- ggplot() +
   geom_sf(data = world_eez, fill = NA) +
   geom_sf(data = world) +
   geom_sf(data = k_eez) +
-  geom_sf(data = pipa, fill = "#D55E00", alpha = 0.5) +
+  geom_sf(data = pipa, aes(fill = "#D55E00"), alpha = 0.5) +
   geom_sf(data = line_eez, fill = "#0072B2", alpha = 0.5) +
   geom_sf(data = gilbert_eez, fill = "#0072B2", alpha = 0.5) +
   coord_sf(
@@ -73,6 +73,44 @@ pipa_map_mini <- ggplot() +
     )
   )
 
+# With legend for dif figure
+pipa_map_mini_2 <- ggplot() +
+  geom_sf(data = world_eez, fill = NA) +
+  geom_sf(data = world) +
+  geom_sf(data = k_eez) +
+  geom_sf(data = pipa, aes(fill = "Treatment"), alpha = 0.5) +
+  geom_sf(data = line_eez, aes(fill = "Control"), alpha = 0.5) +
+  geom_sf(data = gilbert_eez, aes(fill = "Control"), alpha = 0.5) +
+  coord_sf(
+    crs = "EPSG:8859",
+    default_crs = "EPSG:4326",
+    xlim = c(-195, -145),
+    ylim = c(-15, 10)
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Control" = "#0072B2",
+      "Treatment" = "#D55E00"
+    ),
+    name = "Region"
+  ) +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA
+    ),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
+  )
 # PROCESSING ###################################################################
 
 ## Prepare data ----------------------------------------------------------------
@@ -111,32 +149,54 @@ region_panel <- region_std_df |>
 
 
 spline_data <- region_panel |>
-  mutate(event = interval(announcement, date) %/% months(1),
-         treatment = treatment == 1) |>
-  complete(nesting(date, event), treatment, fill = list(effort_day_per_km2 = 0,
-                                                        effort_set_per_km2 = 0,
-                                                        catch_per_km2 = 0,
-                                                        cpue_set = 0,
-                                                        cpue_day = 0))
+  mutate(
+    event = interval(announcement, date) %/% months(1),
+    treatment = treatment == 1
+    ) |>
+  complete(
+    nesting(date, event),
+    treatment,
+    fill = list(
+      effort_day_per_km2 = 0,
+      effort_set_per_km2 = 0,
+      catch_per_km2 = 0,
+      cpue_set = NA_real_,
+      cpue_day = NA_real_)) |>
+  mutate(post = if_else(date >= announcement, 1L, 0L))
 
 # Fit spline for each outcome of interest --------------------------------------
 spline_days   <- feols(effort_day_per_km2 ~ treatment * rcs(event),
-                     data = spline_data)
+                     data = spline_data,
+                     vcov = "NW",
+                     panel.id = ~treatment + date)
 spline_sets   <- feols(effort_set_per_km2 ~ treatment * rcs(event),
-                     data = spline_data)
+                     data = spline_data,
+                     vcov = "NW",
+                     panel.id = ~treatment + date)
 spline_catch  <- feols(catch_per_km2 ~ treatment * rcs(event),
-                      data = spline_data)
+                      data = spline_data,
+                      vcov = "NW",
+                      panel.id = ~treatment + date)
 spline_cpue_d <- feols(cpue_day ~ treatment * rcs(event),
-                       data = spline_data)
+                       data = spline_data,
+                       vcov = "NW",
+                       panel.id = ~treatment + date)
 spline_cpue_s <- feols(cpue_set ~ treatment * rcs(event),
-                       data = spline_data)
+                       data = spline_data,
+                       vcov = "NW",
+                       panel.id = ~treatment + date)
 
 # Get predictions
-predictions_days   <- spline_data |> cbind(predict(spline_days, se.fit = T))
-predictions_sets   <- spline_data |> cbind(predict(spline_sets, se.fit = T))
-predictions_catch  <- spline_data |> cbind(predict(spline_catch, se.fit = T))
-predictions_cpue_d <- spline_data |> cbind(predict(spline_cpue_d, se.fit = T))
-predictions_cpue_s <- spline_data |> cbind(predict(spline_cpue_s, se.fit = T))
+predictions_days   <- spline_data |>
+  cbind(predict(spline_days, newdata = spline_data, se.fit = T))
+predictions_sets   <- spline_data |>
+  cbind(predict(spline_sets, newdata = spline_data, se.fit = T))
+predictions_catch  <- spline_data |>
+  cbind(predict(spline_catch, newdata = spline_data, se.fit = T))
+predictions_cpue_d <- spline_data |>
+  cbind(predict(spline_cpue_d, newdata = spline_data, se.fit = T))
+predictions_cpue_s <- spline_data |>
+  cbind(predict(spline_cpue_s, newdata = spline_data, se.fit = T))
 
 
 # Create plotting function
@@ -368,7 +428,7 @@ p_dif_cpue_s <- plot_difference(
 # Combine Figures ##############################################################
 
 figure2 <- p_dif_effort_days + p_dif_effort_sets +
-  p_dif_cpue_d + p_dif_cpue_s + p_dif_catch + pipa_map_mini +
+  p_dif_cpue_d + p_dif_cpue_s + p_dif_catch + pipa_map_mini_2 +
   patchwork::guide_area() +
   plot_layout(
     design = "
