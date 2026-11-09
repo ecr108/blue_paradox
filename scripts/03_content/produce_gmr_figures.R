@@ -39,7 +39,7 @@ world_eez <- st_read("data/raw/eez/world_eez.gpkg") |>
 
 # Define temporal boundaries ---------------------------------------------------
 
-start_pre      <- as.Date("1997-01-01")  # 1 year before 1998 announcement
+start_pre      <- as.Date("1997-03-18")  # 1 year before 1998 announcement
 announcement   <- as.Date("1998-03-18")  # Announcement and implementation of GMR
 implementation <- as.Date("2002-01-01")  # Implementation of enforcement date (need to find month)
 end_post       <- as.Date("2003-01-01")  # 1 year after implementation
