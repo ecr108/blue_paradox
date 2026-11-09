@@ -108,7 +108,7 @@ saveRDS(m_region_log_enso, "data/output/pipa/m_region_log_enso.rds")
 
 
 # Obtain # of observations
-# Total
+# Total number of observations
 n <- nrow(region_panel)
 n
 
