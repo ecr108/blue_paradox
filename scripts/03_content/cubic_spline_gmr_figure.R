@@ -30,7 +30,7 @@ world_eez <- st_read("data/raw/eez/world_eez.gpkg") |>
 ## Prepare data ----------------------------------------------------------------
 
 # Set temporal boundaries
-start_pre      <- as.Date("1997-01-01")  # 1 year before 1998 announcement
+start_pre      <- as.Date("1997-03-18")  # 1 year before 1998 announcement
 announcement   <- as.Date("1998-03-18")  # Announcement and implementation of GMR
 implementation <- as.Date("2002-01-01")  # Implementation of enforcement date (need to find month)
 
@@ -160,6 +160,7 @@ spline_sets   <- feols(effort_set_per_km2 ~ treatment * rcs(event),
                        data = spline_data,
                        vcov = "NW",
                        panel.id = ~treatment + date)
+
 spline_catch  <- feols(catch_per_km2 ~ treatment * rcs(event),
                        data = spline_data,
                        vcov = "NW",
@@ -334,19 +335,19 @@ plot_difference <- function(df, y_label) {
 # Effort sets
 p_dif_effort_sets <- plot_difference(
   diff_data_sets,
-  "Treatment - Control (sets per 10,000 km²)"
+  "Effort (sets per 10,000 km²)"
 )
 
 # Catch
 p_dif_catch <- plot_difference(
   diff_data_catch,
-  "Treatment - Control (kg per 10,000 km²)"
+  "Catch (kg per 10,000 km²)"
 )
 
 # CPUE sets
 p_dif_cpue_s <- plot_difference(
   diff_data_cpue_s,
-  "Treatment - Control (kg/set)"
+  "CPUE (kg/set)"
 )
 
 # Combine Figures ##############################################################

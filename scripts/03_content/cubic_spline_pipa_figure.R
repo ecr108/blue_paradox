@@ -395,34 +395,35 @@ plot_difference <- function(df, y_label) {
 }
 
 # Generate figures -------------------------------------------------------------
+
 # Effort days
 p_dif_effort_days <- plot_difference(
   diff_data_days,
-  "Treatment - Control (days per 10,000 km²)"
+  "Effort (days per 10,000 km²)"
 )
 
 # Effort sets
 p_dif_effort_sets <- plot_difference(
   diff_data_sets,
-  "Treatment - Control (sets per 10,000 km²)"
+  "Effort (sets per 10,000 km²)"
 )
 
 # Catch
 p_dif_catch <- plot_difference(
   diff_data_catch,
-  "Treatment - Control (kg per 10,000 km²)"
+  "Catch (kg per 10,000 km²)"
 )
 
 # CPUE days
 p_dif_cpue_d <- plot_difference(
   diff_data_cpue_d,
-  "Treatment - Control (kg/day)"
+  "CPUE (kg/day)"
 )
 
 # CPUE sets
 p_dif_cpue_s <- plot_difference(
   diff_data_cpue_s,
-  "Treatment - Control (kg/set)"
+  "CPUE (kg/set)"
 )
 
 # Combine Figures ##############################################################
