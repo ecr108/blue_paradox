@@ -361,9 +361,8 @@ p_dif_cpue_s <- plot_difference(
 
 # Combine Figures ##############################################################
 
-# Area figures
 figure2 <- p_dif_effort_sets +
-  p_dif_cpue_s + p_dif_catch + revilla_map_mini_2 +
+  p_dif_catch + p_dif_cpue_s + gmr_map_mini_2 +
   patchwork::guide_area() +
   plot_layout(
     design = "
@@ -389,3 +388,4 @@ ggsave("results/figures/revilla/differences.png",
        width = 15,
        height = 10,
        dpi = 600)
+
