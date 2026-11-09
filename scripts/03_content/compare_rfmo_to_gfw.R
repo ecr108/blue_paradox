@@ -103,15 +103,15 @@ days_v_hours <- ggplot(
     y = fishing_hours
   )
 ) +
-  geom_point(
-    size = 3,
-    alpha = 0.6,
-    size = 3) +
   geom_smooth(
     method = "lm",
     se = FALSE,
     color = "#D55E00"
   ) +
+    geom_point(
+    size = 3,
+    alpha = 0.6,
+    size = 3) +
   labs(
     x = "RFMO effort (days)",
     y = "GFW fishing effort (hours)",
