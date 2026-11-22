@@ -2,11 +2,38 @@
 title: "Do marine protected area announcements trigger preemptive overfishing?"
 subtitle: "New insights from tuna catch and effort data"
 author: Emily Rodriguez
-institute: "University of Miami Rosenstiel School of Marine, Atmospheric, and Earth Science"
+institute: "Dr. Juan Carlos Villaseñor-Derbez, Chair and Internship Supervisor<br> Gavin McDonald and Dr. Manoj Shivlani, Members"
 bibliography: references.bib
 resources: results
 format:
   revealjs:
+    include-in-header:
+      - text: |
+          <style>
+          #title-slide {
+            text-align: left;
+            padding-left: 5%;
+            padding-right: 5%;
+          }
+          #title-slide .title {
+            font-size: 2.8em;
+            line-height: 1.2;
+            max-width: 100%;
+          }
+          #title-slide .subtitle {
+            font-size: 1.5em;
+            margin-top: 0.5em;
+            margin-bottom: 1.5em;
+            max-width: 100%;
+          }
+          #title-slide .quarto-title-authors {
+            justify-content: flex-start;
+          }
+          #title-slide .quarto-title-author {
+            padding-left: 0;
+          }
+          </style>
+    #theme: serif
     logo: ../results/img/rosenstiel_logo.png
     footer: "MPS Symposium 2026"
     css: styles.css
@@ -17,43 +44,6 @@ format:
     chalkboard:
       buttons: false
 ---
-
-<!--need to fix-->
-## Do marine protected area announcements trigger preemptive overfishing? New insights from tuna catch and effort data {.title-slide}
-
-**Emily Rodriguez**
-
-University of Miami
-Rosenstiel School of Marine, Atmospheric, and Earth Science
-
-
-**Project Committee**
-
-Dr. Juan Carlos Villaseñor-Derbez, Chair and Internship Supervisor
-<br>
-Gavin McDonald, Member  
-Dr. Manoj Shivlani, Member
-
-
-```{r include=FALSE}
-
-pacman::p_load(
-  tidyverse,
-  sf,
-  mapview,
-  lwgeom,
-  viridis,
-  terra,
-  ggspatial,
-  rnaturalearth,
-  rnaturalearthdata,
-  patchwork,
-  mregions2
-)
-```
-
-
-
 
 ## A call for expanded protection
 
@@ -122,11 +112,14 @@ pacman::p_load(
 - This takes us to two paradoxes
 - The first is the **green paradox: the idea that  when resource owners expect future environmental restrictions, they may actually speed up extraction to avoid those restrictions..**
     - We see similar behavior in other environmental contexts. For example, in North Carolina, landowners have preemptively destroyed habitat used by an endangered woodpeckers to avoid future land-use restrictions.
+    - The logic is that if landowners know a species may receive endangered species protection, and they know that its habitat is on their property, they may destroy that habitat before protections are put in place.
+    - This allows them to avoid potential future restrictions on how they can use their land.
+    
 - But what about a similar paradox in the marine environment?
     - So far, there's only one documented case of what's been termed the **blue paradox**. Researchers found that the announcement of a future no-take MPA in Kiribati led to increased fishing effort within the area before protections came into place
 - However, there are some important differences between these two paradoxes.
     - First, we only have one documented case of a blue paradox, providing little evidence and making it difficult to know how widespread this behavior might be.
-    - Second, the ownership structure is very different. Unlike land, the ocean is largely a shared resource, which creates different incentives. For example, fishers may want to maximize their catch before losing access to productive fishing grounds, or make use of fishing days they've already purchased for the region.
+    - Second, the ownership structure is very different. Unlike land, the ocean is largely a shared resource, which creates different incentives. For example, perhaps fishers may want to maximize their catch before losing access to productive fishing grounds.
     - Third, the blue paradox raises a difficult question about equitable management. While we want fishers to be included in the decision-making process, could providing advance knowledge of closures unintentionally encourage increased fishing effort and undermine conservation goals?
 :::
 
@@ -215,18 +208,53 @@ Catch per unit effort (CPUE)
     - Fishers, following the stock, would be increasing effort over an increasing stock size.
     - Assuming that catchability remains the same, CPUE should *increase* in this scenario
 - **The important distinction is that both hypotheses offer different predictions for CPUE, but the original study only examined fishing effort using vessel tracking data, so neither are able to show a change to CPUE.**
+- My research project seeks to address these differing explanations by incorporating catch per unit effort into the analysis
 
 :::
 
 
 ## Assessing the competing hypotheses
 
-- **Data:** Use publicly available regional fisheries management organization (RFMO) data compared to vessel tracking data.
-- **Analysis:** Incorporate tuna purse seine effort *and* catch data available from RFMOs to calculate **CPUE**.
+::::: columns
+::: {.column width="50%"}
+
+::: fragment
+
+**Global Fishing Watch data**
+
+- Contains hourly vessel-level data
+- Fine-scale (up to 0.01 degree cells)
+- No indication on *how much* is being caught
+
+:::
+
+:::
+
+::: {.column width="50%"}
+
+::: fragment
+
+**Regional fisheries management organization (RFMO) data**
+
+- Contains monthly effort
+- Coarser data (1 degree cells)
+- Total **catch** reported for each month
+
+:::
+
+:::
+
+:::fragment
+> **Analysis:** Use publicly available regional fisheries management organization (RFMO) tuna purse seine effort *and* catch data to calculate **CPUE**.
+
+:::
+
+:::::
+
 - **Research questions:**
   1. Can RFMO data reproduce the effort patterns reported by @mcdermottBlueParadoxPreemptive2019?
   2. If so, which hypothesis does the addition of CPUE support?
-  
+
   
   <!-- **Blue paradox:** CPUE ~-->
   <!--- **Environmental effect:** CPUE $\uparrow$-->
@@ -240,7 +268,6 @@ Catch per unit effort (CPUE)
     - **And if so, which hypothesis does the addition of CPUE support?**
 
 :::
-
 
 
 ## Separating announcement effects from environmental change
@@ -295,12 +322,14 @@ Catch per unit effort (CPUE)
 - **Temporal range:** 1 year before MPA announcement $\rightarrow$ MPA establishment
 - **Question:** How changes in the treated region compare to the control
   - **Difference-in-differences model**
-  - **Key estimate: $\beta_3$** (our estimate of the blue paradox in PIPA)
+  - **Key estimate: $\beta_3$** (relative change in fishing effort in the treated region compared to the control)
+
 
 :::
 
 ::: {.column width="50%"}
 
+::: {.fragment}
 
 ::: {style="max-width:440px; width:100%; margin:10px auto; font-family:sans-serif;"}
 
@@ -338,7 +367,7 @@ Hypothetical values for illustration only
 :::
 
 
-<!--![(A) Time series of daily effort in PIPA (B) Map of PIPA, highlighting control and treated regions. Author's own work; manuscript in preparation (2026).](../results/figures/pipa_original/cubic_timeseries_effort_map.png)-->
+:::
 
 ::: 
 
@@ -352,7 +381,7 @@ Hypothetical values for illustration only
 - To illustrate this, if you look at the diagram on the right, imagine fishing activity increased by 30% in the MPA, compared to just 10% in the control region.
 - Although fishing activity increased in both regions, the increase in the MPA was 20 percentage points greater than in the control. **This additional change is what we're trying to capture.**
 - We use a difference-in-differences approach to estimate this additional change, which is represented by our key coefficient.
-- In our study, this coefficient captures the additional change in fishing activity in the MPA relative to the control region, and serves as our estimate of the Blue Paradox effect.
+- In our study, this coefficient captures the additional change in fishing activity in the MPA relative to the control region, and allows us to interpret whether a blue paradox occured.
 
 :::
 
@@ -364,14 +393,14 @@ Hypothetical values for illustration only
 
 ::: {.column width="50%"}
 ::: fragment
-![@mcdermottBlueParadoxPreemptive2019](../results/img/mcdermott_bp_fig.png){width="100%"}
+![Adapted from @mcdermottBlueParadoxPreemptive2019](../results/img/mcdermott_zoom.png){width="100%"}
 :::
 :::
 
 
 ::: {.column width="50%"}
 ::: fragment
-![Author's own work; manuscript in preparation (2026).](../results/figures/pipa_original/cubic_timeseries_effort.png){width="100%"}
+![Author's own work; manuscript in preparation (2026).](../results/img/effort_days_pipa_announcement.png){width="100%"}
 :::
 :::
 
@@ -396,7 +425,7 @@ Hypothetical values for illustration only
 
 
 ::: {.column width="70%"}
-![Author's own work; manuscript in preparation (2026).](../results/figures/pipa_original/cubic_timeseries_cpue_day.png){width=70%}
+![Author's own work; manuscript in preparation (2026).](../results/img/cpue_pipa_announcement.png){width=70%}
 
 - $\beta$ = 0.192, SE = 0.192, *p* \< 0.1
 :::
@@ -441,7 +470,7 @@ Hypothetical values for illustration only
 **What does this mean for MPA design?**
 :::
 
-- Ecological conditions may explain fishing responses.
+- Procedural and representative equity
 - Better data are needed to distinguish these explanations.
 
 
@@ -542,14 +571,10 @@ $q$ = catchability; $N$ = biomass; $E$ = effort.
 
 *Illustrative values; assuming constant catchability.*
 
-# Global Fishing Watch data comparison
 
-## Fishing days
+## Global Fishing Watch data comparison
 
-![Author's own work; manuscript in preparation (2026). Data for these time-series comparisons are obtained from @emilyrodriguezRFMOTunaCatch2026 and @natemillerhe/himGlobalFishingWatchGfwrGfwr2026.](../results/figures/pipa_original/gfw_rfmo_days.png){#fig-pipa-gfw-rfmo-days}
-
-## RFMO fishing days vs GFW fishing hours
-![Author's own work; manuscript in preparation (2026). Data for these time-series comparisons are obtained from @emilyrodriguezRFMOTunaCatch2026 and @natemillerhe/himGlobalFishingWatchGfwrGfwr2026.](../results/figures/pipa_original/gfw_rfmo_days_v_hours.png){#fig-pipa-gfw-rfmo-days-hours fig-pos="H"}
+![Author's own work; manuscript in preparation (2026). Data for these time-series comparisons are obtained from @emilyrodriguezRFMOTunaCatch2026 and @natemillerhe/himGlobalFishingWatchGfwrGfwr2026.](../results/figures/pipa_original/gfw_rfmo_panel.png){#fig-pipa-gfw-rfmo-days}
 
 ## Phoenix Island Protected Area full results
 
@@ -557,33 +582,27 @@ $q$ = catchability; $N$ = biomass; $E$ = effort.
 
 # Additional Case Studies
 
-# Galápagos Marine Reserve
-
-## Map
+## Galápagos Marine Reserve Map
 
 ![Author's own work; manuscript in preparation (2026).](../results/figures/gmr/gmr_map.png){#fig-gmr-map}
 
-## Results
+## Galápagos Marine Reserve Results
 
 ![Author's own work; manuscript in preparation (2026).](../results/figures/gmr/cubic_timeseries_panels_region.png){#fig-gmr-region}
 
-# Revillagigedo National Park
-
-## Map
+## Revillagigedo National Park Map
 
 ![Author's own work; manuscript in preparation (2026).](../results/figures/revilla/revilla_map.png){#fig-revilla-map}
 
-## Results
+## Revillagigedo National Park Results
 
 ![Author's own work; manuscript in preparation (2026).](../results/figures/revilla/cubic_timeseries_panels_region.png){#fig-revilla-region}
 
-# Palau National Marine Sanctuary
-
-## Map
+## Palau National Marine Sanctuary Map
 
 ![Author's own work; manuscript in preparation (2026).](../results/figures/palau/palau_map.png){#fig-palau-map}
 
-## Results
+## Palau National Marine Sanctuary Results
 
 ![Author's own work; manuscript in preparation (2026).](../results/figures/palau/cubic_timeseries_panels_region.png){#fig-palau-region}
 

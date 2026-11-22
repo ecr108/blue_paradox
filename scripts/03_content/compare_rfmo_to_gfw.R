@@ -5,7 +5,8 @@ pacman::p_load(
   tidyverse,
   exactextractr,
   terra,
-  sf
+  sf,
+  patchwork
 )
 
 ## Load data -------------------------------------------------------------------
@@ -106,7 +107,7 @@ days_v_hours <- ggplot(
   geom_smooth(
     method = "lm",
     se = FALSE,
-    color = "#D55E00"
+    color = "red"
   ) +
     geom_point(
     size = 3,
@@ -233,6 +234,25 @@ days <- ggplot(
   ) +
   theme_classic()
 
+# Combine plots
+panel <- days + days_v_hours +
+  patchwork::guide_area() +
+  plot_layout(
+    design = "AB",
+    guides = "collect",
+    axes = "collect"
+  ) +
+  plot_annotation(
+    tag_levels = "A"
+  ) &
+  theme(
+    legend.position = "bottom",
+    legend.justification = "left",
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15),
+    plot.margin = margin(0, 0, 0, 0, unit = "pt")
+  )
+
 # EXPORT #######################################################################
 
 ggsave("results/figures/pipa_original/gfw_rfmo_days_v_hours.png",
@@ -245,5 +265,12 @@ ggsave("results/figures/pipa_original/gfw_rfmo_days.png",
        plot = days,
        width = 8,
        height = 5,
+       dpi = 300)
+
+
+ggsave("results/figures/pipa_original/gfw_rfmo_panel.png",
+       plot = panel,
+       width = 8,
+       height = 4,
        dpi = 300)
 

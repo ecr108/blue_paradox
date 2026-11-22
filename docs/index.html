@@ -149,6 +149,30 @@
       margin-right: 0; 
     }
   </style>
+  <style>
+  #title-slide {
+    text-align: left;
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+  #title-slide .title {
+    font-size: 2.8em;
+    line-height: 1.2;
+    max-width: 100%;
+  }
+  #title-slide .subtitle {
+    font-size: 1.5em;
+    margin-top: 0.5em;
+    margin-bottom: 1.5em;
+    max-width: 100%;
+  }
+  #title-slide .quarto-title-authors {
+    justify-content: flex-start;
+  }
+  #title-slide .quarto-title-author {
+    padding-left: 0;
+  }
+  </style>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -164,23 +188,11 @@
 Emily Rodriguez
 </div>
         <p class="quarto-title-affiliation">
-            University of Miami Rosenstiel School of Marine, Atmospheric, and Earth Science
+            Dr.&nbsp;Juan Carlos Villaseñor-Derbez, Chair and Internship Supervisor<br> Gavin McDonald and Dr.&nbsp;Manoj Shivlani, Members
           </p>
     </div>
 </div>
 
-</section>
-<section class="slide level2">
-
-<!--need to fix-->
-</section>
-<section id="do-marine-protected-area-announcements-trigger-preemptive-overfishing-new-insights-from-tuna-catch-and-effort-data" class="slide level2 title-slide center">
-<h2>Do marine protected area announcements trigger preemptive overfishing? New insights from tuna catch and effort data</h2>
-<p><strong>Emily Rodriguez</strong></p>
-<p>University of Miami Rosenstiel School of Marine, Atmospheric, and Earth Science</p>
-<p><strong>Project Committee</strong></p>
-<p>Dr.&nbsp;Juan Carlos Villaseñor-Derbez, Chair and Internship Supervisor <br> Gavin McDonald, Member<br>
-Dr.&nbsp;Manoj Shivlani, Member</p>
 </section>
 <section id="a-call-for-expanded-protection" class="slide level2">
 <h2>A call for expanded protection</h2>
@@ -258,6 +270,8 @@ Dr.&nbsp;Manoj Shivlani, Member</p>
 <li>The first is the <strong>green paradox: the idea that when resource owners expect future environmental restrictions, they may actually speed up extraction to avoid those restrictions..</strong>
 <ul>
 <li>We see similar behavior in other environmental contexts. For example, in North Carolina, landowners have preemptively destroyed habitat used by an endangered woodpeckers to avoid future land-use restrictions.</li>
+<li>The logic is that if landowners know a species may receive endangered species protection, and they know that its habitat is on their property, they may destroy that habitat before protections are put in place.</li>
+<li>This allows them to avoid potential future restrictions on how they can use their land.</li>
 </ul></li>
 <li>But what about a similar paradox in the marine environment?
 <ul>
@@ -266,7 +280,7 @@ Dr.&nbsp;Manoj Shivlani, Member</p>
 <li>However, there are some important differences between these two paradoxes.
 <ul>
 <li>First, we only have one documented case of a blue paradox, providing little evidence and making it difficult to know how widespread this behavior might be.</li>
-<li>Second, the ownership structure is very different. Unlike land, the ocean is largely a shared resource, which creates different incentives. For example, fishers may want to maximize their catch before losing access to productive fishing grounds, or make use of fishing days they’ve already purchased for the region.</li>
+<li>Second, the ownership structure is very different. Unlike land, the ocean is largely a shared resource, which creates different incentives. For example, perhaps fishers may want to maximize their catch before losing access to productive fishing grounds.</li>
 <li>Third, the blue paradox raises a difficult question about equitable management. While we want fishers to be included in the decision-making process, could providing advance knowledge of closures unintentionally encourage increased fishing effort and undermine conservation goals?</li>
 </ul></li>
 </ul>
@@ -376,6 +390,7 @@ Dr.&nbsp;Manoj Shivlani, Member</p>
 <li>Assuming that catchability remains the same, CPUE should <em>increase</em> in this scenario</li>
 </ul></li>
 <li><strong>The important distinction is that both hypotheses offer different predictions for CPUE, but the original study only examined fishing effort using vessel tracking data, so neither are able to show a change to CPUE.</strong></li>
+<li>My research project seeks to address these differing explanations by incorporating catch per unit effort into the analysis</li>
 </ul>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -391,9 +406,32 @@ Dr.&nbsp;Manoj Shivlani, Member</p>
 </section>
 <section id="assessing-the-competing-hypotheses" class="slide level2">
 <h2>Assessing the competing hypotheses</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="fragment">
+<p><strong>Global Fishing Watch data</strong></p>
 <ul>
-<li class="fragment"><strong>Data:</strong> Use publicly available regional fisheries management organization (RFMO) data compared to vessel tracking data.</li>
-<li class="fragment"><strong>Analysis:</strong> Incorporate tuna purse seine effort <em>and</em> catch data available from RFMOs to calculate <strong>CPUE</strong>.</li>
+<li class="fragment">Contains hourly vessel-level data</li>
+<li class="fragment">Fine-scale (up to 0.01 degree cells)</li>
+<li class="fragment">No indication on <em>how much</em> is being caught</li>
+</ul>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="fragment">
+<p><strong>Regional fisheries management organization (RFMO) data</strong></p>
+<ul>
+<li class="fragment">Contains monthly effort</li>
+<li class="fragment">Coarser data (1 degree cells)</li>
+<li class="fragment">Total <strong>catch</strong> reported for each month</li>
+</ul>
+</div>
+</div><div class="fragment">
+<blockquote>
+<p><strong>Analysis:</strong> Use publicly available regional fisheries management organization (RFMO) tuna purse seine effort <em>and</em> catch data to calculate <strong>CPUE</strong>.</p>
+</blockquote>
+</div>
+</div>
+<ul>
 <li class="fragment"><strong>Research questions:</strong>
 <ol type="1">
 <li class="fragment">Can RFMO data reproduce the effort patterns reported by <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#/references" role="doc-biblioref" onclick="">2019</a>)</span>?</li>
@@ -499,10 +537,11 @@ Dr.&nbsp;Manoj Shivlani, Member</p>
 <li class="fragment"><strong>Question:</strong> How changes in the treated region compare to the control
 <ul>
 <li class="fragment"><strong>Difference-in-differences model</strong></li>
-<li class="fragment"><strong>Key estimate: <span class="math inline">\(\beta_3\)</span></strong> (our estimate of the blue paradox in PIPA)</li>
+<li class="fragment"><strong>Key estimate: <span class="math inline">\(\beta_3\)</span></strong> (relative change in fishing effort in the treated region compared to the control)</li>
 </ul></li>
 </ul>
 </div><div class="column" style="width:50%;">
+<div class="fragment">
 <div style="max-width:440px; width:100%; margin:10px auto; font-family:sans-serif;">
 <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
 <div style="background:#fbf0e5; border-radius:10px; padding:9px; text-align:center;">
@@ -546,7 +585,7 @@ Additional change in PIPA
 <p>Hypothetical values for illustration only</p>
 </div>
 </div>
-<!--![(A) Time series of daily effort in PIPA (B) Map of PIPA, highlighting control and treated regions. Author's own work; manuscript in preparation (2026).](../results/figures/pipa_original/cubic_timeseries_effort_map.png)-->
+</div>
 </div></div>
 <aside class="notes">
 <ul>
@@ -556,7 +595,7 @@ Additional change in PIPA
 <li>To illustrate this, if you look at the diagram on the right, imagine fishing activity increased by 30% in the MPA, compared to just 10% in the control region.</li>
 <li>Although fishing activity increased in both regions, the increase in the MPA was 20 percentage points greater than in the control. <strong>This additional change is what we’re trying to capture.</strong></li>
 <li>We use a difference-in-differences approach to estimate this additional change, which is represented by our key coefficient.</li>
-<li>In our study, this coefficient captures the additional change in fishing activity in the MPA relative to the control region, and serves as our estimate of the Blue Paradox effect.</li>
+<li>In our study, this coefficient captures the additional change in fishing activity in the MPA relative to the control region, and allows us to interpret whether a blue paradox occured.</li>
 </ul>
 <style type="text/css">
         span.MJX_Assistive_MathML {
@@ -577,8 +616,8 @@ Additional change in PIPA
 <div class="fragment">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="../results/img/mcdermott_bp_fig.png" style="width:100.0%"></p>
-<figcaption><span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#/references" role="doc-biblioref" onclick="">2019</a>)</span></figcaption>
+<p><img data-src="../results/img/mcdermott_zoom.png" style="width:100.0%"></p>
+<figcaption>Adapted from <span class="citation" data-cites="mcdermottBlueParadoxPreemptive2019">McDermott et al. (<a href="#/references" role="doc-biblioref" onclick="">2019</a>)</span></figcaption>
 </figure>
 </div>
 </div>
@@ -586,7 +625,7 @@ Additional change in PIPA
 <div class="fragment">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="../results/figures/pipa_original/cubic_timeseries_effort.png" style="width:100.0%"></p>
+<p><img data-src="../results/img/effort_days_pipa_announcement.png" style="width:100.0%"></p>
 <figcaption>Author’s own work; manuscript in preparation (2026).</figcaption>
 </figure>
 </div>
@@ -621,7 +660,7 @@ Additional change in PIPA
 <div class="column" style="width:70%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="../results/figures/pipa_original/cubic_timeseries_cpue_day.png" style="width:70.0%"></p>
+<p><img data-src="../results/img/cpue_pipa_announcement.png" style="width:70.0%"></p>
 <figcaption>Author’s own work; manuscript in preparation (2026).</figcaption>
 </figure>
 </div>
@@ -673,7 +712,7 @@ Additional change in PIPA
 <p><strong>What does this mean for MPA design?</strong></p>
 </div>
 <ul>
-<li class="fragment">Ecological conditions may explain fishing responses.</li>
+<li class="fragment">Procedural and representative equity</li>
 <li class="fragment">Better data are needed to distinguish these explanations.</li>
 </ul>
 </div><div class="column" style="width:50%;">
@@ -824,86 +863,60 @@ Western and Central Pacific Fisheries Commission. 2026. <span>“<span>WCPFC Pub
 <li><strong>ENSO:</strong> More abundance should increase CPUE.</li>
 </ul>
 <p><em>Illustrative values; assuming constant catchability.</em></p>
-</section></section>
-<section>
-<section id="global-fishing-watch-data-comparison" class="title-slide slide level1 center">
-<h1>Global Fishing Watch data comparison</h1>
-
 </section>
-<section id="fishing-days" class="slide level2">
-<h2>Fishing days</h2>
+<section id="global-fishing-watch-data-comparison" class="slide level2">
+<h2>Global Fishing Watch data comparison</h2>
 
-<img data-src="../results/figures/pipa_original/gfw_rfmo_days.png" class="r-stretch quarto-figure-center" id="fig-pipa-gfw-rfmo-days"><p class="caption">
+<img data-src="../results/figures/pipa_original/gfw_rfmo_panel.png" class="r-stretch quarto-figure-center" id="fig-pipa-gfw-rfmo-days"><p class="caption">
 Figure&nbsp;1: Author’s own work; manuscript in preparation (2026). Data for these time-series comparisons are obtained from <span class="citation" data-cites="emilyrodriguezRFMOTunaCatch2026">Rodriguez and Juan Carlos Villaseñor-Derbez (<a href="#/references" role="doc-biblioref" onclick="">2026</a>)</span> and <span class="citation" data-cites="natemillerhe/himGlobalFishingWatchGfwrGfwr2026">Nate Miller (he/him) et al. (<a href="#/references" role="doc-biblioref" onclick="">2026</a>)</span>.
-</p></section>
-<section id="rfmo-fishing-days-vs-gfw-fishing-hours" class="slide level2">
-<h2>RFMO fishing days vs GFW fishing hours</h2>
-
-<img data-src="../results/figures/pipa_original/gfw_rfmo_days_v_hours.png" data-fig-pos="H" class="r-stretch quarto-figure-center" id="fig-pipa-gfw-rfmo-days-hours"><p class="caption">
-Figure&nbsp;2: Author’s own work; manuscript in preparation (2026). Data for these time-series comparisons are obtained from <span class="citation" data-cites="emilyrodriguezRFMOTunaCatch2026">Rodriguez and Juan Carlos Villaseñor-Derbez (<a href="#/references" role="doc-biblioref" onclick="">2026</a>)</span> and <span class="citation" data-cites="natemillerhe/himGlobalFishingWatchGfwrGfwr2026">Nate Miller (he/him) et al. (<a href="#/references" role="doc-biblioref" onclick="">2026</a>)</span>.
 </p></section>
 <section id="phoenix-island-protected-area-full-results" class="slide level2">
 <h2>Phoenix Island Protected Area full results</h2>
 
 <img data-src="../results/figures/pipa_original/cubic_timeseries_panels_region.png" class="r-stretch quarto-figure-center" id="fig-pipa-region"><p class="caption">
-Figure&nbsp;3: Author’s own work; manuscript in preparation (2026).
+Figure&nbsp;2: Author’s own work; manuscript in preparation (2026).
 </p></section></section>
+<section>
 <section id="additional-case-studies" class="title-slide slide level1 center">
 <h1>Additional Case Studies</h1>
 
 </section>
-
-<section>
-<section id="galápagos-marine-reserve" class="title-slide slide level1 center">
-<h1>Galápagos Marine Reserve</h1>
-
-</section>
-<section id="map" class="slide level2">
-<h2>Map</h2>
+<section id="galápagos-marine-reserve-map" class="slide level2">
+<h2>Galápagos Marine Reserve Map</h2>
 
 <img data-src="../results/figures/gmr/gmr_map.png" class="r-stretch quarto-figure-center" id="fig-gmr-map"><p class="caption">
-Figure&nbsp;4: Author’s own work; manuscript in preparation (2026).
+Figure&nbsp;3: Author’s own work; manuscript in preparation (2026).
 </p></section>
-<section id="results" class="slide level2">
-<h2>Results</h2>
+<section id="galápagos-marine-reserve-results" class="slide level2">
+<h2>Galápagos Marine Reserve Results</h2>
 
 <img data-src="../results/figures/gmr/cubic_timeseries_panels_region.png" class="r-stretch quarto-figure-center" id="fig-gmr-region"><p class="caption">
-Figure&nbsp;5: Author’s own work; manuscript in preparation (2026).
-</p></section></section>
-<section>
-<section id="revillagigedo-national-park" class="title-slide slide level1 center">
-<h1>Revillagigedo National Park</h1>
-
-</section>
-<section id="map-1" class="slide level2">
-<h2>Map</h2>
+Figure&nbsp;4: Author’s own work; manuscript in preparation (2026).
+</p></section>
+<section id="revillagigedo-national-park-map" class="slide level2">
+<h2>Revillagigedo National Park Map</h2>
 
 <img data-src="../results/figures/revilla/revilla_map.png" class="r-stretch quarto-figure-center" id="fig-revilla-map"><p class="caption">
-Figure&nbsp;6: Author’s own work; manuscript in preparation (2026).
+Figure&nbsp;5: Author’s own work; manuscript in preparation (2026).
 </p></section>
-<section id="results-1" class="slide level2">
-<h2>Results</h2>
+<section id="revillagigedo-national-park-results" class="slide level2">
+<h2>Revillagigedo National Park Results</h2>
 
 <img data-src="../results/figures/revilla/cubic_timeseries_panels_region.png" class="r-stretch quarto-figure-center" id="fig-revilla-region"><p class="caption">
-Figure&nbsp;7: Author’s own work; manuscript in preparation (2026).
-</p></section></section>
-<section>
-<section id="palau-national-marine-sanctuary" class="title-slide slide level1 center">
-<h1>Palau National Marine Sanctuary</h1>
-
-</section>
-<section id="map-2" class="slide level2">
-<h2>Map</h2>
+Figure&nbsp;6: Author’s own work; manuscript in preparation (2026).
+</p></section>
+<section id="palau-national-marine-sanctuary-map" class="slide level2">
+<h2>Palau National Marine Sanctuary Map</h2>
 
 <img data-src="../results/figures/palau/palau_map.png" class="r-stretch quarto-figure-center" id="fig-palau-map"><p class="caption">
-Figure&nbsp;8: Author’s own work; manuscript in preparation (2026).
+Figure&nbsp;7: Author’s own work; manuscript in preparation (2026).
 </p></section>
-<section id="results-2" class="slide level2">
-<h2>Results</h2>
+<section id="palau-national-marine-sanctuary-results" class="slide level2">
+<h2>Palau National Marine Sanctuary Results</h2>
 
 
 <img data-src="../results/figures/palau/cubic_timeseries_panels_region.png" class="r-stretch quarto-figure-center" id="fig-palau-region"><p class="caption">
-Figure&nbsp;9: Author’s own work; manuscript in preparation (2026).
+Figure&nbsp;8: Author’s own work; manuscript in preparation (2026).
 </p></section></section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
@@ -1123,82 +1136,6 @@ Figure&nbsp;9: Author’s own work; manuscript in preparation (2026).
         ]
       });
     </script>
-    
-
-    <script>
-
-      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
-
-      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
-
-      // slide changes (different for each slide format).
-
-      (function () {
-
-        // dispatch for htmlwidgets
-
-        function fireSlideEnter() {
-
-          const event = window.document.createEvent("Event");
-
-          event.initEvent("slideenter", true, true);
-
-          window.document.dispatchEvent(event);
-
-        }
-
-    
-
-        function fireSlideChanged(previousSlide, currentSlide) {
-
-          fireSlideEnter();
-
-    
-
-          // dispatch for shiny
-
-          if (window.jQuery) {
-
-            if (previousSlide) {
-
-              window.jQuery(previousSlide).trigger("hidden");
-
-            }
-
-            if (currentSlide) {
-
-              window.jQuery(currentSlide).trigger("shown");
-
-            }
-
-          }
-
-        }
-
-    
-
-        // hookup for slidy
-
-        if (window.w3c_slidy) {
-
-          window.w3c_slidy.add_observer(function (slide_num) {
-
-            // slide_num starts at position 1
-
-            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
-
-          });
-
-        }
-
-    
-
-      })();
-
-    </script>
-
-    
-
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
