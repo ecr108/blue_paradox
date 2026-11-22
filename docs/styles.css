@@ -47,3 +47,39 @@
   font-size: 0.6em; /* Adjust this value as needed */
 }
 
+/* Increase logo size only on the title slide */
+.reveal:has(section#title-slide.present) .slide-logo {
+  max-height: 5rem !important; /* Default is usually around 2.2rem */
+  height: 5rem !important;
+  width: auto !important;
+}
+/* Full-screen image overlay */
+.reveal .fullscreen-image.visible {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  background: white !important;
+}
+
+/* Image itself */
+.reveal .fullscreen-image img {
+  display: block !important;
+  position: static !important;
+  transform: none !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  object-fit: contain !important;
+  margin: 0 !important;
+}
