@@ -79,6 +79,44 @@ revilla_map_mini <- ggplot() +
     )
   )
 
+
+# With legend for dif figure
+revilla_map_mini_2 <- ggplot() +
+  geom_sf(data = world_eez, fill = NA) +
+  geom_sf(data = world) +
+  geom_sf(data = revilla, aes(fill = "Treatment"), alpha = 0.5) +
+  geom_sf(data = control_region, aes(fill = "Control"), alpha = 0.5) +
+  coord_sf(
+    crs = "EPSG:6365",
+    default_crs = "EPSG:4326",
+    xlim = c(-125, -90),
+    ylim = c(10, 35)
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Control" = "#0072B2",
+      "Treatment" = "#D55E00"
+    ),
+    name = "Region"
+  ) +
+  theme(
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.line = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(
+      fill = "aliceblue",
+      color = NA
+    ),
+    panel.border = element_rect(
+      color = "black",
+      fill = NA,
+      linewidth = 0.8
+    )
+  )
+
 # PROCESSING ###################################################################
 
 ## Prepare data ----------------------------------------------------------------
@@ -114,24 +152,42 @@ region_panel <- region_std_df |>
 
 
 spline_data <- region_panel |>
-  mutate(event = interval(announcement, date) %/% months(1),
-         treatment = treatment == 1) |>
-  complete(nesting(date, event), treatment, fill = list(effort_set_per_km2 = 0,
-                                                        catch_per_km2 = 0,
-                                                        cpue_set = 0))
+  mutate(
+    event = interval(announcement, date) %/% months(1),
+    treatment = treatment == 1
+  ) |>
+  complete(
+    nesting(date, event),
+    treatment,
+    fill = list(
+      effort_set_per_km2 = 0,
+      catch_per_km2 = 0,
+      cpue_set = NA_real_)) |>
+  mutate(post = if_else(date >= announcement, 1L, 0L))
 
 # Fit spline for each outcome of interest --------------------------------------
 spline_sets   <- feols(effort_set_per_km2 ~ treatment * rcs(event),
-                       data = spline_data)
+                       data = spline_data,
+                       vcov = "NW",
+                       panel.id = ~treatment + date)
 spline_catch  <- feols(catch_per_km2 ~ treatment * rcs(event),
-                       data = spline_data)
+                       data = spline_data,
+                       vcov = "NW",
+                       panel.id = ~treatment + date)
 spline_cpue_s <- feols(cpue_set ~ treatment * rcs(event),
-                       data = spline_data)
+                       data = spline_data,
+                       vcov = "NW",
+                       panel.id = ~treatment + date)
 
 # Get predictions
-predictions_sets   <- spline_data |> cbind(predict(spline_sets, se.fit = T))
-predictions_catch  <- spline_data |> cbind(predict(spline_catch, se.fit = T))
-predictions_cpue_s <- spline_data |> cbind(predict(spline_cpue_s, se.fit = T))
+predictions_sets   <- spline_data |>
+  cbind(predict(spline_sets, newdata = spline_data, se.fit = T))
+
+predictions_catch  <- spline_data |>
+  cbind(predict(spline_catch, newdata = spline_data, se.fit = T))
+
+predictions_cpue_s <- spline_data |>
+  cbind(predict(spline_cpue_s, newdata = spline_data, se.fit = T))
 
 
 # Create plotting function
@@ -214,59 +270,63 @@ ggsave("results/figures/revilla/cubic_timeseries_panels_region.png",
 
 # Effort sets
 diff_data_sets <- predictions_sets |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
 
 # Catch
 diff_data_catch <- predictions_catch |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
 
 # CPUE sets
 diff_data_cpue_s <- predictions_cpue_s |>
-  select(date, event, treatment, fit) |>
+  select(date, event, treatment, fit, se.fit) |>
   pivot_wider(
     names_from = treatment,
-    values_from = fit
+    values_from = c(fit, se.fit)
   ) |>
   magrittr::set_colnames(
-    c("date", "event", "control", "treated")
+    c("date", "event", "control", "treated", "se_control", "se_treated")
   ) |>
   mutate(
-    change = treated - control
+    change = treated - control,
+    se_change = sqrt(se_treated^2 - se_control^2)
   )
-
 # Create plotting function -----------------------------------------------------
 
 # Create plotting function for treatment-control differences
-plot_difference <- function(df, y_label, show_se = FALSE) {
+plot_difference <- function(df, y_label) {
 
   ggplot(df, aes(x = date, y = change)) +
-    {
-      if (show_se && "se_change" %in% names(df)) {
-        geom_ribbon(aes(ymin = change - se_change,
-                        ymax = change + se_change),
-                    fill = "grey60", alpha = 0.2, color = NA)
-      }
-    } +
+    geom_ribbon(
+      aes(
+        ymin = change - se_change,
+        ymax = change + se_change
+      ),
+      fill = "grey60",
+      alpha = 0.2,
+      color = NA
+    ) +
     geom_line(color = "black", linewidth = 1) +
     geom_vline(xintercept = announcement, linetype = "dashed") +
     geom_hline(yintercept = 0, color = "grey60", linewidth = 0.4) +
@@ -284,32 +344,30 @@ plot_difference <- function(df, y_label, show_se = FALSE) {
 # Effort sets
 p_dif_effort_sets <- plot_difference(
   diff_data_sets,
-  "Treatment - Control (sets per 10,000 km²)"
+  "Effort (sets per 10,000 km²)"
 )
 
 # Catch
 p_dif_catch <- plot_difference(
   diff_data_catch,
-  "Treatment - Control (kg per 10,000 km²)"
+  "Catch (kg per 10,000 km²)"
 )
 
 # CPUE sets
 p_dif_cpue_s <- plot_difference(
   diff_data_cpue_s,
-  "Treatment - Control (kg/set)"
+  "CPUE (kg/set)"
 )
 
 # Combine Figures ##############################################################
 
-# Area figures
 figure2 <- p_dif_effort_sets +
-  p_dif_cpue_s + p_dif_catch + revilla_map_mini +
+  p_dif_catch + p_dif_cpue_s + gmr_map_mini_2 +
   patchwork::guide_area() +
   plot_layout(
     design = "
-    ABG
+    ABF
     CD#
-    EF#
     ",
     widths = c(1, 1),
     heights = c(1, 1, 1),
@@ -330,3 +388,4 @@ ggsave("results/figures/revilla/differences.png",
        width = 15,
        height = 10,
        dpi = 600)
+

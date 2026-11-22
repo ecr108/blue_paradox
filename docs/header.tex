@@ -1,0 +1,61 @@
+% Figure and table placement
+\usepackage{float}
+\floatplacement{figure}{H}
+\floatplacement{table}{H}
+
+% Page numbering
+\pagenumbering{roman}
+\setcounter{page}{4}
+
+% Format headings to be same size as text and bold
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\normalfont\normalsize\bfseries}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+
+\titleformat{\paragraph}
+  {\normalfont\normalsize\bfseries}
+  {\theparagraph}{1em}{}
+
+\titleformat{\subparagraph}
+  {\normalfont\normalsize\bfseries}
+  {\theparagraph}{1em}{}
+
+% Table of Contents formatting
+\renewcommand{\contentsname}{\normalfont\bfseries\normalsize Contents}
+
+\makeatletter
+\renewcommand{\l@section}[2]{%
+  \ifnum \c@tocdepth >\z@
+    \addpenalty{\@secpenalty}%
+    \addvspace{1.0em \@plus\p@}%
+    \setlength\@tempdima{1.5em}%
+    \begingroup
+      \parindent \z@
+      \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \normalfont\normalsize\bfseries
+     \leavevmode
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+      #1\nobreak\leaders\hbox{.\ }\hfill\nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+    \endgroup
+  \fi
+}
+
+\renewcommand{\l@subsection}[2]{%
+  \@dottedtocline{2}{1.5em}{2.3em}{\normalfont\normalsize #1}{\normalfont\normalsize #2}
+}
+\makeatother

@@ -77,7 +77,8 @@ m_region_log <- feols(
     log(cpue_day),
     log(cpue_set)
   ) ~ treatment * post,
-  data = region_panel
+  data = region_panel,
+  vcov = "NW",
+  panel.id = ~treatment + date
 )
-
 saveRDS(m_region_log, "data/output/palau/m_region_log.rds")

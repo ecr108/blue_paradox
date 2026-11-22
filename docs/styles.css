@@ -1,0 +1,49 @@
+/* Center title slide content */
+.reveal .slides section.title-slide {
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 100%;
+  width: 100%;
+  left: 0 !important;
+  top: 0 !important;
+  padding: 0 50px !important;
+  box-sizing: border-box;
+}
+
+/* Center all text elements */
+.reveal .slides section.title-slide h2,
+.reveal .slides section.title-slide h3,
+.reveal .slides section.title-slide p {
+  text-align: center !important;
+  width: 100%;
+}
+
+/* Main title */
+.reveal .slides section.title-slide h2 {
+  font-size: 1.65em !important;
+  line-height: 1.25;
+  margin: 0 auto 25px auto !important;
+  max-width: 90%;
+}
+
+/* Subtitle */
+.reveal .slides section.title-slide h3 {
+  font-size: 1.05em !important;
+  margin-bottom: 20px;
+}
+
+/* Body text */
+.reveal .slides section.title-slide p {
+  font-size: 0.85em;
+  line-height: 1.4;
+  margin: 5px 0;
+}
+
+/* Captions */
+.reveal section p.caption {
+  font-size: 0.6em; /* Adjust this value as needed */
+}
+

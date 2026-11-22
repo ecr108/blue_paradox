@@ -1,10 +1,19 @@
 ---
-title: "Testing the Blue Paradox in the Phoenix Islands Protected Area using RFMO catch and effort data"
-author: "Emily Rodriguez"
-subtitle: ""
-abstract: "Marine protected area (MPA) announcements have been cited as having the potential to inadvertently increase fishing effort before closures are implemented, a phenomenon known as the blue paradox. Using Regional Fisheries Management Organization (RFMO) catch and effort data, this study reevaluated the blue paradox test on the Phoenix Island Protected Areas (PIPA) to determine whether previously reported increases in fishing effort are due to anticipatory behavior or favorable ecological conditions. The analysis was extended to additional large scale MPAs to assess whether the blue paradox is detectable in other regions. Results found no conclusive evidence that the increase in fishing effort within PIPA was driven by anticipatory behavior, nor did they reveal evidence of a blue paradox in the other MPAs examined. More broadly, because similar patterns of fishing effort from AIS-derived data were detected using RFMO catch and effort data, the study demonstrated that these data can be used for evaluating fishing dynamics across time periods where AIS coverage is unavailable."
+#title: "Do marine protected area announcements trigger preemptive overfishing? New insights from tuna catch and effort data"
+#author: "Emily Rodriguez"
+#subtitle: ""
+#abstract: 'Marine protected area (MPA) announcements have been cited as having the potential to inadvertently increase fishing effort before closures are implemented, a phenomenon known as the "blue paradox". The only known evidence of a blue paradox comes from the Phoenix Island Protected Area (PIPA), although some have contended that this event was driven by environmental conditions shifting the location of tuna, rather than preemptive fishing behavior. Previous work onyl examined fishing effort data, so we contribute to the debate by examining trends in spatially-explicit tuna catch, effort, and catch per unit effort from publicly available records. We first ask whether our effort data can capture the same trends thoguht to indicate anticipatory behavior. We then leverage our other two measures, catch and catch-per-unit effort, to provid additional evidence. Finally, we ask whether patterns of preemptive overfishing are detectable for toher large-scale MPAs in the region. Our study makes three contributions. First, we find no conclusive evidence whether the increase in fishing effort within PIPA was driven by anticipatory behavior or environmental factors. Second, we fail to detect evidence of a blue paradox in the other three large-scale MPAs examined. And third, our study highlights that RFMO data can be used for evaluating fishing dynamics across time periods where vessel-tracking data were unavailable.'
 bibliography: references.bib
-format: pdf
+format: 
+  pdf:
+    include-in-header: header.tex
+    number-sections: true
+    toc: true
+    lot: false
+    lof: false
+fontsize: 12pt
+geometry: margin=1in
+linestretch: 1.5
 execute:
   echo: false
   warning: false
@@ -18,223 +27,118 @@ library(modelsummary)
 library(tidyverse)
 ```
 
-**Keywords**: Blue Paradox, Marine Protected Areas, Fishing Behavior, Fisheries Management, Overfishing
+<!--**Keywords**: Blue Paradox, Marine Protected Areas, Fishing Behavior, Fisheries Management, Overfishing-->
+
+\newpage
+
+\listoftables
+
+\listoffigures
+
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
 
 # Introduction
 
-A rising question for marine conservation is whether announcing a marine protected area (MPA) can unintentionally increase fishing effort before protection begins. MPAs, like other environmental interventions, are increasingly recognized as tools for biodiversity conservation<!--source?-->. Target 3 of the Convention on Biological Diversity emphasizes that the establishment and management of protected areas should involve fishers and local communities to ensure transparency, participation, and resilient management [@secretariatoftheconventiononbiologicaldiversityTarget3Conserve2022]. However, early disclosure of MPAs can create a tension: informing fishers in advance may encourage preemptive exploitation of resources, potentially undermining conservation objectives. @mcdermottBlueParadoxPreemptive2019 termed this phenomenon the “blue paradox” after documenting a surge in fishing effort hours prior to the implementation of the Phoenix Island Protected Area (PIPA).
+The recently signed Kunming-Montreal Global Biodiversity Framework (Target 3, also known as 30x30) calls for at least 30% of marine regions to be effectively conserved or managed by 2030 using marine protected areas (MPAs) and other area-based conservation measures [@secretariatoftheconventiononbiologicaldiversityTarget3Conserve2022]. Importantly, Target 3 also mentions that the establishment and management of protected areas should involve relevant actors in local communities to ensure transparency, participation, and resilient management. However, early disclosure of MPAs could create a tension: informing fishers that fishing grounds may soon become off-limits may trigger preemptive exploitation of soon-to-be protected resources, potentially undermining conservation objectives. @mcdermottBlueParadoxPreemptive2019 termed this phenomenon the “blue paradox” after documenting a surge in fishing effort in the months leading up to the implementation of the Phoenix Islands Protected Area (PIPA) in Kiribati, an important region for industrial tuna fishing [@hernandezEvidencePatternsTuna2019]. As the global coverage of protected areas expand, the timing and communication of MPA establishment may therefore have increasingly important consequences for fishing behavior. Clearly, a rising question for marine conservation is whether the announcement of a marine protected area can unintentionally increase fishing effort before protection begins.
 
-One explanation for anticipatory fishing behavior comes from psychological reactance, which suggests that people resist perceived threats to their freedom by attempting to restore it [@brehmTheoryPsychologicalReactance1966]. The restriction-sensitive choice model builds on this idea by formalizing how removing or restricting options can paradoxically make them more desirable [@boissonnetGrabbingForbiddenFruit2025]. These types of responses have been documented across environmental management. For example, when landowners in North Carolina learned that the red-cockaded woodpecker might be listed as endangered, some rushed to modify their properties, removing or destroying habitats that would soon become protected in order to avoid future restrictions under the Endangered Species Act. This preemptive behavior ultimately reduced the very critical habitat that the listing of the species intended to protect, illustrating how anticipated regulations can trigger counterproductive or defensive actions [@lueckPreemptiveHabitatDestruction2000]. An alternative explanation can be found in fisheries management, where closure announcements can also inadvertently reveal information about the productivity of nearby fishing grounds. In Peru's anchoveta fishery, regulators temporarily closed areas with high amounts of juvenile fish to reduce catch. However, these announcements also signaled to fishers that areas near the closures were productive, reducing search costs and prompting them to increase fishing effort outside the closure boundary. This information spillover ultimately counteracted the policy's intended effect to protect the over harvest of juvenile fish [@englanderInformationSpilloversTargeting2023]. These examples suggest that conservation policies can unintentionally alter behavior before restrictions take effect, providing a theoretical framework for interpreting the blue paradox. Understanding how these competing goals interact is critical for the effective design and implementation of MPAs.
+One explanation for anticipatory fishing behavior comes from psychological reactance, which suggests that people resist perceived threats to their freedom by attempting to restore it [@brehmTheoryPsychologicalReactance1966]. The restriction-sensitive choice model builds on this idea by formalizing how removing or restricting options can paradoxically make them more desirable [@boissonnetGrabbingForbiddenFruit2025]. A related phenomenon appears in environmental regulation, where anticipated restrictions induced individuals to eliminate the very conditions that would trigger those restrictions. For example, in the case of the red-cockaded woodpecker, research found that private forest owners in North Carolina preemptively destroyed the endangered species' habitat by prematurely harvesting trees to avoid the species inhabiting their property. In turn, landowners prevented regulations on their property that would have been imposed by the Endangered Species Act. This preemptive behavior ultimately reduced the critical habitat that the listing of the species intended to protect, illustrating how anticipated regulations can trigger counterproductive or defensive actions [@lueckPreemptiveHabitatDestruction2000]. This example suggests that under some circumstances, conservation policies can unintentionally alter behavior before restrictions take effect, providing a theoretical framework for interpreting the blue paradox.
 
-Given this tension, it is critical to consider how MPA implementation impacts fishing grounds. @mcdermottBlueParadoxPreemptive2019 reported that the announcement of the future no-take MPA, PIPA (@fig-aoi), triggered a surge in fishing effort within the area slated for protection prior to establishment. The recorded fishing effort was measured as equivalent to 1.5 years of banned fishing: a 130% increase. However, two competing explanations have been proposed for the observed increase in fishing effort. @mcdermottBlueParadoxPreemptive2019 interpreted the increased fishing effort as an anticipatory behavioral response to the announced closure (blue paradox). Under this hypothesis, fishing effort would increase without a corresponding increase in fish abundance, resulting in a declining catch per unit effort (CPUE). In contrast, @hanichUnravelingBlueParadox2018 argued that favorable environmental conditions, particularly El Niño, increased tuna abundance and attracted greater fishing activity in the soon-to-be closed area during the period of this study. Under this explanation, CPUE would be expected to increase across the region because more fish were available and not as a result of anticipatory behavior.
+Given the growing call for MPA implementation, it is critical to consider how MPA announcements impact fishing effort in soon-to-be-protected grounds. @mcdermottBlueParadoxPreemptive2019 reported that the announcement of the future no-take MPA, PIPA (@fig-aoi), triggered a surge in fishing effort within the area slated for protection prior to its establishment. The recorded fishing effort was estimated to be equivalent to 1.5 years of banned fishing. Two competing explanations have been proposed for the observed increase in fishing effort. @mcdermottBlueParadoxPreemptive2019 interpreted the increase as an anticipatory behavioral response to the announced closure (blue paradox). Under this hypothesis, fishing effort increases on a fixed amount of fish in the region. Assuming catchability remains constant, one would expect catch per unit effort (CPUE) to remain constant or even *decrease* as teh stock becomes depleted. In contrast, @hanichUnravelingBlueParadox2018 argued that the El Niño Southern Oscillation (ENSO) during the time of the study elevated tuna abundance in the region, consistent with evidence linking ENSO conditions to changes in tuna abundance and distribution [@lehodeyNinoSouthernOscillation1997]. This increase in abundance, they argued, contributed to a rise in purse seine effort within the Central Pacific region from 19.8% in 2014 to 31.4% in 2015 [@hanichUnravelingBlueParadox2018]. By their argument, the increase in fishing effort is driven by an increase in tuna abundance. If the amount of fish available for harvest increased and catchability remained constant, CPUE would be expected to *increase* in the region unless effort were able to perfectly follow the fish (in which case it would remain constant). Though clearly imperfect, examining changes in CPUE could help shed light on this issue. A *decrease* in CPUE could lend support for the blue paradox, while an *increase* would suggest fish abundance increased proportionally more than effort. No detectable change in CPUE would not tip the balance either way.
 
-![(A) Location of the Kiribati islands denoted by the blue outline relative to surrounding Exclusive Economic Zones (EEZs). (B) Map of Kiribati islands and respective EEZs. The Phoenix Island Protected Area is highlighted in red.](../results/figures/pipa_original/map_studyarea.png){#fig-aoi}
+![(A) Location of the Kiribati Islands denoted by the blue outline relative to surrounding Exclusive Economic Zones (EEZs). (B) Map of Kiribati Islands and respective EEZs. The Phoenix Islands Protected Area is highlighted in red.](../results/figures/pipa_original/map_studyarea.png){#fig-aoi fig-pos="H"}
 
-<!--Need to adjust panel A square, edit colors-->
-
-The existing evaluation of the blue paradox relies primarily on fishing effort. It is important to consider, however, that fishing effort alone cannot distinguish whether increased activity reflects a behavioral response by fishers or changing ecological conditions. In order to reevaluate the blue paradox, this study makes three contributions. First, we assess whether the patterns previously reported for PIPA can be reproduced using Regional Fisheries Management Organization (RFMO) data. We also expand the PIPA case study to other large scale MPAs in order to evaluate whether the blue paradox is a recurring event in Galápagos Marine Reserve (GMR), Revillagigedo National Park (RNP), and Palau National Marine Sanctuary (PNMS). Second, we extend the previous analysis by incorporating total catch to calculate CPUE, allowing us to distinguish changes in fishing activity from changes in fishing success and fish availability. Third, because our approach does not utilize Global Fishing Watch's AIS-derived fishing effort data, which begins in 2012 [@kroodsmaTrackingGlobalFootprint2018a], we demonstrate whether RFMO data capture similar patterns to those observed in AIS records, thereby expanding the temporal range of potential analyses using RFMO data.
+The existing evaluation of the blue paradox relied only on fishing effort derived from automatic identification system (AIS) vessel-tracking data. It is important to note, however, that fishing effort alone cannot distinguish whether increased activity reflects a behavioral response by fishers or changing ecological conditions. In order to reevaluate the potential blue paradox reported for PIPA, this study makes three contributions. First, we assess whether the patterns previously reported for PIPA using Global Fishing Watch's (GFW) AIS-derived fishing effort data [@kroodsmaTrackingGlobalFootprint2018a] can be reproduced using effort data made publicly available by tuna Regional Fisheries Management Organizations (RFMOs). Second, we extend the previous analysis by incorporating catch data to calculate CPUE, an imperfect proxy for local abundance [@maunderInterpretingCatchUnit2006]. Third, we extend the blue paradox test to other large-scale MPAs in the Pacific Ocean, including some implemented before AIS data were available: Galápagos Marine Reserve (GMR) in Ecuador, Revillagigedo National Park (RNP) in Mexico, and Palau National Marine Sanctuary (PNMS) in Palau.
 
 # Methods
 
-## Catch and effort data preparation
+## Overview
 
-This study uses publicly available data from Regional Fisheries Management Organizations (RFMOs) to evaluate evidence of the Blue Paradox in the Phoenix Island Protected Area. The primary sources are the Inter-American Tropical Tuna Commission (IATTC) and the Western and Central Pacific Fisheries Commission (WCPFC). Both RFMOs provide monthly catch and effort data at a 1$^\circ$ x 1$^\circ$ spatial resolution.
+We begin with an evaluation of changes in fishing effort, catch, and CPUE for the Phoenix Islands Protected Area. We use the same  Before-After-Control-Impact (BACI) framework introduced by @mcdermottBlueParadoxPreemptive2019. The analysis compares fishing effort between the area within the boundaries of the future MPA and comparable control areas outside the MPA across before/after periods defined relative to the dates of the MPA. Additionally, we use catch and CPUE in order to distinguish the predictions made by the blue paradox versus the environmental conditions hypothesis. We specifically use commercial tuna purse seine data, as this an important fishery in the region (@hernandezEvidencePatternsTuna2019). 
 
-The data from each RFMO was harmonized into a singular dataset used for this study [@emilyrodriguezRFMOTunaCatch2026]. For each grid cell and month, the variables in @tbl-variables were calculated across both RFMOs. Catch, effort, and CPUE were set to NA when their value was zero.
+@mcdermottBlueParadoxPreemptive2019 previously analyzed fishing responses to the PIPA announcement using GFW's daily fishing effort estimates aggregated at the region level, measured in fishing hours per 1,000 km$^2$. Our approach differs in two ways. First, we measure fishing effort at the monthly level and with fishing days or number of sets per 10,000 km$^2$. We also compliment the analysis by including catch data measured in kilograms per 10,000 km$^2$ to calculate CPUE as kilograms per fishing day and kilograms per set. Further details on the data sources, processing, and analyses are provided below.
 
-<!--should the tuna names be their species name in the table?-->
+## Data sources
 
-| Variable | Description |
-|-----------------------|-------------------------------------------------|
-| Effort (days) | Number of fishing days |
-| Effort (sets) | Number of fishing sets |
-| Total catch (mt) | Metric tons of all selected species (albacore, big eye, skipjack, and yellowfin tuna) |
-| CPUE (days) | Total catch (mt) divided by fishing days |
-| CPUE (sets) | Total catch (mt) divided by fishing sets |
+This study uses publicly available data from RFMOs. The primary sources are the Inter-American Tropical Tuna Commission (IATTC) and the Western and Central Pacific Fisheries Commission (WCPFC) (@iattcPublicDomainData, @WCPFCPublicDomain). Both RFMOs provide monthly purse seine catch and effort data at a 1$^\circ$ × 1$^\circ$ spatial resolution, albeit with some variation in their reporting standards. The data from each RFMO were harmonized into a singular dataset used for this study [@emilyrodriguezRFMOTunaCatch2026]. For each grid cell and month, these data report the effort (days or sets) and total catch (mt) of four main tuna species (*Thunnus alalunga*, *Thunnus obesus*, *Katsuwonus pelamis*, and *Thunnus albacares*) caught by purse seine fleets in the region. From these, CPUE was calculated in mt/day and mt/set.
 
-: Defined variables in the harmonized RFMO data set [@emilyrodriguezRFMOTunaCatch2026]. {#tbl-variables)}
+Vector files with polygons for PIPA, GMR, RNP, and the related EEZs were obtained from the mregions2 R package [@guevaraMregions2AccessData2022]. Spatial data for the original 2015 PNMS were obtained from @zotero-item-726. Global country boundaries were obtained as a spatial vector layer using the rnaturalearth package version 1.2.0 [@massicotteRnaturalearthWorldMap2017].
 
-## Spatial processing
+## Data processing
 
-### PIPA Data
+The BACI design requires that we identify before and after periods. Temporal cutoffs were defined using the announcement and implementation of each MPA. For PIPA, these dates followed the definitions established by @mcdermottBlueParadoxPreemptive2019 in order to replicate the prior analysis: the announcement date was defined as September 1, 2013, while the date of implementation was defined as January 1, 2015.
 
-Because RFMO data are reported at the grid-cell level (1$^\circ$ x 1$^\circ$), each observation was converted into a polygon representing the corresponding spatial cell. For each record, a square polygon was generated by offsetting the reported longitude and latitude by $\pm$ 0.5. Spatial boundaries were then used to to classify cells into the following categories: treatment (cells that are inside or intersect with the border of PIPA) and control (cells that are inside or intersect with the border of either the Line Islands Exclusive Economic Zone (EEZ) or the Gilbert Islands EEZ). Cells that intersected the border of PIPA, even if they overlapped into the un-closed surrounding EEZ of the Phoenix Islands, were kept to ensure substantial data were available, as excluding these cells did not provide enough data for the analysis. All other cells that did not fall within these two categories were discarded.
+The 1$^\circ$ × 1$^\circ$ spatial coordinates were extracted from the RFMO data and rasterized. Spatial boundaries of PIPA and the related Exclusive Economic Zones (EEZs) were then used to define cells into two categories. Treated cells are those that lie inside or intersect with the PIPA boundary. Control cells are those that lie inside or intersect with either the Line Islands EEZ or the Gilbert Islands EEZ, the same two control regions defined by @mcdermottBlueParadoxPreemptive2019. Cells that partially intersected PIPA, even if they overlapped into the un-closed surrounding EEZ of the Phoenix Islands, were retained to capture all activity that might have happened inside the MPA. The same spatial filtering method was used for the control region (see supplementary materials @tbl-pipa-region-robust for a robustness test with different definition of which cells are included/excluded in each group). The total extent of the treated and control regions were calculated in km$^2$, which we then used to normalize our outcomes of interest: fishing effort (days per 10,000 km$^2$ and sets per 10,000 km$^2$), catch (kg per 10,000 km$^2$), and CPUE.
 
-The total area of PIPA, Line Islands EEZ, and Gilbert Islands EEZ were calculated by projecting the boundaries in EPSG:6933 and computing polygon area in km$^2$.
+For each region and month, total effort (days and sets) and total catch were calculated by summing observations across all fishing events. These region-by-month totals were used as the outcome variables in the models. The unit of observation is the region polygon, observed repeatedly across months. Catch was converted from metric tons to kilograms to improve model variable interpretation. CPUE was then calculated as the ratio of total catch to total fishing effort. To account for differences in region size, total fishing effort and total catch were standardized by region area and expressed per 10,000 km$^2$. The panel dataset includes observations for the treated and control cells, the months before implementation, and a treatment indicator (equal to 1 for cells within for PIPA). The spatial distribution of fishing observations within the treated and control regions are shown in @fig-pipa-map, with a total of 203 observation points (N = 171 for the control region; N = 32 for the treated region). The resulting dataset contains 52 rows, with 28 observations from the control and 24 observations from the treated region (@fig-pipa-map).
 
-### Additional case studies
+## Testing for a blue paradox
 
-Different rules for spatial clipping were set on a case by case basis. For GMR, cells that were within or intersected with the GMR border were kept, except those whose centroid did not fall within the GMR. This rule was changed for GMR in order to ensure substantial data was available, but noise from the legal fishing areas did not contribute<!--supplementary figure here?-->. The control region was established as the mainland EEZ of Ecuador. All cells that fell within the EEZ or intersected were kept.
-
-For RNP, all cells within the RNP region and whose centroid fell within the RNP were kept as the treatment region. Cells that were on the border of the treatment region but whose centroid did not fall within RNP were removed from the analysis and not considered for the control region<!--supplementary figure here?-->. The control region for RNP was established as cells within 200 nautical miles of the MPA and within Mexico's EEZ. All intersecting cells within this region were kept.
-
-The PNMS treatment region was defined as all cells within or intersected the original 2015 boundary of the MPA [@jaitehBycatchEstimatesPacific2021]<!--update as needed for this analysis-->. The control region was established as cells within 200 nautical miles of the Palau EEZ, but located within or intersecting with the Federated States of Micronesia (FSM). This was selected due to the limited control region availability within the Palau EEZ, as well as a lack of data within this area<!--should cite here why this choice/supplementary figure-->. However, because of the limited overall data available, a true blue paradox analysis for PNMS was not possible<!--should this be kept here or moved to the results?-->.
-
-All control and treatment region areas were calculated by projecting the boundaries in EPSG:6933 and computing polygon area in km$^2$.
-
-## Temporal boundaries
-
-### PIPA Data
-<!--thinking to reformat this section for how we define the dates so its more concise and clear, not sure best method right now-->
-The original announcement and implementation dates of PIPA selected by @mcdermottBlueParadoxPreemptive2019 were used for this analysis (@tbl-dates). Fishing behavior was analyzed one year prior to the announcement.
-
-| Date       | Description                                            |
-|:-----------|:-------------------------------------------------------|
-| 2012-09-01 | One year before the 2013 MPA announcement              |
-| 2013-09-01 | Online announcement date, as defined by the PIPA paper |
-| 2015-01-01 | Policy implementation date                             |
-| 2016-01-01 | One year after implementation                          |
-
-: Study dates for the PIPA blue paradox analysis defined by @mcdermottBlueParadoxPreemptive2019. {#tbl-dates}
-
-### Additional case studies
-
-For the GMR analysis, the temporal were defined differently compared to other case studies<!--should better defend this choice-->. The announcement date was instead defined as the day GMR was signed into law (1998), while the implementation date was defined as the date enforcement was added to the MPA region (2002) [@boerderInteractionsTunaFisheries2017a]<!--these papers do not give us the month date-->.
-
-The announcement date for RNP was defined as October 5, 2017 [@naturalesEsquemaParqueNacional] while the date of implementation was defined as November 27, 2017 [@martinezGlobalMarineProtected2025]. Because of the limited temporal gap between announcement and implementation, a full analysis to test for the blue paradox was not possible with the data used for this paper<!--should this be in the results with figures-->.
-
-The announcement date for PNMS was cited on October 22, 2015, where it was announced that PNMS would be established over a five-year period, leaving a small area of Palau open to domestic fishing [@PalauSignNational; @martinezGlobalMarineProtected2025]<!--not sure if this extra description goes here-->. The implementation date was defined as January 1, 2020 [@martinezGlobalMarineProtected2025].
-
-## Pixel-level Model creation
-
-To estimate preemptive fishing behavior, the analysis uses a before-after-control-impact (BACI) design. The unit of observation is the grid cell-month. The panel dataset includes all treatment and control cells, all months before implementation, a treatment indicator (equal to 1 for cells within for PIPA), and a post-announcement indicator (equal to 1 during the anticipation period). The baseline regression model is:
+We test for preemptive changes in fishing behavior via a multiple linear regression model with the form:
 
 $$\text{log}(Y_{it}) = \beta_0 + \beta_1\text{Treatment}_i + \beta_2\text{Post}_t + \beta_3(\text{Treatment}_i \times \text{Post}_t) + \epsilon_{it}$$
 
-where:
+where $Y_{it}$ is the outcome (effort per 10,000 km$^2$, catch per 10,000 km$^2$, or CPUE) in region $i$ during month $t$. Variables $\text{Treatment}_i$ and $\text{Post}_t$ are indicator variables. $\text{Treatment}_i$ equals 1 for the treated region and 0 for the control region. Similarly, $\text{Post}_t$ equals 1 for months during the anticipation period and 0 for months before the announcement. The coefficient $\beta_0$ is the intercept, representing the mean log outcome for the control region before the announcement. Then, $\beta_1$ measures the mean difference in the log outcome between treatment and control regions before the announcement, while $\beta_2$ measures the mean change in the log outcome over time for the control region. Finally, $\text{Treatment}_i \times \text{Post}_t$ is the interaction term. $\beta_3$ is our parameter of interest, capturing the additional mean change in the log outcome for the treated region during the anticipation period relative to the mean change observed in the control region (blue paradox effect). $\epsilon_{it}$ is the error term.
 
-- $Y_{it}$ is the outcome (catch, effort, or CPUE) in grid cell $i$ during month $t$.
-- $\beta_0$ is the intercept, representing the log outcome for control grid cells before the announcement.
-- $\text{Treatment}_i$ is an indicator equal to 1 for grid cells within the future MPA and 0 for control grid cells.
-- $\beta_1$ measures the baseline difference in the log outcome between treatment and control grid cells before the announcement.
-- $\text{Post}_t$ is an indicator equal to 1 for months during the anticipation period and 0 for months before the announcement.
-- $\beta_2$ measures the change in the log outcome over time for control grid cells.
-- $\text{Treatment}_i \times \text{Post}_t$ is the interaction term.
-- $\beta_3$ is the BACI (difference-in-differences) estimator, measuring the additional change in the log outcome for treatment grid cells during the anticipation period relative to the change observed in control grid cells (blue paradox effect).
-- $\epsilon_{it}$ is the error term.
+Coefficients from the log-linear models were exponentiated in the results to express effects as percentage changes. Percentage change was calculated as $(e^{\beta}-1) \times 100$, where $\beta$ represents the estimated regression coefficient. This provides the exact percentage change associated with a one-unit change in the predictor.
 
-The model was repeated for the following variables: effort (days), effort (sets), total catch (mt), CPUE (sets), and CPUE (days). Models were estimated using Conley standard errors to account for spatial correlation. For the GMR and RNP analysis, effort and CPUE in days were not available.
+## Additional case studies
 
-## Region-level model creation
+We extend the blue paradox to test three other MPAs: Galápagos Marine Reserve (GMR) in Ecuador, Revillagigedo National Park (RNP) in Mexico, and Palau National Marine Sanctuary (PNMS) in Palau. For each additional case study, MPA announcement and implementation dates were defined using available evidence as follows (@tbl-mpa-dates).
 
-The models were repeated using data aggregated the region-by-month level. For each region and month, total catch, total effort (days and sets) were calculated by summing observations across all fishing events. Catch was converted from metric tons to kilograms to improve model variable interpretation. CPUE was then calculated as the ratio of total catch to total fishing effort, rather than aggregating observation-level CPUE values. To account for differences in region size, total catch and total fishing effort were standardized by region area and expressed per 10,000 km$^2$. In this model, $Y_{jt}$ is the region-level outcome (catch per 10,000 km$^2$, effort per 10,000 km$^2$, or CPUE in region $r$ on date $t$). For the GMR and RNP analysis, effort and CPUE in days were not available.
+The announcement date for GMR was defined as March 19, 1998, when GMR was signed into law [@GalapagosMarineReserve]. The definition for "announcement" was changed here due to illegal fishing continuing in the region despite formal implementation. Thus, the "implementation" date for GMR was defined as January 1, 2002, corresponding to the date enforcement was added to the MPA region [@boerderInteractionsTunaFisheries2017a]. We follow @boerderInteractionsTunaFisheries2017a in adopting this enforcement implementation date because their study focused on tuna fisheries within the GMR, which are also the focus of our analysis. No specific month-date was found for the GMR enforcement, so January 1 is assumed as the month-start of enforcement in 2002.
+
+For RNP, the announcement date was defined as October 5, 2017, based on @naturalesEsquemaParqueNacional, and the implementation date as November 27, 2017, based on @martinezGlobalMarineProtected2025. The PNMS announcement date was defined as October 22, 2015 [@martinezGlobalMarineProtected2025]. Because PNMS was established over a five-year period (@PalauSignNational), the implementation date was defined as the end of the period on January 1, 2020 [@martinezGlobalMarineProtected2025]. Fishing behavior was analyzed one year prior to the announcement date.
+
+Spatial processing rules to clip RFMO data to the treated and control region were kept the same for each of the additional case studies. Related EEZs were selected as the control region for all analyses to similarly follow the selection criteria determined by @mcdermottBlueParadoxPreemptive2019. For GMR, the control region was established as the mainland EEZ of Ecuador (@fig-gmr-map). The Galápagos EEZ was not used as a control region because the 1$^\circ$ × 1$^\circ$  spatial resolution resulted in a limited number of independent observations. Further more, several grid cells overlapped into GMR, reducing the independence of the control region. The control region for RNP was established as cells within 200 nautical miles of the MPA and within Mexico's EEZ (@fig-revilla-map). Lastly, the PNMS treated region was defined as the original 2015 boundary of the MPA [@jaitehBycatchEstimatesPacific2021]. The control region for PNMS was established as cells within a 200 nautical mile region of Palau but within the Federated States of Micronesia EEZ (@fig-palau-map). This approach was necessary because the number of remaining observations in Palau was not sufficient to support the analysis. The Federated States of Micronesia provides a suitable comparison region due to its geographic proximity. Additionally, both countries are signatories to the Parties to the Nauru Agreement, and therefore operate under the same regional framework and licensing mechanisms related to tuna fishing, making this a comparable control region (@bernadettPartiesNauruAgreements).
+
+GMR was modeled the same as PIPA, but complete analyses for RNP and PNMS were not possible due to limited data coverage. Additionally, GMR and RNP lie within IATTC, who only report effort in sets. Therefore, effort in days per 10,000 km$^2$ and CPUE in kg/day were unavailable to be tested. 
 
 ## Processing
 
-All processing and analyses were conducted in R [@zotero-item-713]. Spatial data for MPAs and related EEZs were obtained from the mregions2 package [@guevaraMregions2AccessData2022]. Spatial data for the updated 2019 Palau EEZ and PNMS were obtained from<!--maybe cite repo https://github.com/emlab-ucsb/vds-mpa-paper/tree/master  here? Also, I think something came from mregions2 or another source, not sure-->. Related maps were built using ggplot2 [@ggplot2] and sf [@pebesmaSimpleFeaturesStandardized2018a]. Models were fit using the fixest package [@bergeFixestFastFeaturerich2026]<!--terra? rnaturalearth?-->. Model tables were built using the modelsummary package [@modelsummary] and time series were created using ggplot2 [@ggplot2]<!--or just cite tidyverse?-->. Coefficients from the log-linear models were exponentiated in the written results to express effects as percentage changes. Percentage change was calculated as $(e^{\beta}-1) \times 100$, where $\beta$ represents the estimated regression coefficient. This provides the exact percentage change associated with a one-unit change in the predictor.
+All processing and analyses were conducted in R version 4.5.1 [@zotero-item-713]. Models were fit using the fixest package (version 0.14.0) [@bergeFixestFastFeaturerich2026]. Model tables were built using the modelsummary package (version 2.6.0) [@modelsummary] and figures were created using ggplot2 (version 4.0.2)[@ggplot2]. Maps were built using ggplot2 [@ggplot2], rnaturalearth (version 1.2.0) [@massicotteRnaturalearthWorldMap2017] and sf (version 1.1.0)[@pebesmaSimpleFeaturesStandardized2018a].
 
 # Results
 
-## PIPA
+## Phoenix Islands Protected Area
 
-Cumulative fishing effort in days five years prior to announcement demonstrates varying patterns across the study region (@fig-fishing-effort). The Line Islands EEZ presents lower log-fishing effort within its EEZ. Higher concentrations of fishing effort are clustered around the eastern and southern EEZ of the Gilbert Islands. The Phoenix islands display mixed concentrations of effort.<!--maybe cut this part since now we have the AOI figure?-->
+### Comparing AIS and RFMO data
 
-![Sum of monthly fishing effort (log-days) across the Kiribati study region from 2010-2015, prior to the implementation of PIPA in 2015.](../results/figures/pipa_original/map_pipa.png){#fig-fishing-effort}
+We first compared fishing activity derived from RFMO data and those derived from GFW data. Monthly fishing effort time-series comparing the datasets showed similar patterns recorded a year prior to PIPA's announcement and leading up to the MPA's implementation (@fig-pipa-gfw-rfmo-days and @fig-pipa-gfw-rfmo-days-hours). These results demonstrate that RFMO catch and effort records are a suitable basis for extending previous evaluations of the blue paradox beyond fishing effort alone.
 
-Log-linear pixel-level BACI models indicated little significant evidence that the announcement of PIPA closure produced changes in fishing behavior during the anticipation period (@tbl-pipa-pixel). Prior to the announcement, treatment cells exhibited significantly lower fishing effort than control cells, averaging approximately -34% lower fishing effort measured in days ($\beta$ = -0.419, SE = 0.157, *p* \< 0.01). Total catch was marginally lower in treatment versus control cells by approximately -28% ($\beta$ = -0.334, SE = 0.188, *p* \< 0.10). Baseline differences in CPUE and effort measured in sets were not statistically significant.
+### Trends in effort, catch, and CPUE
 
-During the anticipation period, control cells demonstrated little change in fishing effort or total catch. There was a significant temporal change by +13% in CPUE measured per fishing day among control cells ($\beta$ = 0.118, SE = 0.055, *p* \< 0.05). All treatment cells showed a percent increase for each model variable relative to the control region in during the anticipation period. The BACI coefficient for total catch in PIPA cells increased by an estimated +36% relative to control region cells ($\beta$ = 0.304, SE = 0.215, *p* \< 0.10). Effort measured in sets had the smallest percent increase in the PIPA cells relative to the control region cells (+5.9%, $\beta$ = 0.058, SE = 0.259, *p* \< 0.10). CPUE measured per fishing day was positive, indicating that CPUE in PIPA cells increased by an estimated +19% relative to the change observed in control region cells ($\beta$ = 0.177, SE = 0.116, *p* \< 0.10). CPUE measured in sets increased by approximately 28% ($\beta$ = 0.245, SE = 0.162, *p* \< 0.68)  (@fig-pipa-pixel). However, none of the BACI interaction terms were statistically significant, providing no evidence that fishing effort, total catch, or CPUE changed significantly between treatment and control cells during the anticipation period.
+To characterize how fishing activity changed around the announcement of PIPA, we examined time-series trends in effort, CPUE, and catch in the control and treated regions (@fig-pipa-region). Across all five outcomes, the control and treated regions exhibited broadly similar temporal patterns prior to the announcement. Following the announcement of PIPA, our results show a slight increase for both fishing effort in days and sets per 10,000 km$^2$ in the control region (Panels A-B, blue lines). This increase is accompanied by a corresponding rise in catch in kg per 10,000 km$^2$ in the control region (Panel E). Effort and catch in the treated region show even higher increases, though these were not significantly different from the ones observed for the control region (@tbl-pipa-region). Across both regions, CPUE remained relatively stable after the announcement date in the treatment and control regions, with no clear shifts in either kg/day or kg/set (Panels C-D).
 
-```{r}
-#| label: tbl-pipa-pixel
-#| tbl-cap: Log-linear BACI regression estimates at the pixel-month level for PIPA. The interaction term (MPA announcement effect) estimates the percentage change in treated cells relative to control cells during the anticipation period. Conley standard errors are used.
+Consistent with these visual patterns, the BACI interaction terms indicate moderate, positive announcement effects in the treated region relative to the control, though none of these estimates are statistically significant (@tbl-pipa-region). Specifically, the announcement was associated with an increase in effort measured in days and sets per 10,000 km $^2$ ($\beta$ = 0.336, SE = 0.897, *p* \< 0.1; $\beta$ = 0.354, SE = 0.961). Catch increased with the announcement by 46.81% within the treated region relative to the changes observed in control region ($\beta$ = 0.384, SE = 0.882, *p* \< 0.1). However, CPUE in kg per days and sets had minimal increase relative to the control region ($\beta$ = 0.048, SE = 0.192, *p* \< 0.1; $\beta$ = 0.030, SE = 0.208, *p* \< 0.1) (@tbl-pipa-region). To further examine temporal differences between the treated and control regions, we fitted a restricted-cubic spline to the time-series of each region and  differences between their predicted values for each outcome. That is, we calculated the month-by-month difference between the orange and blue lines in @fig-pipa-region. These estimates provide a complementary visualization of how the gap between regions evolved before MPA implementation (@fig-differences-pipa).
 
-pixel_pipa <- readRDS("../data/output/pipa/m_pixel_log.rds")
+We include robustness test in the supplementary content where we change the definition of how pixels are assigned to treatment and controls. This regression table provides a robustness check to match @tbl-pipa-region. Here, we restrict the treated region data to include only cells that are full contained within PIPA. Our results show similar non-significant trends (@tbl-pipa-region-robust). Additionally, we included an ENSO index as a covariate in the model and found no significant differences in the results (@tbl-pipa-enso).
 
-pipa_pixel_list <- as.list(pixel_pipa)
+![Cubic spline estimates of temporal trends in five outcomes of interest for control and treatment regions in the Phoenix Islands Protected Area (PIPA) at the region-month level. Panels show observed monthly values (points) and fitted cubic spline trajectories (lines) with shaded ribbons indicating ±1 standard error around the predicted values for (A) effort (days/10,000 km$^2$), (B) effort (sets/10,000 km$^2$), (C) CPUE (kg/day), (D) CPUE (kg/sets), and (E) total catch (kg/10,000 km$^2$) from September 2012 to December 2014. Panel F shows the treatment (PIPA) and control regions. The vertical line indicates the announcement of PIPA (2013-09-01). Data include all observations prior to MPA implementation on 2015-01-01, with no post-implementation observations.](../results/figures/pipa_original/cubic_timeseries_panels_region.png){#fig-pipa-region fig-pos="H"}
 
-names(pipa_pixel_list) <- c(
-  "log Effort (days)",
-  "log Effort (sets)",
-  "log Total Catch (mt)",
-  "CPUE (mt/days)",
-  "CPUE (mt/sets)"
-)
-
-
-modelsummary(
-  pipa_pixel_list,
-  stars = TRUE,
-  coef_map = c(
-    "treatment" = "Pre-announement difference (treatment)",
-    "post" = "Post-announcement change (control)",
-    "treatment:post" = "MPA announcement effect (treatment)"
-  ),
-  gof_map = c(
-    "nobs",
-    "r.squared",
-    "adj.r.squared"),
-  output = "latex",
-  width = 1
-)
-```
-
-![Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the pixel-month level in PIPA. Panels show monthly trajectories for (A) effort (days), (B) effort (sets), (C) total catch (mt), (D) CPUE (mt/day), and (E) CPUE (mt/set) from 2013-2016. The first vertical marker indicates the announcement date of PIPA, while the second vertical marker notes the implementation of PIPA. Panel F highlights the related control and treatment region.](../results/figures/pipa_original/BACI_timeseries_panels.png){#fig-pipa-pixel}
-
-Standardizing for area, the region-level log-linear BACI models indicated significant increases in effort (sets and days) and catch in the control region during the announcement period (@tbl-pipa-region). Effort density increased by approximately +277% for fishing days ($\beta$ = 1.328, SE = 0.434, *p* \< 0.01) and +311% for fishing sets ($\beta$ = 1.414, SE = 0.458, *p* \< 0.01), while catch density increased by approximately +302% ($\beta$ = 1.391, SE = 0.448, *p* \< 0.01) in the control region post-announcement (@fig-pipa-region). The interaction terms were positive across effort and catch for the interaction term, suggesting larger increases in the treatment region relative to controls (approximately 40–46%), but these effects were not statistically significant.
 
 ```{r}
 #| label: tbl-pipa-region
-#| tbl-cap: Log-linear BACI regression estimates at the region-level for PIPA. The interaction term (MPA announcement effect) estimates the percentage change in the treatment region relative to control region during the anticipation period.
+#| tbl-cap: Log-linear BACI regression estimates at the region-level for Phoenix Islands Protected Area. The interaction term estimates the change in the treatment region relative to the control region during the anticipation period. Numbers in parentheses report Numbers in parentheses report Newey-West standard errors that to account for serial correlation.
+#| tbl-scap: BACI regression estimates for the Phoenix Islands Protected Area
+#| tbl-pos: H
 
 region_pipa <- readRDS("../data/output/pipa/m_region_log.rds")
 
 pipa_region_list <- as.list(region_pipa)
 
 names(pipa_region_list) <- c(
-  "log Effort (days) / km²",
-  "log Effort (sets) / km²",
-  "log Total Catch (kg) / km²",
-  "CPUE (kg/days)",
-  "CPUE (kg/sets)"
+  "log Effort (days) / 10,000 km²",
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/day)",
+  "CPUE (kg/set)"
 )
 
 modelsummary(
   pipa_region_list,
   stars = TRUE,
-  coef_map = c(
-    "treatment" = "Pre-announement difference (treatment)",
-    "post" = "Post-announcement change (control)",
-    "treatment:post" = "MPA announcement effect (treatment)"
-  ),
-  gof_map = c(
-    "nobs",
-    "r.squared",
-    "adj.r.squared"),
-  width = 1
-)
-```
-
-![Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the region-month level in PIPA. Panels show monthly trajectories for (A) effort (days)/km$^2$, (B) effort (sets)/km$^2$, (C) total catch (kg)/km$^2$, (D) CPUE (kg/day), and (E) CPUE (kg/set) from 2013-2016. The first vertical marker indicates the announcement date of PIPA, while the second vertical marker notes the implementation of PIPA. Panel F highlights the related control and treatment region.](../results/figures/pipa_original/BACI_timeseries_panels_region.png){#fig-pipa-region}
-
-## Additional case studies
-
-### GMR
-
-Log-linear pixel-level models for GMR indicated that effort (sets), total catch (mt), and CPUE (mt/sets) were generally higher (approximately 10%-36%) in the treatment region cells relative to the control region cells prior to the announcement of GMR (@tbl-gmr-pixel). After the implementation of GMR, total catch (kg) and CPUE measured in sets significantly increased in the control region area by approximately +47% and +42% ($\beta$ = 0.386, SE = 0.146, *p* \< 0.01; $\beta$ = 0.348, SE = 0.120, *p* \< 0.01)(@fig-gmr-pixel). Effort measured in sets was minimally higher in the control region after implementation of GMR by approximately 3.9% but was not significant (*p* \< 0.1). Within the treatment region, effort (sets) decreased by approximately -1.7% ($\beta$ = -0.017, SE = 0.137, *p* \< 0.1) while catch and CPUE increased by about +15.7% and +17.7%, but none were significant (@tbl-gmr-pixel).
-
-```{r}
-#| label: tbl-gmr-pixel
-#| tbl-cap: Log-linear BACI regression estimates at the pixel-month level for GMR. The interaction term (MPA announcement effect) estimates the percentage change in treated cells relative to control cells during the anticipation period. Conley standard errors are used.
-
-pixel_gmr <- readRDS("../data/output/gmr/m_pixel_log.rds")
-
-gmr_pixel_list <- as.list(pixel_gmr)
-
-names(gmr_pixel_list) <- c(
-  "log Effort (sets)",
-  "log Total Catch (mt)",
-  "CPUE (mt/sets)"
-)
-
-modelsummary(
-  gmr_pixel_list ,
-  stars = TRUE,
-  coef_map = c(
-    "treatment" = "Pre-announement difference (treatment)",
-    "post" = "Post-announcement change (control)",
-    "treatment:post" = "MPA announcement effect (treatment)"
-  ),
   gof_map = c(
     "nobs",
     "r.squared",
@@ -242,38 +146,36 @@ modelsummary(
   output = "latex",
   width = 1
 )
+
 ```
 
-<!--need to fix height of figures below-->
+## Additional case studies
 
-![Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the pixel-month level in GMR. Panels show monthly trajectories for (A) effort (sets), (B) total catch (mt), (C) CPUE (mt/set) from 2013-2016. The first vertical marker indicates the implementation of GMR, while the second vertical marker notes the implementation of enforcement within GMR. Panel D highlights the related control and treatment region.](../results/figures/gmr/BACI_timeseries_panels.png){#fig-gmr-pixel}
+We have shown that RFMO data can capture the same broad temporal trends observed in AIS-derived data from GFW. RFMO data thus offer a unique opportunity to examine whether a blue paradox had emerged in the GMR (@fig-gmr-map). Fishing trends in GMR after implementation of the MPA were generally lower (@fig-gmr-region). Supplementary figures show the temporal differences between treatment and control regions for each outcome (@fig-differences-gmr). Effort in sets for the region was 8.97% lower, while catch was 5.35% lower in the treated region relative to the control ($\beta$ = -0.094, SE = 0.497, *p* < 0.1; $\beta$ = -0.055, SE = 0.494, *p* < 0.1). CPUE in sets was only minimally higher in the treated region relative to the control ($\beta$ = 0.039, SE = 0.202, *p* < 0.1) (@tbl-gmr-region).
 
-The log-linear region-level model indicated effort measured in sets was significantly lower in the treatment region relative to the control by approximately -66.4% prior to the implementation of GMR ($\beta$ = -1.092, SE = .524, *p* \< 0.05). Total catch was also lower, but not significantly ($\beta$ = -0.848, SE = .590, *p* \< 0.1) (@tbl-gmr-region).
+Unfortunately, regional analyses for RNP and PNMS were not possible. RNP had a limited temporal gap between announcement and implementation (~1.5 months). Even if preemptive behavior were to occur, it would be difficult to detect given the monthly resolution of data utilized for this analysis. As for PNMS, little data was available during the time of anticipation. Therefore, a full analysis to test for the blue paradox in PNMS was not possible. Our supplementary materials include figures and tables with the restricted data available for these two cases (@tbl-revilla-region, @tbl-palau-region, @fig-revilla-region, @fig-palau-region, @fig-differences-rnp, @fig-differences-pnms).
 
-After the implementation of GMR, effort and catch within the treatment region decreased by -41% and -38.2% ($\beta$ = -0.528, SE = .605, *p* \< 0.1; $\beta$ = -0.482, SE = .681, *p* \< 0.1), greater than the marginal decrease captured in the pixel-level model (@tbl-gmr-region). CPUE increased marginally by 4.7%, but none of the modeled changes were significant.
+
+![Cubic spline estimates of temporal trends in three outcomes of interest for control and treatment regions in the Galápagos Marine Reserve (GMR) at the region-month level. Panels show observed monthly values (points) and fitted cubic spline trajectories (lines) with shaded ribbons indicating ±1 standard error around the predicted values for (A) effort (sets/10,000 km$^2$), (B) total catch (kg/10,000 km$^2$, and (C) CPUE (kg/sets) from January 1997 to December 2001. Panel D shows the treatment (GMR) and control region. The vertical line indicates the implementation of GMR (1998-03-18). Data include all observations prior to enforcement implementation on 2002-01-01, with no post-implementation observations.](../results/figures/gmr/cubic_timeseries_panels_region.png){#fig-gmr-region fig-pos="H"}
 
 ```{r}
 #| label: tbl-gmr-region
-#| tbl-cap: Log-linear BACI regression estimates at the region-level for GMR. The interaction term (MPA announcement effect) estimates the percentage change in the treatment region relative to the control region during the anticipation period.
+#| tbl-cap: Log-linear BACI regression estimates at the region-level for Galápagos Marine Reserve. The interaction term estimates the percentage change in the treatment region relative to the control region during the anticipation period. Numbers in parentheses report Newey-West standard errors that to account for serial correlation.
+#| tbl-pos: H
 
 region_gmr <- readRDS("../data/output/gmr/m_region_log.rds")
 
 gmr_region_list <- as.list(region_gmr)
 
 names(gmr_region_list) <- c(
-  "log Effort (sets) / km²",
-  "log Total Catch (kg) / km²",
-  "CPUE (kg/sets)"
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/set)"
 )
 
 modelsummary(
   gmr_region_list,
   stars = TRUE,
-  coef_map = c(
-    "treatment" = "Pre-announement difference (treatment)",
-    "post" = "Post-announcement change (control)",
-    "treatment:post" = "MPA announcement effect (treatment)"
-  ),
   gof_map = c(
     "nobs",
     "r.squared",
@@ -284,45 +186,217 @@ modelsummary(
 
 ```
 
-<!--this figure below for CPUE seems strange, need to check code-->
-
-![Temporal trends in fishing effort, catch, and CPUE for control and treatment regions at the region-month level in GMR. Panels show monthly trajectories for (A) effort (sets)/km$^2$, (B) total catch (kg)/km$^2$, (C) CPUE (kg/set) from 2013-2016. The vertical marker indicates the implementation of GMR, while the second vertical marker notes the implementation of enforcement within GMR. Panel D highlights the related control and treatment region.](../results/figures/gmr/BACI_timeseries_panels_region.png){#fig-gmr-region}
-
-### RNP
-
-### PNMS
-
-<!--how do we discuss these in the results?-->
-
 # Discussion
 
-<!--line about the blue paradox as anticipatory vs. ecological drivers, why CPUE is essential, why RFMO data offers new lens-->
+## Evaluating reproducibility using RFMO data
 
-## PIPA
+We used publicly available RFMO data to revisit the test of the blue paradox following MPA announcements. We found that RFMO data were able to generally reproduce the same patterns in fishing effort reported for the Phoenix Islands Protected Area (PIPA)[@mcdermottBlueParadoxPreemptive2019]. This alignment is notable considering that RFMO data can differ substantially from GFW AIS-based data. While AIS data capture detected vessel-level behavior at daily intervals, RFMO data aggregate effort at the set or day level and are reported monthly. However, unlike the AIS-based analysis, our results do not show statistically significant changes in effort (days) in the treatment region relative to the control during the anticipation period as reported by @mcdermottBlueParadoxPreemptive2019. This highlights an important limitation. RFMO data may capture broad shifts in effort but may not be sensitive enough to detect fine-scale changes, especially when changes occur in smaller regions or in limited temporal gaps. These data are also subject to privacy constraints that preclude RFMOs from disclosing information in any strata that comes from less than 3 vessels<!--missing citation-->. Though, it is important to note that the analysis by @mcdermottBlueParadoxPreemptive2019 does not filter strictly for tuna purse seine data, which may partly explain why the RFMO data used does not show a significant increase in effort during the anticipation period.
 
-This study reassesses the prior analysis of the blue paradox effect on PIPA. Previous work by @mcdermottBlueParadoxPreemptive2019 found that fishing effort increased 130% in response to the announcement of PIPA. We find non-significant increases in fishing catch and effort within PIPA from the announcement date leading up to the implementation of the MPA.
+## Extending the previous blue paradox analysis
 
-Prior to the announcement of PIPA, the pixel-level model indicates that catch, effort, and CPUE were generally lower within the treatment region compared to the control. All five model variables increased during the announcement period within PIPA. Effort measured in days only increased by about 7.8%, while CPUE measured in mt/days increased by almost 20%. Comparably, effort in sets only increased by about 6%, while CPUE measured in mt/sets increased by about 28%<!--should i be restating these percentages as a reminder or is it redundant--> (@tbl-pipa-pixel). This model suggests that fishing did not increase in response to the announcement of PIPA, but rather because of favorable fishing conditions yielding higher profitability, consistent with the competing hypothesis by @hanichUnravelingBlueParadox2018.<!--source here about conditions this year-->
+Incorporating CPUE into the analysis provides a critical aspect missing from the previous evaluation of the blue paradox. Fishing effort alone cannot distinguish whether behavior is a reflection of preemptive action or the expected increase in effort associated with higher fishing abundance. As discussed prior, one would expect an increase in effort without an increase in fish abundance, CPUE is expected to remain relatively stable. Conversely, if increasing tuna abundance caused the previously reported increase in fishing effort, CPUE would be expected to increase. 
 
-However, the PIPA region-level model suggests a different explanation. Though not significant, catch, effort (days), and effort (sets) are noticeably greater in the treatment region compared to the control during the anticipation period (@fig-pipa-region). However, CPUE in kg/days only modestly increased by approximately by 4.8%, while effort in days/km$^2$ increased by almost 40%. These contrasting results suggest that the response during the announcement period was not uniform within PIPA. Aggregation to the region level overall captures a broader redistribution of fishing effort. Directionally, these results are more consistent with arguments made by @mcdermottBlueParadoxPreemptive2019 on anticipatory behavioral responses rather than an increase in fish availability. However, the results are not statistically conclusive. This model does not demonstrate a decline in CPUE that would be expected under a blue paradox mechanism, but neither does it provide substantial evidence of an increase in catch efficiency that would be expected if increased tuna abundance were the primary drivers.<!--maybe need to discuss more here-->
+In PIPA, the increase in fishing effort during the anticipation period was accompanied by an increase in total catch. However, despite increases in both catch and effort within the treated region, CPUE exhibited relatively little change. Our results show CPUE during the anticipation period while also leveling off toward values comparable to those observed in the control, though these changes were not statistically significant (@fig-pipa-region). The overall stability of CPUE is noteworthy given the substantial, though non-significant, increases in both effort in catch. 
 
-## Additional Case Studies
+These results provide only limited evidence for the increase in CPUE that would be expected if elevated tuna abundance caused by ENSO were the primary driver of fishing activity associated with a blue paradox. At the same time, the weak positive trends do not completely rule out a possible blue paradox mechanism. Access to higher-resolution RFMO data would perhaps allow for a more precise assessment of CPUE dynamics within PIPA, providing a stronger test of these competing hypotheses. Most notably, the combination of increased effort and catch with relatively stable CPUE suggests that effort patterns alone are insufficient to attribute the observed increase exclusively to preemptive behavior. Our analysis demonstrates that similar patterns in fishing effort may arise under multiple ecological and behavioral scenarios. Overall, these results highlight the value of integrating CPUE and demonstrate how RFMO data can contribute to evaluating conservation interventions.
 
-GMR showed little evidence of the blue paradox. Prior to the implementation of GMR, effort, catch, and CPUE were already higher within the treatment region relative to the control per the pixel-level model. This indicates that the treatment region already attracted higher levels of fishing without the implication of an MPA implementation. After the implementation of GMR, the only significant changes occurred outside the soon-to-be closed region. Total catch and CPUE increased substantially (+47% and +42%). Effort only increased slightly and was not significant. This could indicate a redistribution of effort towards more productive cells<!--source?-->. The treatment region had little response to the implementation of GMR. Effort declined slightly by -1.7%, while catch and CPUE had modest increases (+15.7% and +17.7%), but none were significant. The lack of strong trends suggest that the implementation of GMR had little effect on the decisions of fishers. The region-level model reveals larger decreases within GMR after implementation. Effort specifically decreased by -41%, while catch decreased -38.2%, the opposite of a blue paradox effect.
+## Other cases of the blue paradox
 
-Revillagigedo was implemented a little over a month after its announcement, which would likely not allow for a blue paradox to occur. Even if it were to occur, the data we use does not allow a test for it. <!--not sure if data should be included in the results or as supplementary material-->
+A major advantage of using RFMO data is their longer temporal coverage. AIS data became easily available when GFW brought them to mainstream scientific workflow in 2018, with data dating back to 2012 [@kroodsmaTrackingGlobalFootprint2018a]. RFMO data, on the other hand, date back as far as 1958 for the IATTC and 1950 for the WCPFC purse seine data on a 1$^\circ$ × 1$^\circ$ grid (@iattcPublicDomainData, @WCPFCPublicDomain). These data allowed for the analysis of a blue paradox study in temporal ranges unavailable from GFW data. Because we were able to replicate the patterns detected in PIPA via AIS data, we extended our analysis to other MPAs. Specifically, we repeated this analysis on GMR, which was designated as an MPA in 1998 long before the temporal start of GFW data (2012) [@kroodsmaTrackingGlobalFootprint2018a]. We found no evidence of a blue paradox within this region. Interestingly, catch and effort were notably lower in GMR relative to the treated region during the anticipation period. CPUE was only minimally higher within GMR relative to the control. However, it is important to note that the GMR model did not have a true "anticipation" period, as the analysis focuses on the region after the implementation of the MPA, but before the addition of enforcement (@boerderInteractionsTunaFisheries2017a).
 
-Palau had little to no data available. <!--for Palau, should address changing locations of PNMS)-->
+The RFMO data, however, come with their own shortcomings associated with the resolution at which data are reported. Specifically, RNP in Mexico was implemented a little over a month after its announcement. Though the temporal gap is limited and would likely allow little time for a blue paradox to occur, RFMO data aggregated at the monthly level did not allow robust analyses. For PNMS, a large temporal gap was present between announcement and implementation, but little reported data from the RFMOs were available within the region, making a blue paradox analysis impossible via this data. Additional research has also shown no evidence of a blue paradox in the large scale MPA Papahānaumokuākea Marine National Monument (@lynhamImpactTwoWorlds2020).
 
-## RFMO Data Expansion
+The same issue of resolution extends to the spatial dimensions of the data, which are reported on a 1$^\circ$ × 1$^\circ$ grid. At the equator, a grid cell is ~111 km. Most MPAs in the world would be entirely captured by a single grid cell in the data. We note, however, that large-scale pelagic MPAs tend to be larger than coastal MPAs, so RFMO data may still prove useful when evaluating large-scale MPAs.
 
-Notably, the PIPA region-level model successfully reproduces the trend in fishing effort related to the announcement of PIPA as modeled by @mcdermottBlueParadoxPreemptive2019, indicating that RFMO data can yield similar ecological results. This trend is most distinct within @fig-pipa-region, specifically in panel A, which indicates a greater increase in effort in the treatment region relative to the control, similar to the previous findings by @mcdermottBlueParadoxPreemptive2019.<!--should we put mcdermott figure here maybe? or ref it some how?-->
+# Conclusion
 
-## Conclusion
-
-The collective results across PIPA and GMR suggest that the blue paradox is not a universal response to MPA announcements. Anticipatory behavior is contingent on a specific set of conditions, including sufficient time between announcement and closure, clear expectations of future access loss, and stable ecological conditions<!--basically want to address here the conflicting, but non significant, results of PIPA-->. In the case of PIPA, pixel-level models indicate that profitability was the main driver for movement of vessels in the soon-to-be closed region, while the region model shows both catch and effort rising, yet little change to CPUE. The overall results are more consistent with the trends reported by @mcdermottBlueParadoxPreemptive2019, but neither provide significant evidence on the expected changes in CPUE for the @mcdermottBlueParadoxPreemptive2019 or @hanichUnravelingBlueParadox2018 hypotheses. Across the additional case studies, we find little evidence of the blue paradox acting as a repeated pattern in other large-scale MPAs. GMR exhibited stable or declining effort, while RNP's short announcement window allowed little time for a blue paradox to occur. PNMS lacked sufficient data for inference, but the data that were available showed little changing trends in fishing effort between the control and treatment <!--ref figure here-->. Importantly, this study demonstrates that RFMO data can be used to reproduce broad patterns captured in AIS data provided by @kroodsmaTrackingGlobalFootprint2018a. This expands analysis possibilities on a historical scale. 
-
-Taken together, these  results suggest that anticipatory responses to MPAs is highly context-dependent, shaped by ecological conditions, announcement timing, and fleet behavior rather than by MPA designation alone. Rather than signaling a universal blue paradox, the results indicate a context-dependent response for each MPA analyzed. Overall, this work highlights the need to interpret blue paradox dynamics through the use of both catch and effort.
-<!--Need good closing statements-->
+We demonstrate that reevaluating the blue paradox through RFMO catch and effort data provide a more nuanced understanding of how fishers may respond to impending MPA establishments. By showing that RFMO data can reproduce broad effort patterns observed in AIS-derived data and incorporating CPUE, our analysis extends previous evaluations that relied solely on fishing effort. Rather than supporting a single explanation, our results suggest that the increase in fishing effort observed in PIPA may reflect a combination of behavioral and ecological processes. The analyses of PIPA and other large-scale MPAs underscore the importance of fishing context when defining a blue paradox. Together, these findings emphasize the value of integrating multiple aspects of fishing activity to assess the behavioral impacts of large-scale marine conservation policies.
 
 # References
+
+::: {#refs}
+:::
+
+\clearpage
+
+# Appendices {.appendix}
+
+\setcounter{figure}{0}
+\setcounter{table}{0}
+
+\renewcommand{\thefigure}{A.\arabic{figure}}
+\renewcommand{\thetable}{A.\arabic{table}}
+
+## Tables
+
+
+| MPA | Announcement date | Implementation date | Source |
+|---|---|---|---|
+| PIPA | 2013-09-01 | 2015-01-01 | @mcdermottBlueParadoxPreemptive2019 |
+| GMR* | 1998-03-19 | 2002-01-01 | @GalapagosMarineReserve; @boerderInteractionsTunaFisheries2017a |
+| RNP | 2017-10-05 | 2017-11-27 | @naturalesEsquemaParqueNacional; @martinezGlobalMarineProtected2025 |
+| PNMS | 2015-10-22 | 2020-01-01 | @martinezGlobalMarineProtected2025; @PalauSignNational |
+
+: Marine protected area announcement and implementation dates used for the analysis. \**The GMR "announcement" date is the date GMR was established, and the "implementation" date is the date enforcement was added.* {#tbl-mpa-dates tbl-pos="H"}
+
+
+```{r}
+#| label: tbl-pipa-region-robust
+#| tbl-cap: Log-linear BACI regression estimates at the region-level for Phoenix Islands Protected Area, filtering for cells strictly inside PIPA. The interaction term estimates the percentage change in the treatment region relative to the control region during the anticipation period.Numbers in parentheses report Newey-West standard errors that to account for serial correlation.
+#| tbl-pos: H
+
+region_pipa <- readRDS("../data/output/pipa/m_region_log_robustness.rds")
+
+pipa_region_list <- as.list(region_pipa)
+
+names(pipa_region_list) <- c(
+  "log Effort (days) / 10,000 km²",
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/day)",
+  "CPUE (kg/set)"
+)
+
+modelsummary(
+  pipa_region_list,
+  stars = TRUE,
+  gof_map = c(
+    "nobs",
+    "r.squared",
+    "adj.r.squared"),
+  output = "latex",
+  width = 1
+)
+```
+
+
+
+```{r}
+#| label: tbl-pipa-enso
+#| tbl-cap: Log-linear BACI regression estimates at the region-level for Phoenix Islands Protected Area controlling for the El Niño Southern Oscillation (Niño 3.4) [@zotero-item-804]. The interaction term estimates the percentage change in the treatment region relative to the control region during the anticipation period, conditional on ENSO conditions. Numbers in parentheses report Newey-West standard errors that to account for serial correlation.
+#| tbl-pos: H
+
+m_region_log_enso <- readRDS("../data/output/pipa/m_region_log_enso.rds")
+
+m_region_log_enso_list <- as.list(m_region_log_enso)
+
+names(m_region_log_enso_list) <- c(
+  "log Effort (days) / 10,000 km²",
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/day)",
+  "CPUE (kg/set)"
+)
+
+modelsummary(
+  m_region_log_enso_list,
+  stars = TRUE,
+  gof_map = c(
+    "nobs",
+    "r.squared",
+    "adj.r.squared"),
+  output = "latex",
+  width = 1
+)
+```
+
+
+
+```{r}
+#| label: tbl-revilla-region
+#| tbl-cap: Log-linear BACI regression estimates at the region-level for Revillagigedo National Park. The interaction term estimates the percentage change in the treatment region relative to the control region during the anticipation period. Numbers in parentheses report Newey-West standard errors that to account for serial correlation.
+#| tbl-pos: H
+
+region_revilla <- readRDS("../data/output/revilla/m_region_log.rds")
+
+revilla_region_list <- as.list(region_revilla)
+
+names(revilla_region_list) <- c(
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/set)"
+)
+
+modelsummary(
+  revilla_region_list,
+  stars = TRUE,
+  gof_map = c(
+    "nobs",
+    "r.squared",
+    "adj.r.squared"),
+  output = "latex",
+  width = 1
+)
+
+```
+
+
+```{r}
+#| label: tbl-palau-region
+#| tbl-cap: Log-linear BACI regression estimates at the region-level for Palau National Marine Sanctuary The interaction term estimates the percentage change in the treatment region relative to the control region during the anticipation period. Numbers in parentheses report Newey-West standard errors that to account for serial correlation.
+#| tbl-pos: H
+
+region_palau <- readRDS("../data/output/palau/m_region_log.rds")
+
+palau_region_list <- as.list(region_palau)
+
+names(palau_region_list) <- c(
+  "log Effort (days) / 10,000 km²",
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/day)",
+  "CPUE (kg/set)"
+)
+
+modelsummary(
+  palau_region_list,
+  stars = TRUE,
+  gof_map = c(
+    "nobs",
+    "r.squared",
+    "adj.r.squared"),
+  output = "latex",
+  width = 1
+)
+```
+
+
+## Figures
+
+### Spatial distribution of data
+
+![Spatial distribution of treated and control regions used in Kiribati. The map shows the boundaries of the treated (Phoenix Islands Protected Area) and control (Line and Gilbert Islands exclusive economic zones) regions. Points indicate the centroids of the 1$^\circ$ × 1$^\circ$ grid cells included in the analysis. Nearby exclusive economic zones are outlined.](../results/figures/pipa_original/map_pipa.png){#fig-pipa-map fig-pos="H"}
+
+![Spatial distribution of treated and control regions used in Ecuador. The map shows the boundaries of the treated (Galápagos Marine Reserve) and control (Ecuador mainland exclusive economic zone) regions. Points indicate the centroids of the 1$^\circ$ × 1$^\circ$ grid cells included in the analysis. Nearby exclusive economic zones are outlined.](../results/figures/gmr/gmr_map.png){#fig-gmr-map fig-pos="H"}
+
+![Spatial distribution of treated and control regions used in Mexico. The map shows the boundaries of the treated (Revillagigedo National Park) and control (Mexico exclusive economic zone 200 nautical miles away from the national park) regions. Points indicate the centroids of the 1$^\circ$ × 1$^\circ$ grid cells included in the analysis. Nearby exclusive economic zones are outlined.](../results/figures/revilla/revilla_map.png){#fig-revilla-map fig-pos="H"}
+
+![Spatial distribution of treated and control regions used in Palau. The map shows the boundaries of the treated (Palau National Marine Sanctuary) and control (Federated States of Micronesia Exclusive Economic Zone within 200 nautical miles of Palau) regions. Points indicate the centroids of the 1$^\circ$ × 1$^\circ$ grid cells included in the analysis. Nearby exclusive economic zones are outlined.](../results/figures/palau/palau_map.png){#fig-palau-map fig-pos="H"}
+
+### Global Fishing Watch data comparison
+
+Data for these time-series comparisons are obtained from @emilyrodriguezRFMOTunaCatch2026 and @natemillerhe/himGlobalFishingWatchGfwrGfwr2026.
+
+![Monthly fishing effort within the Phoenix Islands Protected Area (PIPA) estimated comparing RFMO data to GFW data. Effort is expressed as days aggregated across the entire PIPA region. Effort in days from GFW data is defined as the number of unique vessel-specific fishing days per month. The dashed vertical line marks the September 2013 announcement of PIPA.](../results/figures/pipa_original/gfw_rfmo_days.png){#fig-pipa-gfw-rfmo-days fig-pos="H"}
+
+![Relationship between monthly fishing effort estimates within the Phoenix Islands Protected Area (PIPA) comparing RFMO data to GFW data. Each point represents a month, with RFMO effort measured in fishing days and GFW effort measured in fishing hours. The fitted linear regression line illustrates the relationship between the two datasets. ](../results/figures/pipa_original/gfw_rfmo_days_v_hours.png){#fig-pipa-gfw-rfmo-days-hours fig-pos="H"}
+
+
+### Region-specific temporal trends
+
+<!--proofread these cubic spline captions)-->
+![Cubic spline estimates of temporal trends in three outcomes of interest for control and treatment regions in the Revillagigedo National Park (RNP) at the region-month level. Panels show observed monthly values (points) and fitted cubic spline trajectories (lines) with shaded ribbons indicating ±1 standard error around the predicted values for (A) effort (sets/10,000 km$^2$), (B) total catch (kg/10,000 km$^2$, and (C) CPUE (kg/sets) from Ocotber 2016 to November 2017. Panel D shows the treatment (RNP) and control region. The vertical line indicates the announcement of RNP (2017-10-05). Data include all observations prior to implementation on 2017-11-27, with no post-implementation observations.](../results/figures/revilla/cubic_timeseries_panels_region.png){#fig-revilla-region fig-pos="H"}
+
+![Cubic spline estimates of temporal trends in five outcomes of interest for control and treatment regions in the Palau National Marine Sanctuary (PNMS) at the region-month level. Panels show observed monthly values (points) and fitted cubic spline trajectories (lines) with shaded ribbons indicating ±1 standard error around the predicted values for (A) effort (days/10,000 km$^2$), (B) effort (sets/10,000 km$^2$), (C) CPUE (kg/day), (D) CPUE (kg/sets), and (E) total catch (kg/10,000 km$^2$) from October 2014 to December 2019. Panel F shows the treatment (PNMS) and control regions. The vertical line indicates the announcement of PNMS (2015-10-22). Data include all observations prior to MPA implementation on 2020-01-01, with no post-implementation observations.](../results/figures/palau/cubic_timeseries_panels_region.png){#fig-palau-region fig-pos="H"}
+
+
+### Temporal differences between treatment and control regions
+
+![Temporal differences in fishing activity and catch metrics between treatment and control regions in the Phoenix Islands Protected Area (PIPA). Panels show spline-based estimates of the difference between treatment and control regions (treatment minus control) for (A) effort (days/10,000 km$^2$), (B) effort (sets/10,000 km$^2$), (C) CPUE (kg/day), (D) CPUE (kg/sets), and (E) total catch (kg/10,000 km$^2$) from October 2014 to December 2019. The shaded ribbon represents ±1 standard error around the estimated treatment-control difference. Panel F shows the treatment (PIPA) and control regions. The vertical line indicates the announcement of PIPA (2013-09-01). Data include all observations prior to MPA implementation on 2015-01-01, with no post-implementation observations.](../results/figures/pipa_original/differences.png){#fig-differences-pipa fig-pos="H"}
+
+![Temporal differences in fishing activity and catch metrics between treatment and control regions in Galápagos Marine Reserve (GMR) prior to implementation. Panels show spline-based estimates of the difference between treatment and control regions (treatment minus control) (A) effort (sets/10,000 km$^2$), (B) total catch (kg/10,000 km$^2$, and (C) CPUE (kg/sets) from January 1997 to December 2001. The shaded ribbon represents ±1 standard error around the estimated treatment-control difference. Panel D shows the treatment (GMR) and control region. The vertical line indicates the implementation of GMR (1998-03-18). Data include all observations prior to enforcement implementation on 2002-01-01, with no post-implementation observations.](../results/figures/gmr/differences.png){#fig-differences-gmr fig-pos="H"}
+
+![Temporal differences in fishing activity and catch metrics between treatment and control regions for Revillagigedo National Park (RNP) prior to implementation. Panels show spline-based estimates of the difference between treatment and control regions (treatment minus control) (A) effort (sets/10,000 km$^2$), (B) total catch (kg/10,000 km$^2$, and (C) CPUE (kg/sets) from Ocotber 2016 to November 2017. The shaded ribbon represents ±1 standard error around the estimated treatment-control difference. Panel D shows the treatment (GMR) and control region. The vertical line indicates the announcement of RNP (2017-10-05). Data include all observations prior to implementation on 2017-11-27, with no post-implementation observations.](../results/figures/revilla/differences.png){#fig-differences-rnp fig-pos="H"}
+
+
+![Temporal differences in fishing activity and catch metrics between treatment and control regions for Palau National Marine Sanctuary (PNMS) prior to implementation. Panels show spline-based estimates of the difference between treatment and control regions (treatment minus control) for (A) effort (days/10,000 km$^2$), (B) effort (sets/10,000 km$^2$), (C) CPUE (kg/day), (D) CPUE (kg/sets), and (E) total catch (kg/10,000 km$^2$) from October 2014 to December 2019. The shaded ribbon represents ±1 standard error around the estimated treatment-control difference. Panel F shows the treatment (PNMS) and control regions. The vertical line indicates the announcement of PNMS (2015-10-22). Data include all observations prior to MPA implementation on 2020-01-01, with no post-implementation observations.](../results/figures/palau/differences.png){#fig-differences-pnms fig-pos="H"}

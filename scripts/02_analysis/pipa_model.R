@@ -23,6 +23,7 @@ library(gt)
 
 # Filtered RFMO Data
 pipa_data <- readRDS("data/processed/pipa_rasterized.rds")
+nino <- readRDS("data/raw/annual_nino34.rds")
 
 ## Prepare data ----------------------------------------------------------------
 
@@ -68,6 +69,9 @@ region_panel <- region_std_df |>
   mutate(post = 1 * (date >= announcement & date < implementation)
   )
 
+region_panel_nino <- region_panel |>
+  left_join(nino, by = "date")
+
 # BACI models
 
 m_region_log <- feols(
@@ -77,15 +81,34 @@ m_region_log <- feols(
     log(cpue_day),
     log(cpue_set)
   ) ~ treatment * post,
-  data = region_panel
+  data = region_panel,
+  vcov = "NW",
+  panel.id = ~treatment + date
 )
+
+# Add ENSO
+m_region_log_enso <- feols(
+  c(log(effort_day_per_km2),
+    log(effort_set_per_km2),
+    log(catch_per_km2),
+    log(cpue_day),
+    log(cpue_set)
+  ) ~ treatment * post + nino34,
+  data = region_panel_nino,
+  vcov = "NW",
+  panel.id = ~treatment + date
+)
+
+# EXPORT #######################################################################
 
 
 saveRDS(m_region_log, "data/output/pipa/m_region_log.rds")
 
+saveRDS(m_region_log_enso, "data/output/pipa/m_region_log_enso.rds")
+
 
 # Obtain # of observations
-# Total
+# Total number of observations
 n <- nrow(region_panel)
 n
 
@@ -107,3 +130,51 @@ pipa_data |>
   summarise(
     n_grid_cells = n_distinct(id)
   )
+
+
+# Build tables
+
+m_region_log_list <- as.list(m_region_log)
+
+names(m_region_log_list) <- c(
+  "log Effort (days) / 10,000 km²",
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/day)",
+  "CPUE (kg/set)"
+)
+
+modelsummary(
+  m_region_log_list,
+  title = "Original model",
+  stars = TRUE,
+  gof_map = c(
+    "nobs",
+    "r.squared",
+    "adj.r.squared"),
+  output = "html",
+  width = 1
+)
+
+
+m_region_log_enso_list <- as.list(m_region_log_enso)
+
+names(m_region_log_enso_list) <- c(
+  "log Effort (days) / 10,000 km²",
+  "log Effort (sets) / 10,000 km²",
+  "log Total Catch (kg) / 10,000 km²",
+  "CPUE (kg/day)",
+  "CPUE (kg/set)"
+)
+
+modelsummary(
+  m_region_log_enso_list,
+  title = "ENSO model",
+  stars = TRUE,
+  gof_map = c(
+    "nobs",
+    "r.squared",
+    "adj.r.squared"),
+  output = "html",
+  width = 1
+)

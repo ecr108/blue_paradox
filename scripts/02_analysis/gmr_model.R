@@ -28,7 +28,7 @@ gmr_data <- readRDS("data/processed/gmr_rasterized.rds")
 
 # Set temporal boundaries
 
-start_pre      <- as.Date("1997-01-01")  # 1 year before 1998 announcement
+start_pre      <- as.Date("1997-03-18")  # 1 year before 1998 announcement
 announcement   <- as.Date("1998-03-18")  # Announcement and implementation of GMR
 implementation <- as.Date("2002-01-01")  # Implementation of enforcement date
 
@@ -74,7 +74,10 @@ m_region_log <- feols(
     log(catch_per_km2),
     log(cpue_set)
   ) ~ treatment * post,
-  data = region_panel
+  data = region_panel,
+  vcov = "NW",
+  panel.id = ~treatment + date
 )
 
 saveRDS(m_region_log, "data/output/gmr/m_region_log.rds")
+
