@@ -17,7 +17,8 @@ and the Palau National Marine Sanctuary (PNMS).
     - `data/processed`: contains `.rds` files of filtered data to test blue paradox
     - `data/output`: contains model outputs of blue paradox analyses
 - `docs/`:
-    - contains paper output of study and references
+    - internship_paper
+    - [symposium_presentation](docs/symposium_presentation.html)
 - `scripts/`:
     - `scripts/01_processing`: contains scripts to prepare MPA, EEZ, and RFMO data
     - `scripts/02_analysis`: contains scripts to test MPAs for blue paradox
